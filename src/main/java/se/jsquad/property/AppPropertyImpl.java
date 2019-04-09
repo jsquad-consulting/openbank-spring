@@ -1,12 +1,12 @@
 package se.jsquad.property;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class AppPropertyImpl implements AppProperty {
-    private static final Logger logger = Logger.getLogger(AppPropertyImpl.class.getName());
+    private static final Logger logger = LogManager.getLogger(AppPropertyImpl.class.getName());
 
     private String version;
 
@@ -15,13 +15,13 @@ public class AppPropertyImpl implements AppProperty {
 
     @Override
     public String getVersion() {
-        logger.log(Level.FINE, "getVersion(), version: {0}", new Object[]{version});
+        logger.log(Level.INFO, "getVersion(), version: {}", version);
         return version;
     }
 
     @Override
     public String getName() {
-        logger.log(Level.FINE, "getName(), name: {0}", new Object[]{name});
+        logger.log(Level.INFO, "getName(), name: {}", name);
         return name;
     }
 
