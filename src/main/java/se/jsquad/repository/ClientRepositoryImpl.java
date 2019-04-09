@@ -7,19 +7,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import se.jsquad.entity.Client;
+import se.jsquad.producer.EntityManagerProducerAbstract;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
 
 @Repository("clientRepositoryImpl")
-public class ClientRepositoryImpl implements ClientRepository {
+public class ClientRepositoryImpl extends EntityManagerProducerAbstract implements ClientRepository {
     private static final Logger logger = LogManager.getLogger(ClientRepositoryImpl.class.getName());
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Override
     public Client getClientInformation(String personIdentification) {
