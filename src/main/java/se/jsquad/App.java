@@ -1,17 +1,18 @@
 package se.jsquad;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import se.jsquad.property.AppProperty;
 import se.jsquad.rest.GetClientInformationREST;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class App {
-    private static Logger logger = Logger.getLogger(App.class.getName());
+    private static Logger logger = LogManager.getLogger(App.class.getName());
 
     public static void main(String[] arguments) {
-        logger.log(Level.FINE, "main(arguments: {0})", new Object[]{arguments});
+        logger.log(Level.INFO, "main(arguments: {})", arguments);
 
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(App.class.getResource(
                 "/META-INF/applicationContext.xml").toString());

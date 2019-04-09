@@ -45,12 +45,6 @@
         <constructor-arg ref="transactionManager"/>
     </bean>
 
-    <!-- Setup logger level for all loggers -->
-    <bean id="loggerConfig" class="se.jsquad.logger.LoggerConfig" init-method="initLogger">
-        <property name="rootLoggerLevel" value="FINE"/>
-        <property name="printedLoggerLevel" value="FINE"/>
-    </bean>
-
     <!-- Define the Startup database initiation -->
     <bean id="startupOpenBank" class="se.jsquad.business.StartupOpenBankComponentImpl"
           init-method="initiateDatabase" destroy-method="closeDatabase"/>
