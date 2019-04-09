@@ -1,5 +1,8 @@
 package se.jsquad.business;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
@@ -8,11 +11,8 @@ import se.jsquad.entity.Client;
 import se.jsquad.generator.EntityGenerator;
 import se.jsquad.repository.ClientRepository;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class StartupOpenBankComponentImpl implements StartupOpenBankComponent {
-    private static final Logger logger = Logger.getLogger(StartupOpenBankComponentImpl.class.getName());
+    private static final Logger logger = LogManager.getLogger(StartupOpenBankComponentImpl.class.getName());
 
     @Autowired
     @Qualifier("clientRepositoryImpl")
@@ -25,7 +25,7 @@ public class StartupOpenBankComponentImpl implements StartupOpenBankComponent {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void initiateDatabase() {
-        logger.log(Level.FINE, "initiateDatabase()");
+        logger.log(Level.INFO, "initiateDatabase()");
 
         for (Client client : entityGenerator.generateClientList()) {
             clientRepository.persistClient(client);
@@ -34,6 +34,6 @@ public class StartupOpenBankComponentImpl implements StartupOpenBankComponent {
 
     @Override
     public void closeDatabase() {
-        logger.log(Level.FINE, "closeDatabase()");
+        logger.log(Level.INFO, "closeDatabase()");
     }
 }
