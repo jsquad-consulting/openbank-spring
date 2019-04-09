@@ -16,6 +16,8 @@ public class GetClientInformationRESTImpl implements GetClientInformationREST {
 
     @Autowired
     private GetClientInformationRESTImpl(OpenBankComponent openBankComponent) {
+        logger.log(Level.FINE, "GetClientInformationREST(openBankComponent: {0}",
+                new Object[]{openBankComponent});
         this.openBankComponent = openBankComponent;
     }
 

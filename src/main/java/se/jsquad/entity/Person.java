@@ -13,7 +13,7 @@ import javax.persistence.Table;
 public class Person {
     @Id
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
 
     @Column(name = "FIRSTNAME")

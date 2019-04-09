@@ -19,7 +19,7 @@ public class Client {
 
     @Id
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
 
     @OneToOne(mappedBy = "client",
