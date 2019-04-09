@@ -2,21 +2,22 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd  http://www.springframework.org/schema/tx
-        http://www.springframework.org/schema/tx/spring-tx.xsd
-
-
-
-        http://www.springframework.org/schema/data/jpa
-        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/data/jpa
+       http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
     <jpa:repositories base-package="se.jsquad"/>
-
+    <context:component-scan base-package="se.jsquad"/>
     <context:property-placeholder location="classpath:/META-INF/property/app.properties"/>
 
+    <!-- Setup JPA and transaction vendor implementation -->
     <bean class="org.apache.commons.dbcp2.BasicDataSource"
           destroy-method="close" id="dataSource">
     </bean>
@@ -40,13 +41,13 @@
         <constructor-arg ref="transactionManager"/>
     </bean>
 
-    <context:component-scan base-package="se.jsquad"/>
-
+    <!-- Setup logger level for all loggers -->
     <bean id="loggerConfig" class="se.jsquad.logger.LoggerConfig" init-method="initLogger">
         <property name="rootLoggerLevel" value="FINE"/>
         <property name="printedLoggerLevel" value="FINE"/>
     </bean>
 
+    <!-- Define the Startup database initiation -->
     <bean id="startupOpenBank" class="se.jsquad.business.StartupOpenBankComponentImpl"
           init-method="initiateDatabase" destroy-method="closeDatabase"/>
 
@@ -54,6 +55,7 @@
         <property name="version" value="${app.version}"/>
     </bean>
 
+    <!-- Define mock values when intiating a new Client with DI -->
     <bean id="client" class="se.jsquad.entity.Client" scope="prototype">
         <property name="person" ref="person"/>
     </bean>
