@@ -45,11 +45,7 @@
         <constructor-arg ref="transactionManager"/>
     </bean>
 
-    <!-- Define the Startup database initiation -->
-    <bean id="startupOpenBank" class="se.jsquad.business.StartupOpenBankComponentImpl"
-          init-method="initiateDatabase" destroy-method="closeDatabase"/>
-
-    <bean id="appProperty" class="se.jsquad.property.AppPropertyImpl" scope="singleton">
+    <bean id="appProperty" class="se.jsquad.property.AppPropertyImpl">
         <property name="version" value="${app.version}"/>
     </bean>
 
