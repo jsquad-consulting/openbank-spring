@@ -13,8 +13,12 @@
        http://www.springframework.org/schema/data/jpa
        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
+    <!-- Scan package level for Repository defined classes -->
     <jpa:repositories base-package="se.jsquad"/>
+
+    <!-- Enable dependency injection for all component defined classes at the se.jsquad package level -->
     <context:component-scan base-package="se.jsquad"/>
+
     <context:property-placeholder location="classpath:/META-INF/property/app.properties"/>
 
     <!-- Setup JPA and transaction vendor implementation -->
