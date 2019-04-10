@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import se.jsquad.generator.EntityGenerator;
+import se.jsquad.generator.EntityGeneratorImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -19,8 +21,9 @@ class ClientTest {
     @Test
     public void testPrototypeScopeForClient() {
         // Given
-        Client client1 = (Client) applicationContext.getBean("client");
-        Client client2 = (Client) applicationContext.getBean("client");
+        EntityGenerator entityGenerator = (EntityGeneratorImpl) applicationContext.getBean("entityGeneratorImpl");
+        Client client1 = entityGenerator.generateClientList().get(0);
+        Client client2 = entityGenerator.generateClientList().get(0);
 
         // Then
         assertNotEquals(client1, client2);

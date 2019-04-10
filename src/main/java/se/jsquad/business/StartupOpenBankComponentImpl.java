@@ -19,13 +19,17 @@ import javax.annotation.PreDestroy;
 public class StartupOpenBankComponentImpl implements StartupOpenBankComponent {
     private static final Logger logger = LogManager.getLogger(StartupOpenBankComponentImpl.class.getName());
 
-    @Autowired
-    @Qualifier("clientRepositoryImpl")
     private ClientRepository clientRepository;
+    private EntityGenerator entityGenerator;
 
     @Autowired
-    @Qualifier("entityGeneratorImpl")
-    private EntityGenerator entityGenerator;
+    private StartupOpenBankComponentImpl(@Qualifier("clientRepositoryImpl") ClientRepository clientRepository,
+                                         @Qualifier("entityGeneratorImpl") EntityGenerator entityGenerator) {
+        logger.log(Level.INFO, "StartupOpenBankComponentImpl(clientRepository: {}, entityGenerator: {}",
+                clientRepository, entityGenerator);
+        this.clientRepository = clientRepository;
+        this.entityGenerator = entityGenerator;
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -33,8 +37,10 @@ public class StartupOpenBankComponentImpl implements StartupOpenBankComponent {
     public void initiateDatabase() {
         logger.log(Level.INFO, "initiateDatabase()");
 
-        for (Client client : entityGenerator.generateClientList()) {
-            clientRepository.persistClient(client);
+        if (clientRepository.getClientInformation("191212121212") == null) {
+            for (Client client : entityGenerator.generateClientList()) {
+                clientRepository.persistClient(client);
+            }
         }
     }
 
