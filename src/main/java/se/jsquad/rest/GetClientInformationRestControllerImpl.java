@@ -1,23 +1,25 @@
 package se.jsquad.rest;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import se.jsquad.business.OpenBankService;
 import se.jsquad.entity.Client;
 
 @Controller("getClientInformationRestControllerImpl")
 public class GetClientInformationRestControllerImpl implements GetClientInformationRestController {
-    private static Logger logger = LogManager.getLogger(GetClientInformationRestControllerImpl.class.getName());
+    private Logger logger;
 
     private OpenBankService openBankService;
 
     @Autowired
-    private GetClientInformationRestControllerImpl(OpenBankService openBankService) {
-        logger.log(Level.INFO, "GetClientInformationREST(openBankComponent: {}",
-                openBankService);
+    private GetClientInformationRestControllerImpl(@Qualifier("logger") Logger logger,
+                                                   OpenBankService openBankService) {
+        this.logger = logger;
+        this.logger.log(Level.INFO, "GetClientInformationREST(logger: {}, openBankComponent: {})",
+                logger, openBankService);
         this.openBankService = openBankService;
     }
 

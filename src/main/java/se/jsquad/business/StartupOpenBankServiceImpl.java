@@ -1,7 +1,6 @@
 package se.jsquad.business;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,27 +8,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import se.jsquad.entity.Client;
-import se.jsquad.generator.EntityGeneratorComponent;
+import se.jsquad.generator.EntityGenerator;
 import se.jsquad.repository.ClientRepository;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 @Service("startupOpenBankServiceImpl")
 public class StartupOpenBankServiceImpl implements StartupOpenBankService {
-    private static final Logger logger = LogManager.getLogger(StartupOpenBankServiceImpl.class.getName());
+    private Logger logger;
 
     private ClientRepository clientRepository;
-    private EntityGeneratorComponent entityGeneratorComponent;
+    private EntityGenerator entityGenerator;
 
     @Autowired
-    private StartupOpenBankServiceImpl(@Qualifier("clientRepositoryImpl") ClientRepository clientRepository,
-                                       @Qualifier("entityGeneratorComponentImpl") EntityGeneratorComponent
-                                               entityGeneratorComponent) {
-        logger.log(Level.INFO, "StartupOpenBankComponentImpl(clientRepository: {}, entityGenerator: {}",
-                clientRepository, entityGeneratorComponent);
+    private StartupOpenBankServiceImpl(@Qualifier("logger") Logger logger,
+                                       @Qualifier("clientRepositoryImpl") ClientRepository clientRepository) {
+        this.logger = logger;
+        this.logger.log(Level.INFO, "StartupOpenBankComponentImpl(logger: {}, clientRepository: {})",
+                logger, clientRepository);
         this.clientRepository = clientRepository;
-        this.entityGeneratorComponent = entityGeneratorComponent;
+    }
+
+    @Inject
+    private void setEntityGenerator(@Named("entityGeneratorImpl") EntityGenerator entityGenerator) {
+        this.entityGenerator = entityGenerator;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
         logger.log(Level.INFO, "initiateDatabase()");
 
         if (clientRepository.getClientInformation("191212121212") == null) {
-            for (Client client : entityGeneratorComponent.generateClientList()) {
+            for (Client client : entityGenerator.generateClientList()) {
                 clientRepository.persistClient(client);
             }
         }
