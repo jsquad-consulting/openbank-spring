@@ -4,6 +4,6 @@ import se.jsquad.entity.Client;
 
 import java.util.List;
 
-public interface EntityGenerator {
+public interface EntityGeneratorComponent {
     List<Client> generateClientList();
 }

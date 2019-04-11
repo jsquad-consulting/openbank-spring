@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.Person;
 
@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Service("entityGeneratorImpl")
+@Component("entityGeneratorComponentImpl")
 @PropertySource("classpath:/META-INF/property/client.properties")
-public class EntityGeneratorImpl implements EntityGenerator {
-    private static final Logger logger = LogManager.getLogger(EntityGeneratorImpl.class.getName());
+public class EntityGeneratorComponentImpl implements EntityGeneratorComponent {
+    private static final Logger logger = LogManager.getLogger(EntityGeneratorComponentImpl.class.getName());
 
     private Environment environment;
 
     @Autowired
-    private EntityGeneratorImpl(Environment environment) {
+    private EntityGeneratorComponentImpl(Environment environment) {
         logger.log(Level.INFO, "EntityGeneratorImpl(environment: {}",
                 environment);
         this.environment = environment;

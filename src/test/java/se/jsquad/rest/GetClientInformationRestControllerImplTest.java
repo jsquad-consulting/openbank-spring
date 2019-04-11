@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
-public class GetClientInformationRESTImplTest {
+public class GetClientInformationRestControllerImplTest {
     @Autowired
-    @Qualifier("getClientInformationRESTImpl")
-    private GetClientInformationREST getClientInformationREST;
+    @Qualifier("getClientInformationRestControllerImpl")
+    private GetClientInformationRestController getClientInformationRESTController;
 
     @Autowired
     ApplicationContext applicationContext;
@@ -24,7 +24,7 @@ public class GetClientInformationRESTImplTest {
     @Test
     public void testGetClientInformation() {
         // When
-        Client client = getClientInformationREST.getClientInformation("191212121212");
+        Client client = getClientInformationRESTController.getClientInformation("191212121212");
 
         // Then
         assertEquals("Mr. Spock", client.getPerson().getFirstName());
@@ -34,13 +34,15 @@ public class GetClientInformationRESTImplTest {
     @Test
     public void testSingleton() {
         // Given
-        GetClientInformationREST getClientInformationREST1 = (GetClientInformationREST) applicationContext.getBean(
-                "getClientInformationRESTImpl");
+        GetClientInformationRestController getClientInformationRestController1 = (GetClientInformationRestController)
+                applicationContext.getBean(
+                        "getClientInformationRestControllerImpl");
 
-        GetClientInformationREST getClientInformationREST2 = (GetClientInformationREST) applicationContext.getBean(
-                "getClientInformationRESTImpl");
+        GetClientInformationRestController getClientInformationRestController2 = (GetClientInformationRestController)
+                applicationContext.getBean(
+                        "getClientInformationRestControllerImpl");
 
         // Then
-        assertEquals(getClientInformationREST1, getClientInformationREST2);
+        assertEquals(getClientInformationRestController1, getClientInformationRestController2);
     }
 }

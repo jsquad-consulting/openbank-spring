@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import se.jsquad.property.AppProperty;
-import se.jsquad.rest.GetClientInformationREST;
+import se.jsquad.rest.GetClientInformationRestController;
 
 
 public class App {
@@ -17,14 +17,15 @@ public class App {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(App.class.getResource(
                 "/META-INF/applicationContext.xml").toString());
 
-        GetClientInformationREST getClientInformationREST = applicationContext.getBean("getClientInformationRESTImpl",
-                GetClientInformationREST.class);
+        GetClientInformationRestController getClientInformationRESTController = applicationContext
+                .getBean("getClientInformationRestControllerImpl",
+                        GetClientInformationRestController.class);
 
         AppProperty appProperty = applicationContext.getBean("appProperty", AppProperty.class);
         appProperty.getVersion();
         appProperty.getName();
 
-        getClientInformationREST.getClientInformation("191212");
+        getClientInformationRESTController.getClientInformation("191212");
 
         applicationContext.close();
     }
