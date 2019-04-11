@@ -1,7 +1,6 @@
 package se.jsquad.business;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,15 +10,16 @@ import se.jsquad.repository.ClientRepository;
 
 @Service("openBankServiceImpl")
 public class OpenBankServiceImpl implements OpenBankService {
-    private static Logger logger = LogManager.getLogger(OpenBankServiceImpl.class.getName());
+    private Logger logger;
 
     private ClientRepository clientRepository;
 
     @Autowired
-    private OpenBankServiceImpl(@Qualifier("clientRepositoryImpl") ClientRepository
+    private OpenBankServiceImpl(@Qualifier("logger") Logger logger, @Qualifier("clientRepositoryImpl") ClientRepository
                                           clientRepository) {
-        logger.log(Level.INFO, "OpenBankControllerImpl(clientInformationService: {})",
-                clientRepository);
+        this.logger = logger;
+        this.logger.log(Level.INFO, "OpenBankControllerImpl(logger: {}, clientInformationService: {})",
+                logger, clientRepository);
         this.clientRepository = clientRepository;
     }
 

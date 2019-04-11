@@ -2,12 +2,12 @@ package se.jsquad.entity;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import se.jsquad.generator.EntityGeneratorComponent;
-import se.jsquad.generator.EntityGeneratorComponentImpl;
+import se.jsquad.generator.EntityGenerator;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -15,16 +15,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
 class ClientTest {
-    @Autowired
-    private ApplicationContext applicationContext;
+    @Inject
+    @Named("entityGeneratorImpl")
+    private EntityGenerator entityGenerator;
 
     @Test
     public void testPrototypeScopeForClient() {
         // Given
-        EntityGeneratorComponent entityGeneratorComponent = (EntityGeneratorComponentImpl) applicationContext.getBean
-                ("entityGeneratorComponentImpl");
-        Client client1 = entityGeneratorComponent.generateClientList().get(0);
-        Client client2 = entityGeneratorComponent.generateClientList().get(0);
+        Client client1 = entityGenerator.generateClientList().get(0);
+        Client client2 = entityGenerator.generateClientList().get(0);
 
         // Then
         assertNotEquals(client1, client2);
