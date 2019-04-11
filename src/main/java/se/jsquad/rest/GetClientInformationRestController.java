@@ -2,6 +2,6 @@ package se.jsquad.rest;
 
 import se.jsquad.entity.Client;
 
-public interface GetClientInformationREST {
+public interface GetClientInformationRestController {
     Client getClientInformation(String personIdentification);
 }
