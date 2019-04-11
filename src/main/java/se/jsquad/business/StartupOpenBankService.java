@@ -1,6 +1,6 @@
 package se.jsquad.business;
 
-public interface StartupOpenBankComponent {
+public interface StartupOpenBankService {
     void initiateDatabase();
     void closeDatabase();
 }
