@@ -1,8 +1,9 @@
 package se.jsquad.repository;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,13 @@ import java.util.List;
 
 @Repository("clientRepositoryImpl")
 public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducerAbstract implements ClientRepository {
-    private static final Logger logger = LogManager.getLogger(ClientRepositoryImpl.class.getName());
+    private Logger logger;
+
+    @Autowired
+    private ClientRepositoryImpl(@Qualifier("logger") Logger logger) {
+        this.logger = logger;
+        this.logger.log(Level.INFO, "ClientRepositoryImpl(logger: {})", logger);
+    }
 
     @Override
     public Client getClientInformation(String personIdentification) {

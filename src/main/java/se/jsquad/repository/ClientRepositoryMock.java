@@ -1,15 +1,22 @@
 package se.jsquad.repository;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.Person;
 
 @Repository("getClientRepositoryMock")
 public class ClientRepositoryMock implements ClientRepository {
-    private static final Logger logger = LogManager.getLogger(ClientRepositoryMock.class.getName());
+    private Logger logger;
+
+    @Autowired
+    private ClientRepositoryMock(@Qualifier("logger") Logger logger) {
+        this.logger = logger;
+        this.logger.log(Level.INFO, "ClientRepositoryMock(logger: {})", logger);
+    }
 
     @Override
     public Client getClientInformation(String personIdentification) {
