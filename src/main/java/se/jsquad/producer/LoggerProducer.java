@@ -14,7 +14,7 @@ class LoggerProducer {
     @Bean("logger")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     Logger logger(final InjectionPoint injectionPoint) {
-        return LogManager.getLogger(injectionPoint.getMethodParameter().getContainingClass());
+        return LogManager.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
 
 }
