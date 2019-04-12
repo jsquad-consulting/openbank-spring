@@ -8,15 +8,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-@Component("appProperty")
+@Component("appPropertyConfigurationImpl")
+@Qualifier("appPropertyConfiguration")
 @PropertySource("classpath:/META-INF/property/app.properties")
-public class AppPropertyImpl implements AppProperty {
+public class AppPropertyConfigurationImpl implements AppPropertyConfiguration {
     private Logger logger;
 
     @Autowired
-    private AppPropertyImpl(@Qualifier("logger") Logger logger) {
+    private AppPropertyConfigurationImpl(@Qualifier("logger") Logger logger) {
+        logger.log(Level.INFO, "AppPropertyImpl(logger: {})", logger);
         this.logger = logger;
-        this.logger.log(Level.INFO, "AppPropertyImpl(logger: {})", logger);
     }
 
     @Value("${app.version}")

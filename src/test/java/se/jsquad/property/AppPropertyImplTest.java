@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
 public class AppPropertyImplTest {
     @Autowired
-    @Qualifier("appProperty")
-    private AppProperty appProperty;
+    @Qualifier("appPropertyConfiguration")
+    private AppPropertyConfiguration appPropertyConfiguration;
 
     @Test
     public void testAppProperty() {
         // Then
-        assertEquals("OpenBank", appProperty.getName());
-        assertEquals("1.0.0", appProperty.getVersion());
+        assertEquals("OpenBank", appPropertyConfiguration.getName());
+        assertEquals("1.0.0", appPropertyConfiguration.getVersion());
     }
 }
