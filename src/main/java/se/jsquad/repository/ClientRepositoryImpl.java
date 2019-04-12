@@ -15,21 +15,22 @@ import java.util.List;
 
 
 @Repository("clientRepositoryImpl")
+@Qualifier("clientRepository")
 public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducerAbstract implements ClientRepository {
     private Logger logger;
 
     @Autowired
     private ClientRepositoryImpl(@Qualifier("logger") Logger logger) {
+        logger.log(Level.INFO, "ClientRepositoryImpl(logger: {})", logger);
         this.logger = logger;
-        this.logger.log(Level.INFO, "ClientRepositoryImpl(logger: {})", logger);
     }
 
     @Override
-    public Client getClientInformation(String personIdentification) {
-        logger.log(Level.INFO, "getClientInformation(personIdentification: {})", "hidden");
+    public Client getClientByPersonIdentification(String personIdentification) {
+        logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
 
         TypedQuery<Client> query = entityManager.createNamedQuery(Client.PERSON_IDENTIFICATION, Client.class);
-        query.setParameter(Client.PERSON_IDENTIFICSTION_PARAM, personIdentification);
+        query.setParameter(Client.PARAM_PERSON_IDENTIFICATION, personIdentification);
 
         List<Client> clientList = query.getResultList();
 

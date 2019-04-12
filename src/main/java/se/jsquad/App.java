@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import se.jsquad.property.AppProperty;
+import se.jsquad.property.AppPropertyConfiguration;
 import se.jsquad.rest.GetClientInformationRestController;
 
 
@@ -21,9 +21,10 @@ public class App {
                 .getBean("getClientInformationRestControllerImpl",
                         GetClientInformationRestController.class);
 
-        AppProperty appProperty = applicationContext.getBean("appProperty", AppProperty.class);
-        appProperty.getVersion();
-        appProperty.getName();
+        AppPropertyConfiguration appPropertyConfiguration = applicationContext.getBean("appPropertyConfigurationImpl",
+                AppPropertyConfiguration.class);
+        appPropertyConfiguration.getVersion();
+        appPropertyConfiguration.getName();
 
         getClientInformationRESTController.getClientInformation("191212");
 

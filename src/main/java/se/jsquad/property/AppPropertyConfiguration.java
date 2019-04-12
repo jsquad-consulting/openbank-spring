@@ -1,6 +1,6 @@
 package se.jsquad.property;
 
-public interface AppProperty {
+public interface AppPropertyConfiguration {
     String getVersion();
 
     String getName();

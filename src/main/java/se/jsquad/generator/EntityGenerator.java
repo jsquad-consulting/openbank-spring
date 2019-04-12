@@ -2,8 +2,8 @@ package se.jsquad.generator;
 
 import se.jsquad.entity.Client;
 
-import java.util.List;
+import java.util.Set;
 
 public interface EntityGenerator {
-    List<Client> generateClientList();
+    Set<Client> generateClientSet();
 }
