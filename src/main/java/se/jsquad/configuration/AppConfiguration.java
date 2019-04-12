@@ -1,4 +1,4 @@
-package se.jsquad.producer;
+package se.jsquad.configuration;
 
 
 import org.apache.logging.log4j.LogManager;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-class LoggerProducer {
+class AppConfiguration {
     @Bean("logger")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     Logger logger(final InjectionPoint injectionPoint) {
