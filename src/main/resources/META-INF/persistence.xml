@@ -4,7 +4,14 @@
         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd" version="2.1">
     <persistence-unit name="openBankPU">
         <class>se.jsquad.entity.Client</class>
+        <class>se.jsquad.entity.Account</class>
+        <class>se.jsquad.entity.AccountTransaction</class>
         <class>se.jsquad.entity.Person</class>
+        <class>se.jsquad.entity.SystemProperty</class>
+        <class>se.jsquad.entity.ClientType</class>
+        <class>se.jsquad.entity.RegularClient</class>
+        <class>se.jsquad.entity.PremiumClient</class>
+        <class>se.jsquad.entity.ForeignClient</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>

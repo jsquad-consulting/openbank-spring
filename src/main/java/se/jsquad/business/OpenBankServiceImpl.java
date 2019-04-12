@@ -9,24 +9,25 @@ import se.jsquad.entity.Client;
 import se.jsquad.repository.ClientRepository;
 
 @Service("openBankServiceImpl")
+@Qualifier("openBankService")
 public class OpenBankServiceImpl implements OpenBankService {
     private Logger logger;
 
     private ClientRepository clientRepository;
 
     @Autowired
-    private OpenBankServiceImpl(@Qualifier("logger") Logger logger, @Qualifier("clientRepositoryImpl") ClientRepository
+    private OpenBankServiceImpl(@Qualifier("logger") Logger logger, @Qualifier("clientRepository") ClientRepository
                                           clientRepository) {
-        this.logger = logger;
-        this.logger.log(Level.INFO, "OpenBankControllerImpl(logger: {}, clientInformationService: {})",
+        logger.log(Level.INFO, "OpenBankControllerImpl(logger: {}, clientInformationService: {})",
                 logger, clientRepository);
         this.clientRepository = clientRepository;
+        this.logger = logger;
     }
 
     @Override
-    public Client getClientInformation(String personIdentification) {
-        logger.log(Level.INFO, "getClientInformation(personIdentification: {})", "hidden");
+    public Client getClientInformationByPersonIdentification(String personIdentification) {
+        logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
 
-        return clientRepository.getClientInformation(personIdentification);
+        return clientRepository.getClientByPersonIdentification(personIdentification);
     }
 }

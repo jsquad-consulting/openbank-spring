@@ -9,6 +9,7 @@ import se.jsquad.business.OpenBankService;
 import se.jsquad.entity.Client;
 
 @Controller("getClientInformationRestControllerImpl")
+@Qualifier("getClientInformationRestController")
 public class GetClientInformationRestControllerImpl implements GetClientInformationRestController {
     private Logger logger;
 
@@ -17,15 +18,16 @@ public class GetClientInformationRestControllerImpl implements GetClientInformat
     @Autowired
     private GetClientInformationRestControllerImpl(@Qualifier("logger") Logger logger,
                                                    OpenBankService openBankService) {
-        this.logger = logger;
-        this.logger.log(Level.INFO, "GetClientInformationREST(logger: {}, openBankComponent: {})",
+        logger.log(Level.INFO, "GetClientInformationREST(logger: {}, openBankComponent: {})",
                 logger, openBankService);
+        this.logger = logger;
         this.openBankService = openBankService;
     }
 
     @Override
     public Client getClientInformation(String personIdentification) {
-        logger.log(Level.INFO, "getClientInformation(personIdentification: {})", "hidden");
-        return openBankService.getClientInformation(personIdentification);
+        logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
+
+        return openBankService.getClientInformationByPersonIdentification(personIdentification);
     }
 }

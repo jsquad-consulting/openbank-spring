@@ -15,11 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
 public class GetClientInformationRestControllerImplTest {
     @Autowired
-    @Qualifier("getClientInformationRestControllerImpl")
+    @Qualifier("getClientInformationRestController")
     private GetClientInformationRestController getClientInformationRESTController;
 
     @Autowired
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     @Test
     public void testGetClientInformation() {
@@ -27,7 +27,7 @@ public class GetClientInformationRestControllerImplTest {
         Client client = getClientInformationRESTController.getClientInformation("191212121212");
 
         // Then
-        assertEquals("Mr. Spock", client.getPerson().getFirstName());
+        assertEquals("John", client.getPerson().getFirstName());
         assertEquals("191212121212", client.getPerson().getPersonIdentification());
     }
 
