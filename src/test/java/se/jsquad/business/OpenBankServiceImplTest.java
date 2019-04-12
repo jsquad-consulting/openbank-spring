@@ -6,19 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.RegularClient;
 import se.jsquad.entity.TransactionType;
 
-import javax.transaction.Transactional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
-@Transactional
+@Transactional(propagation = Propagation.REQUIRED)
 class OpenBankServiceImplTest {
     @Autowired
     @Qualifier("openBankService")
