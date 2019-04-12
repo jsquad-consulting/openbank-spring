@@ -21,7 +21,6 @@ import javax.inject.Named;
 
 @Service("startupOpenBankServiceImpl")
 @Qualifier("startupOpenBankService")
-@Transactional(propagation = Propagation.REQUIRED)
 public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private Logger logger;
 
@@ -54,6 +53,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
 
     @Override
     @PostConstruct
+    @Transactional(propagation = Propagation.REQUIRED)
     public void initiateDatabase() {
         logger.log(Level.INFO, "initiateDatabase()");
 

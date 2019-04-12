@@ -15,7 +15,6 @@ import java.util.List;
 
 @Repository("systemPropertyRepositoryImpl")
 @Qualifier("systemPropertyRepository")
-@Transactional(propagation = Propagation.REQUIRED)
 public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProducerAbstract implements SystemPropertyRepository {
     private Logger logger;
 
@@ -26,6 +25,7 @@ public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProduce
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void persistSystemProperty(SystemProperty systemProperty) {
         logger.log(Level.INFO, "persistSystemProperty: systemProperty: {}", systemProperty);
         entityManager.persist(systemProperty);
