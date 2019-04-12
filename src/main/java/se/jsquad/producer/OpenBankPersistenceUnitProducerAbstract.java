@@ -4,6 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 public abstract class OpenBankPersistenceUnitProducerAbstract {
-    @PersistenceContext(unitName = "openBankPU")
+    @PersistenceContext
     protected EntityManager entityManager;
 }
