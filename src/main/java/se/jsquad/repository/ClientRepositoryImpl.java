@@ -16,7 +16,6 @@ import java.util.List;
 
 @Repository("clientRepositoryImpl")
 @Qualifier("clientRepository")
-@Transactional(propagation = Propagation.REQUIRED)
 public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducerAbstract implements ClientRepository {
     private Logger logger;
 
@@ -43,6 +42,7 @@ public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducerAbstrac
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void persistClient(Client client) {
         logger.log(Level.INFO, "persistClient(client: {})", client);
 
