@@ -1,7 +1,7 @@
 package se.jsquad.business;
 
-import se.jsquad.entity.Client;
+import se.jsquad.client.info.ClientApi;
 
 public interface OpenBankService {
-    Client getClientInformationByPersonIdentification(String personIdentification);
+    ClientApi getClientInformationByPersonIdentification(String personIdentification);
 }

@@ -6,23 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import se.jsquad.entity.Account;
-import se.jsquad.entity.AccountTransaction;
-import se.jsquad.entity.Client;
-import se.jsquad.entity.RegularClient;
-import se.jsquad.entity.TransactionType;
+import se.jsquad.client.info.AccountApi;
+import se.jsquad.client.info.AccountTransactionApi;
+import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.TransactionTypeApi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
-@Transactional(propagation = Propagation.REQUIRED)
 class OpenBankServiceImplTest {
     @Autowired
     @Qualifier("openBankService")
-    private OpenBankServiceImpl openBankService;
+    private OpenBankService openBankService;
 
     @Test
     void testGetClientInformation() {
@@ -30,29 +26,24 @@ class OpenBankServiceImplTest {
         String personIdentification = "191212121212";
 
         // When
-        Client client = openBankService.getClientInformationByPersonIdentification(personIdentification);
+        ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(personIdentification);
 
         // Then
-        assertEquals(personIdentification, client.getPerson().getPersonIdentification());
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
 
-        assertEquals("John", client.getPerson().getFirstName());
-        assertEquals("Doe", client.getPerson().getLastName());
-        assertEquals("john.doe@test.se", client.getPerson().getMail());
-        assertEquals(client, client.getPerson().getClient());
+        assertEquals("John", clientApi.getPerson().getFirstName());
+        assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
 
-        assertEquals(500, ((RegularClient) client.getClientType()).getRating());
-        assertEquals(client, client.getClientType().getClient());
+        assertEquals(500, clientApi.getClientType().getRating());
 
-        Account account = client.getAccountSet().iterator().next();
+        AccountApi accountApi = clientApi.getAccountList().get(0);
 
-        assertEquals("1000", account.getAccountNumber());
-        assertEquals(500, account.getBalance());
-        assertEquals(client, account.getClient());
+        assertEquals(500, accountApi.getBalance());
 
-        AccountTransaction accountTransaction = account.getAccountTransactionSet().iterator().next();
+        AccountTransactionApi accountTransactionApi = accountApi.getAccountTransactionList().get(0);
 
-        assertEquals(account, accountTransaction.getAccount());
-        assertEquals("500$ in deposit", accountTransaction.getMessage());
-        assertEquals(TransactionType.DEPOSIT, accountTransaction.getTransactionType());
+        assertEquals("500$ in deposit", accountTransactionApi.getMessage());
+        assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
     }
 }

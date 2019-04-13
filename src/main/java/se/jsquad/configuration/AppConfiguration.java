@@ -16,5 +16,4 @@ class AppConfiguration {
     Logger logger(final InjectionPoint injectionPoint) {
         return LogManager.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
-
 }

@@ -4,7 +4,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.Client;
@@ -26,7 +25,7 @@ public class EntityGeneratorImpl implements EntityGenerator {
     public static final String IN_WITHDRAWAL = "500$ in withdrawal";
 
     @Autowired
-    EntityGeneratorImpl(@Qualifier("logger") Logger logger, Environment environment) {
+    EntityGeneratorImpl(@Qualifier("logger") Logger logger) {
         logger.log(Level.INFO, "EntityGeneratorImpl(logger: {})", logger);
         this.logger = logger;
     }
