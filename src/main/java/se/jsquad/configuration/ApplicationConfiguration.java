@@ -34,10 +34,9 @@ class ApplicationConfiguration {
 
     @Bean("entityManagerFactory")
     @Autowired
-    LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBean(@Qualifier(
-            "hibernateVendorAdapter")
-                                                                                             JpaVendorAdapter jpaVendorAdapter,
-                                                                                     @Value("#{dbProds.pu}") String persistenceUnitName) {
+    LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBean(
+            @Qualifier("hibernateVendorAdapter") JpaVendorAdapter jpaVendorAdapter,
+            @Value("#{dbProds.pu}") String persistenceUnitName) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
         factoryBean.setPersistenceUnitName(persistenceUnitName);
@@ -52,7 +51,8 @@ class ApplicationConfiguration {
 
     @Bean("transactionManager")
     @Autowired
-    JpaTransactionManager getJpaTransactionManager(@Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory) {
+    JpaTransactionManager getJpaTransactionManager(@Qualifier("entityManagerFactory")
+                                                           EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
         jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
 
@@ -60,7 +60,8 @@ class ApplicationConfiguration {
     }
 
     @Bean("transactionTemplate")
-    TransactionTemplate getTransactionTemplate(@Qualifier("transactionManager") JpaTransactionManager jpaTransactionManager) {
+    TransactionTemplate getTransactionTemplate(@Qualifier("transactionManager") JpaTransactionManager
+                                                       jpaTransactionManager) {
         TransactionTemplate transactionTemplate = new TransactionTemplate();
         transactionTemplate.setTransactionManager(jpaTransactionManager);
         transactionTemplate.setPropagationBehavior(Propagation.REQUIRED.value());
