@@ -6,10 +6,7 @@ import java.util.List;
 
 public interface SystemPropertyRepository {
     void persistSystemProperty(SystemProperty systemProperty);
-
     List<SystemProperty> findAllUniqueSystemProperties();
-
     void clearSecondaryLevelCache();
-
     void refreshSecondaryLevelCache();
 }
