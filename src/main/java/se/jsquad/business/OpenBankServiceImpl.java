@@ -26,7 +26,7 @@ public class OpenBankServiceImpl implements OpenBankService {
 
     @Autowired
     private OpenBankServiceImpl(@Qualifier("logger") Logger logger, @Qualifier("clientRepository") ClientRepository
-                                          clientRepository) {
+            clientRepository) {
         logger.log(Level.INFO, "OpenBankControllerImpl(logger: {}, clientInformationService: {})",
                 logger, clientRepository);
         this.clientRepository = clientRepository;
