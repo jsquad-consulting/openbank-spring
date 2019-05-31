@@ -50,6 +50,25 @@ paths:
                 example: 'System failure.'
                 type: string
 
+  /openbank/start/slow/batch/mock:
+    get:
+      summary: Returns a BatchStatus object with status enum string and message string.
+      description: Returns a BatchStatus object
+      responses:
+        '200':
+          description: Returns a BatchStatus JSON string.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchStatus'
+        '5XX':
+          description: Unexpected system error.
+          content:
+            application/json:
+              schema:
+                example: 'System failure.'
+                type: string
+
 components:
   schemas:
     BatchStatus:
