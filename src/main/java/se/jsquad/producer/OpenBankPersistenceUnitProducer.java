@@ -9,7 +9,7 @@ public class OpenBankPersistenceUnitProducer {
     @PersistenceContext(unitName = "entityManagerFactory")
     protected EntityManager entityManager;
 
-	public EntityManager getEntityManager() {
-		return entityManager;
-	}
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
 }

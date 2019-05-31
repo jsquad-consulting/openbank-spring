@@ -1,9 +1,9 @@
 package se.jsquad.business;
 
 public interface StartupOpenBankService {
-	void initiateDatabase();
+    void initiateDatabase();
 
-	void closeDatabase();
+    void closeDatabase();
 
-	void refreshJpaCache();
+    void refreshJpaCache();
 }

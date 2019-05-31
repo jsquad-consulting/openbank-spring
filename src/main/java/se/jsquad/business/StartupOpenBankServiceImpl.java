@@ -32,7 +32,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private ClientRepository clientRepository;
     private EntityGenerator entityGenerator;
     private SystemPropertyRepository systemPropertyRepository;
-	private static final Lock lock = new ReentrantLock();
+    private static final Lock lock = new ReentrantLock();
 
     @Autowired
     private StartupOpenBankServiceImpl(@Qualifier("logger") Logger logger,
@@ -82,26 +82,26 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     }
 
 
-	@Override
-	@Scheduled(cron = "0 0/5 * * * *")
-	/**
-	 * Batch job that runs every five minutes to refresh the secondary cache level
-	 *
-	 * @return
-	 */
-	public void refreshJpaCache() {
-		logger.log(Level.INFO, "refreshJpaCache()");
+    @Override
+    @Scheduled(cron = "0 0/5 * * * *")
+    /**
+     * Batch job that runs every five minutes to refresh the secondary cache level
+     *
+     * @return
+     */
+    public void refreshJpaCache() {
+        logger.log(Level.INFO, "refreshJpaCache()");
 
-		lock.lock();
-		logger.log(Level.INFO, "Locked the batch thread.");
-		NumberOfLocks.increaseNumberOfLocks();
+        lock.lock();
+        logger.log(Level.INFO, "Locked the batch thread.");
+        NumberOfLocks.increaseNumberOfLocks();
 
-		try {
-			systemPropertyRepository.refreshSecondaryLevelCache();
-		} finally {
-			NumberOfLocks.decreaseNumberOfLocks();
-			lock.unlock();
-			logger.log(Level.INFO, "Unlocked the batch thread.");
-		}
-	}
+        try {
+            systemPropertyRepository.refreshSecondaryLevelCache();
+        } finally {
+            NumberOfLocks.decreaseNumberOfLocks();
+            lock.unlock();
+            logger.log(Level.INFO, "Unlocked the batch thread.");
+        }
+    }
 }
