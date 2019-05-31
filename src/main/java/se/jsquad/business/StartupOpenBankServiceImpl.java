@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +14,14 @@ import se.jsquad.generator.EntityGenerator;
 import se.jsquad.property.AppPropertyConfiguration;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.SystemPropertyRepository;
+import se.jsquad.thread.NumberOfLocks;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service("startupOpenBankServiceImpl")
 @Qualifier("startupOpenBankService")
@@ -28,6 +32,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private ClientRepository clientRepository;
     private EntityGenerator entityGenerator;
     private SystemPropertyRepository systemPropertyRepository;
+	private static final Lock lock = new ReentrantLock();
 
     @Autowired
     private StartupOpenBankServiceImpl(@Qualifier("logger") Logger logger,
@@ -75,4 +80,28 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     public void closeDatabase() {
         logger.log(Level.INFO, "closeDatabase()");
     }
+
+
+	@Override
+	@Scheduled(cron = "0 0/5 * * * *")
+	/**
+	 * Batch job that runs every five minutes to refresh the secondary cache level
+	 *
+	 * @return
+	 */
+	public void refreshJpaCache() {
+		logger.log(Level.INFO, "refreshJpaCache()");
+
+		lock.lock();
+		logger.log(Level.INFO, "Locked the batch thread.");
+		NumberOfLocks.increaseNumberOfLocks();
+
+		try {
+			systemPropertyRepository.refreshSecondaryLevelCache();
+		} finally {
+			NumberOfLocks.decreaseNumberOfLocks();
+			lock.unlock();
+			logger.log(Level.INFO, "Unlocked the batch thread.");
+		}
+	}
 }

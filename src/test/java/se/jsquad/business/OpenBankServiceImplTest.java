@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
-class OpenBankServiceImplTest {
+public class OpenBankServiceImplTest {
     @Autowired
     @Qualifier("openBankService")
     private OpenBankService openBankService;
