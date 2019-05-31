@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import se.jsquad.entity.Client;
-import se.jsquad.producer.OpenBankPersistenceUnitProducerAbstract;
+import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Repository("clientRepositoryImpl")
 @Qualifier("clientRepository")
-public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducerAbstract implements ClientRepository {
+public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducer implements ClientRepository {
     private Logger logger;
 
     @Autowired
