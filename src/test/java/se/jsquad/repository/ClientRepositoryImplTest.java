@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
 @Transactional(propagation = Propagation.REQUIRED)
-class ClientRepositoryImplTest {
+public class ClientRepositoryImplTest {
     @Autowired
     @Qualifier("clientRepository")
     private ClientRepository clientRepository;

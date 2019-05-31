@@ -16,6 +16,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -26,8 +27,9 @@ import javax.validation.Validator;
 
 @Configuration
 @EnableTransactionManagement
+@EnableScheduling
 @ImportResource(locations = "classpath:META-INF/applicationContext.xml")
-class ApplicationConfiguration {
+public class ApplicationConfiguration {
     @Bean("logger")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     Logger getLogger(final InjectionPoint injectionPoint) {
