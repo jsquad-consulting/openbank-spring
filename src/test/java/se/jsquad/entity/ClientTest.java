@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
-class ClientTest {
+public class ClientTest {
     @Inject
     @Named("entityGeneratorImpl")
     private EntityGenerator entityGenerator;
