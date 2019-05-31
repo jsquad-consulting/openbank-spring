@@ -14,7 +14,7 @@ RUN /usr/wildfly/bin/add-user.sh -a  -g customer --silent john doe
 
 ADD . /usr/openbank-spring
 
-RUN mvn -f /usr/openbank-spring/pom.xml clean install -DskipTests
+RUN mvn -f /usr/openbank-spring/pom.xml clean install
 
 RUN cp /usr/openbank-spring/target/openbank-spring-1.0-SNAPSHOT.war $WILDFLY_HOME/wildfly/standalone/deployments/.
 

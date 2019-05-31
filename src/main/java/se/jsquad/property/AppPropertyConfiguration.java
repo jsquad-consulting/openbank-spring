@@ -4,4 +4,6 @@ public interface AppPropertyConfiguration {
     String getVersion();
 
     String getName();
+
+    Integer getBatchSleepTime();
 }
