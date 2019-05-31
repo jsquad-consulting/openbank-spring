@@ -36,10 +36,10 @@ public class ApplicationConfiguration {
         return LogManager.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
 
-	@Bean("validator")
-	Validator validator() {
-		return new LocalValidatorFactoryBean();
-	}
+    @Bean("validator")
+    Validator validator() {
+        return new LocalValidatorFactoryBean();
+    }
 
     @Bean("entityManagerFactory")
     @Autowired

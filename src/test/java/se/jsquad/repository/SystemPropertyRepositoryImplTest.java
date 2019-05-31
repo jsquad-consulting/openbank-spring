@@ -14,33 +14,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
 public class SystemPropertyRepositoryImplTest {
-	@Autowired
-	private SystemPropertyRepository systemPropertyRepository;
+    @Autowired
+    private SystemPropertyRepository systemPropertyRepository;
 
-	@Autowired
-	private OpenBankPersistenceUnitProducer openBankPersistenceUnitProducer;
+    @Autowired
+    private OpenBankPersistenceUnitProducer openBankPersistenceUnitProducer;
 
-	@Test
-	public void testClearFindAndRefreshSecondaryCacheLevel() {
-		// Given
-		SystemProperty systemProperty = systemPropertyRepository.findAllUniqueSystemProperties().iterator().next();
+    @Test
+    public void testClearFindAndRefreshSecondaryCacheLevel() {
+        // Given
+        SystemProperty systemProperty = systemPropertyRepository.findAllUniqueSystemProperties().iterator().next();
 
-		// Then
-		assertTrue(openBankPersistenceUnitProducer.getEntityManager().getEntityManagerFactory().getCache()
-				.contains(SystemProperty.class, systemProperty.getId()));
+        // Then
+        assertTrue(openBankPersistenceUnitProducer.getEntityManager().getEntityManagerFactory().getCache()
+                .contains(SystemProperty.class, systemProperty.getId()));
 
-		// When
-		systemPropertyRepository.clearSecondaryLevelCache();
+        // When
+        systemPropertyRepository.clearSecondaryLevelCache();
 
-		// Then
-		assertFalse(openBankPersistenceUnitProducer.getEntityManager().getEntityManagerFactory().getCache().
-				contains(SystemProperty.class, systemProperty.getId()));
+        // Then
+        assertFalse(openBankPersistenceUnitProducer.getEntityManager().getEntityManagerFactory().getCache().
+                contains(SystemProperty.class, systemProperty.getId()));
 
-		// When
-		systemPropertyRepository.refreshSecondaryLevelCache();
+        // When
+        systemPropertyRepository.refreshSecondaryLevelCache();
 
-		// Then
-		assertTrue(openBankPersistenceUnitProducer.getEntityManager().getEntityManagerFactory().getCache()
-				.contains(SystemProperty.class, systemProperty.getId()));
-	}
+        // Then
+        assertTrue(openBankPersistenceUnitProducer.getEntityManager().getEntityManagerFactory().getCache()
+                .contains(SystemProperty.class, systemProperty.getId()));
+    }
 }
