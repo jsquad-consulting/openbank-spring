@@ -26,19 +26,27 @@ public class AppPropertyConfigurationImpl implements AppPropertyConfiguration {
     @Value("${app.name}")
     private String name;
 
+    @Value("${app.batch.sleep.time}")
+    private Integer batchSleepTime;
+
     @Override
     public String getVersion() {
         logger.log(Level.INFO, "getVersion(), version: {}", version);
+
         return version;
     }
 
     @Override
     public String getName() {
         logger.log(Level.INFO, "getName(), name: {}", name);
+
         return name;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    @Override
+    public Integer getBatchSleepTime() {
+        logger.log(Level.INFO, "getBatchSleepTime()");
+
+        return batchSleepTime;
     }
 }

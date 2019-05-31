@@ -23,7 +23,7 @@ public class GetClientInformationRestController {
     @Autowired
     private GetClientInformationRestController(@Qualifier("logger") Logger logger,
                                                OpenBankService openBankService) {
-        logger.log(Level.INFO, "GetClientInformationREST(logger: {}, openBankComponent: {})",
+        logger.log(Level.INFO, "GetClientInformationREST(logger: {}, openBankService: {})",
                 logger, openBankService);
         this.logger = logger;
         this.openBankService = openBankService;
