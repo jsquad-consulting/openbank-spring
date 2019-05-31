@@ -42,7 +42,6 @@ public class GetClientInformationRestControllerImplTest {
         ClientApi clientApi = (ClientApi) responseEntity.getBody();
 
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
-
         assertEquals("John", clientApi.getPerson().getFirstName());
         assertEquals("Doe", clientApi.getPerson().getLastName());
         assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
