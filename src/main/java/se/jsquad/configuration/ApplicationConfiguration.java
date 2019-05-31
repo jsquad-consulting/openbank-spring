@@ -19,8 +19,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.persistence.EntityManagerFactory;
+import javax.validation.Validator;
 
 @Configuration
 @EnableTransactionManagement
@@ -31,6 +33,11 @@ class ApplicationConfiguration {
     Logger getLogger(final InjectionPoint injectionPoint) {
         return LogManager.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
+
+	@Bean("validator")
+	Validator validator() {
+		return new LocalValidatorFactoryBean();
+	}
 
     @Bean("entityManagerFactory")
     @Autowired

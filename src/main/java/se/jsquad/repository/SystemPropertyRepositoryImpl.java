@@ -8,14 +8,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import se.jsquad.entity.SystemProperty;
-import se.jsquad.producer.OpenBankPersistenceUnitProducerAbstract;
+import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository("systemPropertyRepositoryImpl")
 @Qualifier("systemPropertyRepository")
-public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProducerAbstract implements SystemPropertyRepository {
+public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProducer implements SystemPropertyRepository {
     private Logger logger;
 
     @Autowired
