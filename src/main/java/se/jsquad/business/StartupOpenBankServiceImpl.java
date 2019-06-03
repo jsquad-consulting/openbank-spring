@@ -1,5 +1,6 @@
 package se.jsquad.business;
 
+import org.apache.activemq.broker.BrokerService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private EntityGenerator entityGenerator;
     private SystemPropertyRepository systemPropertyRepository;
     private static final Lock lock = new ReentrantLock();
+    private BrokerService brokerService;
 
     @Autowired
     private StartupOpenBankServiceImpl(@Qualifier("logger") Logger logger,
@@ -40,15 +42,17 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
                                                appPropertyConfiguration,
                                        @Qualifier("clientRepository") ClientRepository clientRepository, @Qualifier(
             "systemPropertyRepository")
-                                               SystemPropertyRepository systemPropertyRepository) {
+                                               SystemPropertyRepository systemPropertyRepository,
+                                       @Qualifier("broker") BrokerService brokerService) {
         logger.log(Level.INFO, "StartupOpenBankComponentImpl(logger: {}, appPropertyConfiguration: " +
                         "{}, clientRepository: " +
-                        "{}, systemPropertyRepository: {})",
-                logger, appPropertyConfiguration, clientRepository, systemPropertyRepository);
+                        "{}, systemPropertyRepository: {}, brokerService: {})",
+                logger, appPropertyConfiguration, clientRepository, systemPropertyRepository, brokerService);
         this.clientRepository = clientRepository;
         this.systemPropertyRepository = systemPropertyRepository;
         this.appPropertyConfiguration = appPropertyConfiguration;
         this.logger = logger;
+        this.brokerService = brokerService;
     }
 
     @Inject
