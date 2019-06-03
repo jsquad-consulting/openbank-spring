@@ -1,0 +1,126 @@
+package se.jsquad.soap;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import se.jsquad.entity.Account;
+import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.ForeignClient;
+import se.jsquad.entity.PremiumClient;
+import se.jsquad.entity.RegularClient;
+import se.jsquad.getclientservice.AccountTransactionType;
+import se.jsquad.getclientservice.AccountType;
+import se.jsquad.getclientservice.ClientType;
+import se.jsquad.getclientservice.ClientTypeType;
+import se.jsquad.getclientservice.GetClientRequest;
+import se.jsquad.getclientservice.GetClientResponse;
+import se.jsquad.getclientservice.PersonType;
+import se.jsquad.getclientservice.StatusType;
+import se.jsquad.getclientservice.TransactionType;
+import se.jsquad.getclientservice.Type;
+import se.jsquad.repository.ClientRepository;
+
+import java.util.Iterator;
+
+@Endpoint
+public class GetClientInformationSoapController {
+    private ClientRepository clientRepository;
+    private Logger logger;
+
+    @Autowired
+    public GetClientInformationSoapController(@Qualifier("logger") Logger logger,
+                                              @Qualifier("clientRepository") ClientRepository clientRepository) {
+        logger.log(Level.INFO, "GetClientInformationSoapController(logger: {}, clientRepository: {}", logger, clientRepository);
+        this.logger = logger;
+        this.clientRepository = clientRepository;
+    }
+
+
+    @PayloadRoot(namespace = "http://jsquad.se/GetClientService/", localPart = "GetClientRequest")
+    @ResponsePayload
+    public GetClientResponse getClientResponse(@RequestPayload GetClientRequest getClientRequest) {
+        logger.log(Level.INFO, "getClientResponse(getClientRequest: {}", getClientRequest);
+
+        GetClientResponse getClientResponse = new GetClientResponse();
+        getClientResponse.setClient(null);
+        getClientResponse.setMessage("Client not found.");
+        getClientResponse.setStatus(StatusType.ERROR);
+
+        if (getClientRequest == null || getClientRequest.getPersonIdentification() == null || getClientRequest.getPersonIdentification().isEmpty()) {
+            logger.log(Level.INFO, "Request parameter must be set, can't be null.");
+            getClientResponse.setMessage("Request parameter must be set with a proper identification number.");
+            return getClientResponse;
+        }
+
+        try {
+            Client client = clientRepository.getClientByPersonIdentification(getClientRequest.getPersonIdentification());
+
+            createClientType(getClientResponse, client);
+            getClientResponse.setStatus(StatusType.OK);
+            getClientResponse.setMessage("Client found.");
+
+            return getClientResponse;
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage(), e);
+
+            getClientResponse.setMessage("A system failure has occured.");
+            getClientResponse.setClient(null);
+            return getClientResponse;
+        }
+    }
+
+    private void createClientType(GetClientResponse getClientResponse, Client client) {
+        se.jsquad.getclientservice.ClientType clientType = new ClientType();
+        getClientResponse.setClient(clientType);
+
+        clientType.setPerson(new PersonType());
+        clientType.getPerson().setFirstName(client.getPerson().getFirstName());
+        clientType.getPerson().setLastName(client.getPerson().getLastName());
+        clientType.getPerson().setMail(client.getPerson().getMail());
+        clientType.getPerson().setPersonIdentification(client.getPerson().getPersonIdentification());
+
+        clientType.setClientType(new ClientTypeType());
+
+        if (client.getClientType() instanceof RegularClient) {
+            clientType.getClientType().setRating(((RegularClient) client.getClientType()).getRating());
+            clientType.getClientType().setType(Type.REGULAR);
+        } else if (client.getClientType() instanceof PremiumClient) {
+            clientType.getClientType().setPremiumRating(((PremiumClient) client.getClientType()).getPremiumRating());
+            clientType.getClientType().setSpecialOffers(((PremiumClient) client.getClientType()).getSpecialOffers());
+            clientType.getClientType().setType(Type.PREMIUM);
+        } else {
+            clientType.getClientType().setCountry(((ForeignClient) client.getClientType()).getCountry());
+            clientType.getClientType().setType(Type.FOREIGN);
+        }
+
+        Iterator<Account> accountIterator = client.getAccountSet().iterator();
+        while (accountIterator.hasNext()) {
+            Account account = accountIterator.next();
+
+            AccountType accountType = new AccountType();
+            accountType.setBalance(account.getBalance());
+
+            if (account.getAccountTransactionSet() != null) {
+                Iterator<AccountTransaction> accountTransactionIterator = account.getAccountTransactionSet()
+                        .iterator();
+                while (accountTransactionIterator.hasNext()) {
+                    AccountTransaction accountTransaction = accountTransactionIterator.next();
+
+                    AccountTransactionType accountTransactionType = new AccountTransactionType();
+                    accountTransactionType.setMessage(accountTransaction.getMessage());
+                    accountTransactionType.setTransactionType(TransactionType.valueOf(accountTransaction
+                            .getTransactionType().name()));
+
+                    accountType.getAccountTransactionList().add(accountTransactionType);
+                }
+            }
+            clientType.getAccountList().add(accountType);
+        }
+    }
+}
