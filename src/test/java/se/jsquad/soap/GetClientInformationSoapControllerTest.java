@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import se.jsquad.configuration.ApplicationConfiguration;
 import se.jsquad.getclientservice.GetClientRequest;
 import se.jsquad.getclientservice.GetClientResponse;
 import se.jsquad.getclientservice.StatusType;
@@ -15,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
+@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class GetClientInformationSoapControllerTest {
     @Autowired
     private GetClientInformationSoapController getClientInformationSoapController;
@@ -46,7 +48,8 @@ public class GetClientInformationSoapControllerTest {
 
         assertEquals(1000, getClientResponse.getClient().getAccountList().get(0).getBalance());
         assertEquals(TransactionType.WITHDRAWAL,
-                getClientResponse.getClient().getAccountList().get(0).getAccountTransactionList().get(0).getTransactionType());
+                getClientResponse.getClient().getAccountList().get(0).getAccountTransactionList().get(0)
+                        .getTransactionType());
         assertEquals("500$ in withdrawal",
                 getClientResponse.getClient().getAccountList().get(0).getAccountTransactionList().get(0).getMessage());
 
