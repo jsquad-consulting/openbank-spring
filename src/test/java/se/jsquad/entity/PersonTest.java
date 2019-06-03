@@ -5,8 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import se.jsquad.configuration.ApplicationConfiguration;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
 import javax.inject.Inject;
@@ -21,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
+@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
 @Transactional(propagation = Propagation.REQUIRED)
 public class PersonTest {
     @Inject
