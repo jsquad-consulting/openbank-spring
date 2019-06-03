@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.ws.config.annotation.EnableWs;
 
 import javax.persistence.EntityManagerFactory;
 import javax.validation.Validator;
@@ -29,6 +30,7 @@ import javax.validation.Validator;
 @Configuration
 @EnableTransactionManagement
 @EnableScheduling
+@EnableWs
 @EnableAsync
 @ImportResource(locations = "classpath:META-INF/applicationContext.xml")
 public class ApplicationConfiguration {
