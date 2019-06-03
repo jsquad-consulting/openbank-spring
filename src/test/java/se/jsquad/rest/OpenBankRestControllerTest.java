@@ -7,17 +7,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.batch.SlowMockBatchImpl;
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.batch.status.Status;
+import se.jsquad.configuration.ApplicationConfiguration;
 
 import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
+@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
 class OpenBankRestControllerTest {
     @Autowired
     private OpenBankRestController openBankRestController;

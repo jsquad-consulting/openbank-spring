@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import se.jsquad.configuration.ApplicationConfiguration;
 import se.jsquad.generator.EntityGenerator;
 
 import javax.inject.Inject;
@@ -12,7 +14,7 @@ import javax.inject.Named;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
+@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class ClientTest {
     @Inject
     @Named("entityGeneratorImpl")

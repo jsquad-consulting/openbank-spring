@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import se.jsquad.configuration.ApplicationConfiguration;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
@@ -12,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration({"classpath:META-INF/applicationContext.xml"})
+@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class SystemPropertyRepositoryImplTest {
     @Autowired
     private SystemPropertyRepository systemPropertyRepository;
