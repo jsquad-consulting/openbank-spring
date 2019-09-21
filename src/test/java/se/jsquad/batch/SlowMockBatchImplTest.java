@@ -3,19 +3,20 @@ package se.jsquad.batch;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.batch.status.Status;
-import se.jsquad.configuration.ApplicationConfiguration;
 
 import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@SpringBootTest
+@TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
+        "classpath:database.properties"})
 public class SlowMockBatchImplTest {
     @Autowired
     private SlowMockBatch slowMockBatch;

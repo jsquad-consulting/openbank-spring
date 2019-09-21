@@ -1,6 +1,12 @@
 package se.jsquad.configuration;
 
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -186,5 +192,18 @@ public class ApplicationConfiguration {
         brokerService.start();
 
         return brokerService;
+    }
+
+    @Bean
+    public OpenAPI customOpenAPI(@Value("${api.version}") String appVersion) {
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("basicScheme",
+                        new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")))
+                .info(new Info().title("OpenBank API").version(appVersion).description(
+                        "This is an OpenBank server. You can find out more about OpenBank at " +
+                                "[http://jsquad.se](http://jsquad.se).")
+                        .termsOfService("http://jsquad.se/terms/")
+                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0.html")))
+                .addServersItem(new Server().description("Local OpenBank API server.").url("http://localhost:8080"));
     }
 }

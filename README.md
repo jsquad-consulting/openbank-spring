@@ -57,13 +57,19 @@ docker-compose -f docker-compose-pipeline.yaml up --build --force-recreate
 
 `docker system prune -af`
 
+## Access on the fly RESTful API code generation
+
+http://localhost:8080/v1/OpenBankAPI
+
+http://localhost:8080/swagger-ui.html
+
 START THE DOCKER CONTAINER TO TEST RESTFUL/SOAP CONTRACTS
 ---------------------------------------------------------
 
 
 TEST THE RESTfulCONTRACTS
 -------------------------
-Load the src/main/resources/schema/rest.yaml file with the 
+Load the src/main/resources/schema/OpenBankAPIv1.yaml file with the 
 http://editor.swagger.io/ editor to easily test the RESTful 
 contracts. Be sure to use basic authorization with --user <user:pass>
 flag to use the RESTful operations successfully.
