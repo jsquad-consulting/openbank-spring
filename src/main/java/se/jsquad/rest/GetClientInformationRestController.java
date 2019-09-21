@@ -1,5 +1,10 @@
 package se.jsquad.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +35,17 @@ public class GetClientInformationRestController {
     }
 
     @GetMapping(value = "/client/info/{personIdentification}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity getClientInformation(@PathVariable String personIdentification) {
+    @Operation(summary = "Get client by person identification number",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "The client", content = @Content(mediaType =
+                            MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ClientApi.class))),
+                    @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
+                    @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
+                            example = "Severe system failure has occured!")))})
+    public ResponseEntity getClientInformation(@Parameter(description = "The person identification number",
+            example = "191212121212", required = true) @PathVariable String personIdentification) {
         logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
 
         if (personIdentification == null || personIdentification.isEmpty()) {

@@ -1,0 +1,133 @@
+|-
+  openapi: 3.0.1
+  info:
+    title: OpenBank API
+    description: This is an OpenBank server. You can find out more about OpenBank at
+      [http://jsquad.se](http://jsquad.se).
+    termsOfService: http://jsquad.se/terms/
+    license:
+      name: Apache 2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0.html
+    version: "1"
+  servers:
+  - url: http://localhost:8080
+    description: Local OpenBank API server.
+  paths:
+    /api/client/info/{personIdentification}:
+      get:
+        summary: Get client by person identification number
+        operationId: getClientInformation
+        parameters:
+        - name: personIdentification
+          in: path
+          description: The person identification number
+          required: true
+          schema:
+            type: string
+          example: 191212121212
+        responses:
+          200:
+            description: The client
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ClientApi'
+          500:
+            description: Severe system failure has occured!
+            content:
+              text/plain:
+                schema:
+                  type: string
+                  example: Severe system failure has occured!
+    /api/openbank/start/slow/batch/mock:
+      get:
+        operationId: getOpenBankBatchStatus
+        responses:
+          200:
+            description: default response
+            content:
+              application/json:
+                schema:
+                  type: string
+  components:
+    schemas:
+      AccountApi:
+        type: object
+        properties:
+          balance:
+            type: integer
+            format: int64
+          accountTransactionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/AccountTransactionApi'
+      AccountTransactionApi:
+        required:
+        - message
+        - transactionType
+        type: object
+        properties:
+          transactionType:
+            type: string
+            enum:
+            - DEPOSIT
+            - WITHDRAWAL
+          message:
+            type: string
+      ClientApi:
+        required:
+        - clientType
+        - person
+        type: object
+        properties:
+          person:
+            $ref: '#/components/schemas/PersonApi'
+          accountList:
+            type: array
+            items:
+              $ref: '#/components/schemas/AccountApi'
+          clientType:
+            $ref: '#/components/schemas/ClientTypeApi'
+      ClientTypeApi:
+        required:
+        - country
+        - specialOffers
+        - type
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+            - REGULAR
+            - PREMIUM
+            - FOREIGN
+          specialOffers:
+            type: string
+          rating:
+            type: integer
+            format: int64
+          premiumRating:
+            type: integer
+            format: int64
+          country:
+            type: string
+      PersonApi:
+        required:
+        - firstName
+        - lastName
+        - mail
+        - personIdentification
+        type: object
+        properties:
+          personIdentification:
+            type: string
+          firstName:
+            type: string
+          lastName:
+            type: string
+          mail:
+            type: string
+    securitySchemes:
+      basicScheme:
+        type: http
+        scheme: basic

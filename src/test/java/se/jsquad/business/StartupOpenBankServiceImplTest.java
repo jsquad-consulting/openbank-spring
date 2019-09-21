@@ -5,10 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import se.jsquad.configuration.ApplicationConfiguration;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 import se.jsquad.property.AppPropertyConfiguration;
@@ -23,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@SpringBootTest
+@TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
+        "classpath:database.properties"})
 @Execution(ExecutionMode.SAME_THREAD)
 public class StartupOpenBankServiceImplTest {
     @Autowired
