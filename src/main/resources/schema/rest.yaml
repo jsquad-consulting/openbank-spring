@@ -6,7 +6,7 @@ info:
   version: 0.0.3
 
 servers:
-  - url: http://localhost:8080/openbank-spring-1.0-SNAPSHOT/restful-webservice/api
+  - url: http://localhost:8080/api
     description: Local OpenBank server
 
 paths:

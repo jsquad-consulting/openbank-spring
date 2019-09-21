@@ -2,7 +2,6 @@ package se.jsquad.business;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -30,8 +29,7 @@ public class OpenBankServiceImpl implements OpenBankService {
     private ClientAdapter clientAdapter;
     private SlowMockBatch slowMockBatch;
 
-    @Autowired
-    private OpenBankServiceImpl(@Qualifier("logger") Logger logger, @Qualifier("clientRepository") ClientRepository
+    public OpenBankServiceImpl(@Qualifier("logger") Logger logger, @Qualifier("clientRepository") ClientRepository
             clientRepository, @Qualifier("slowMockBatch") SlowMockBatch slowMockBatch) {
         logger.log(Level.INFO, "OpenBankControllerImpl(logger: {}, clientInformationService: {}, slowMockBatch: {})",
                 logger, clientRepository, slowMockBatch);

@@ -60,7 +60,7 @@ public class StartupOpenBankServiceImplTest {
     @Test
     public void testConcurrentRefreshTheSecondaryLevelCache() {
         List<Integer> numberOfLockList = new ArrayList<>();
-        var executorService = Executors.newFixedThreadPool(1001);
+        var executorService = Executors.newFixedThreadPool(25);
 
         executorService.execute(() -> {
             while (runningThreads) {
@@ -69,7 +69,7 @@ public class StartupOpenBankServiceImplTest {
         });
 
 
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 25; ++i) {
             executorService.execute(() -> startupOpenBankService.refreshJpaCache());
         }
         runningThreads = false;
