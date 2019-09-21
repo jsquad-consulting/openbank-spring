@@ -3,7 +3,6 @@ package se.jsquad.business;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -36,14 +35,13 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private static final Lock lock = new ReentrantLock();
     private BrokerService brokerService;
 
-    @Autowired
-    private StartupOpenBankServiceImpl(@Qualifier("logger") Logger logger,
-                                       @Qualifier("appPropertyConfiguration") AppPropertyConfiguration
+    public StartupOpenBankServiceImpl(@Qualifier("logger") Logger logger,
+                                      @Qualifier("appPropertyConfiguration") AppPropertyConfiguration
                                                appPropertyConfiguration,
-                                       @Qualifier("clientRepository") ClientRepository clientRepository, @Qualifier(
+                                      @Qualifier("clientRepository") ClientRepository clientRepository, @Qualifier(
             "systemPropertyRepository")
                                                SystemPropertyRepository systemPropertyRepository,
-                                       @Qualifier("broker") BrokerService brokerService) {
+                                      @Qualifier("broker") BrokerService brokerService) {
         logger.log(Level.INFO, "StartupOpenBankComponentImpl(logger: {}, appPropertyConfiguration: " +
                         "{}, clientRepository: " +
                         "{}, systemPropertyRepository: {}, brokerService: {})",

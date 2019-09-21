@@ -11,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.connection.SingleConnectionFactory;
@@ -36,7 +39,9 @@ import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import javax.validation.Validator;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
@@ -46,7 +51,15 @@ import javax.validation.Validator;
 @EnableJms
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
+@PropertySource("classpath:database.properties")
+@PropertySource("classpath:activemq.properties")
 public class ApplicationConfiguration {
+    private Environment environment;
+
+    public ApplicationConfiguration(Environment environment) {
+        this.environment = environment;
+    }
+
     @Bean("logger")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     Logger getLogger(final InjectionPoint injectionPoint) {
@@ -58,14 +71,40 @@ public class ApplicationConfiguration {
         return new LocalValidatorFactoryBean();
     }
 
+    @Bean("dataSource")
+    DataSource dataSource() {
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.driverClassName(environment.getProperty("spring.datasource.driverClassName"));
+        dataSourceBuilder.url(environment.getProperty("spring.datasource.url"));
+
+        return dataSourceBuilder.build();
+    }
+
     @Bean("entityManagerFactory")
     @Autowired
     LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBean(
             @Qualifier("hibernateVendorAdapter") JpaVendorAdapter jpaVendorAdapter,
+            @Qualifier("dataSource") DataSource dataSource,
             @Value("#{dbProds.pu}") String persistenceUnitName) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
         factoryBean.setPersistenceUnitName(persistenceUnitName);
+        factoryBean.setDataSource(dataSource);
+
+        Properties properties = new Properties();
+
+        properties.setProperty("hibernate.dialect", environment.getProperty("spring.jpa.database-platform"));
+
+        properties.setProperty("javax.persistence.schema-generation.database.action", environment
+                .getProperty("spring.javax.persistence.schema-generation.database.action"));
+
+        properties.setProperty("hibernate.cache.use_second_level_cache", environment
+                .getProperty("spring.jpa.hibernate.cache.use_second_level_cache"));
+
+        properties.setProperty("hibernate.cache.region.factory_class", environment
+                .getProperty("spring.jpa.hibernate.cache.region.factory.class"));
+
+        factoryBean.setJpaProperties(properties);
 
         return factoryBean;
     }
@@ -118,7 +157,7 @@ public class ApplicationConfiguration {
 
     @Bean("activeMqConnectionFactory")
     ConnectionFactory getActiveMQConnectionFactory() {
-        return new ActiveMQConnectionFactory("tcp://localhost:61616");
+        return new ActiveMQConnectionFactory("vm://embedded");
     }
 
     @Bean("jmsContainer")
@@ -141,7 +180,9 @@ public class ApplicationConfiguration {
         BrokerService brokerService = new BrokerService();
         brokerService.setUseJmx(false);
         brokerService.setPersistent(false);
-        brokerService.addConnector("tcp://localhost:61616");
+        brokerService.setBrokerName("embedded");
+        brokerService.setUseShutdownHook(false);
+        brokerService.addConnector(environment.getProperty("activemq.broker-url"));
         brokerService.start();
 
         return brokerService;

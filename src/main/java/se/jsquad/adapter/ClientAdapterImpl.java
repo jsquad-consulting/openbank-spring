@@ -2,7 +2,6 @@ package se.jsquad.adapter;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
@@ -28,8 +27,7 @@ import java.util.Set;
 public class ClientAdapterImpl implements ClientAdapter {
     private Logger logger;
 
-    @Autowired
-    private ClientAdapterImpl(@Qualifier("logger") Logger logger) {
+    public ClientAdapterImpl(@Qualifier("logger") Logger logger) {
         logger.log(Level.INFO, "ClientAdapterImpl(logger: {})", logger);
         this.logger = logger;
     }
