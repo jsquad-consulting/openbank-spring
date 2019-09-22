@@ -35,6 +35,12 @@
     </xs:simpleType>
 
     <xs:complexType name="PersonApi">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                    "PersonAPI contains person's firstname, lastname and email address information.")</annox:annotate>
+            </xsd:appinfo>
+        </xsd:annotation>
         <xs:sequence>
             <xs:element name="personIdentification" type="xs:string">
                 <xsd:annotation>

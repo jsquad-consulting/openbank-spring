@@ -63,14 +63,14 @@ http://localhost:8080/v1/OpenBankAPI
 
 http://localhost:8080/swagger-ui.html
 
-START THE DOCKER CONTAINER TO TEST RESTFUL/SOAP CONTRACTS
----------------------------------------------------------
+## Reference to OpenApi version 3.0.1 for documentation tasks
+
+http://spec.openapis.org/oas/v3.0.1
 
 
-TEST THE RESTfulCONTRACTS
--------------------------
+# Test the RESTful contracts
+
 Load the src/main/resources/schema/OpenBankAPIv1.yaml file with the 
 http://editor.swagger.io/ editor to easily test the RESTful 
-contracts. Be sure to use basic authorization with --user <user:pass>
-flag to use the RESTful operations successfully.
+contracts.
 
