@@ -121,12 +121,20 @@
         properties:
           personIdentification:
             type: string
+            description: Person identification number
+            example: "191212121212"
           firstName:
             type: string
+            description: Firstname
+            example: John
           lastName:
             type: string
+            description: Lastname
+            example: Doe
           mail:
             type: string
+            description: Email address
+            example: john.doe@mail.com
     securitySchemes:
       basicScheme:
         type: http

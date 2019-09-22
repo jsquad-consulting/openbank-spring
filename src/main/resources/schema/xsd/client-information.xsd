@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
            xmlns:tns="http://jsquad.se/client/info"
-           targetNamespace="http://jsquad.se/client/info" version="1.0">
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           jaxb:version="2.1"
+           targetNamespace="http://jsquad.se/client/info" version="1.0"
+           xmlns:annox="http://annox.dev.java.net"
+           jaxb:extensionBindingPrefixes="annox">
 
     <xs:complexType name="ClientApi">
         <xs:sequence>
@@ -31,10 +36,38 @@
 
     <xs:complexType name="PersonApi">
         <xs:sequence>
-            <xs:element name="personIdentification" type="xs:string"/>
-            <xs:element name="firstName" type="xs:string"/>
-            <xs:element name="lastName" type="xs:string"/>
-            <xs:element name="mail" type="xs:string"/>
+            <xs:element name="personIdentification" type="xs:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "Person identification number", example = "191212121212")</annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
+            <xs:element name="firstName" type="xs:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description = "Firstname",
+                            example = "John")</annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
+            <xs:element name="lastName" type="xs:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "Lastname", example = "Doe")</annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
+            <xs:element name="mail" type="xs:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "Email address", example = "john.doe&#64;mail.com")</annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
 
