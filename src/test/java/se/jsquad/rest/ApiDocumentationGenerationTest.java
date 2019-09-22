@@ -13,16 +13,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties", "classpath:database.properties"})
+@TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
+        "classpath:database.properties"})
 @SpringBootTest
 public class ApiDocumentationGenerationTest {
     @Autowired
@@ -47,14 +46,7 @@ public class ApiDocumentationGenerationTest {
         // Then
         assertNotNull(mvcResult);
 
-        DumperOptions options = new DumperOptions();
-        options.setPrettyFlow(true);
-        Yaml output = new Yaml(options);
-
-        File targetYAMLFile = new File("src/main/resources/schema/OpenBankAPIv"
-                + environment.getProperty("api.version") + ".yaml");
-        FileWriter writer = new FileWriter(targetYAMLFile);
-
-        output.dump(mvcResult.getResponse().getContentAsString().trim(), writer);
+        Files.write(Paths.get("src/main/resources/schema/OpenBankAPIv" + environment.getProperty("api.version") +
+                ".yaml"), mvcResult.getResponse().getContentAsByteArray());
     }
 }
