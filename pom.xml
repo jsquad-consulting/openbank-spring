@@ -19,6 +19,7 @@
 		<java.version>11</java.version>
 		<junit.jupiter.version>5.4.0</junit.jupiter.version>
 		<spring.version>5.1.6.RELEASE</spring.version>
+		<springdoc.openapi-ui.version>1.1.39</springdoc.openapi-ui.version>
 	</properties>
 
 	<dependencies>
@@ -87,7 +88,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.1.39</version>
+			<version>${springdoc.openapi-ui.version}</version>
 		</dependency>
 
 		<dependency>
@@ -162,6 +163,10 @@
 					</execution>
 				</executions>
 				<configuration>
+					<arguments>
+						<argument>-Xannotate</argument>
+					</arguments>
+					<extension>true</extension>
 					<sources>
 						<source>${project.basedir}/src/main/resources/schema/xsd/dummy.xsd</source>
 						<source>${project.basedir}/src/main/resources/schema/xsd/batch-status.xsd</source>
@@ -170,6 +175,21 @@
 					<clearOutputDir>false</clearOutputDir>
 				</configuration>
 				<dependencies>
+					<dependency>
+						<groupId>org.springdoc</groupId>
+						<artifactId>springdoc-openapi-ui</artifactId>
+						<version>${springdoc.openapi-ui.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
+						<artifactId>jaxb2-annotate-plugin-test-annox-annotations</artifactId>
+						<version>1.0.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
+						<artifactId>jaxb2-basics-annotate</artifactId>
+						<version>1.0.2</version>
+					</dependency>
 					<dependency>
 						<groupId>org.glassfish.jaxb</groupId>
 						<artifactId>jaxb-xjc</artifactId>
