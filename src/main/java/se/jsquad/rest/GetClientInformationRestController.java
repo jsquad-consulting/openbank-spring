@@ -36,6 +36,8 @@ public class GetClientInformationRestController {
 
     @GetMapping(value = "/client/info/{personIdentification}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "Get client by person identification number",
+            description = "Get the ClientAPI response object with uniqueue personal identification number as " +
+                    "parameter argument.",
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "The client", content = @Content(mediaType =
