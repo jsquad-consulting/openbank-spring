@@ -16,8 +16,10 @@ import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TransactionTypeApi;
+import se.jsquad.exception.IllegalPersonIdentificationNumberException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
@@ -59,6 +61,17 @@ public class GetClientInformationRestControllerImplTest {
 
         assertEquals("500$ in deposit", accountTransactionApi.getMessage());
         assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
+    }
+
+    @Test
+    public void testInvalidPersonIdentificationNumber() {
+        // Given
+        String personalIdentificationNumber = "123";
+
+        // When
+        assertThrows(IllegalPersonIdentificationNumberException.class, () ->
+                getClientInformationRESTController.getClientInformation(personalIdentificationNumber), "Personal " +
+                "identification number can't be empty and it must be twelve digits.");
     }
 
     @Test
