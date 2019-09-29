@@ -2,7 +2,6 @@ package se.jsquad.rest;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +19,8 @@ public class OpenBankRestController {
     private Logger logger;
     private OpenBankService openBankService;
 
-    @Autowired
-    private OpenBankRestController(Logger logger,
-                                   OpenBankService openBankService) {
+    public OpenBankRestController(Logger logger,
+                                  OpenBankService openBankService) {
         logger.log(Level.INFO, "OpenBankRestController(logger: {}, openBankService: {})",
                 logger, openBankService);
         this.logger = logger;

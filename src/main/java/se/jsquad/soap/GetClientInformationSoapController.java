@@ -2,7 +2,6 @@ package se.jsquad.soap;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -32,7 +31,6 @@ public class GetClientInformationSoapController {
     private ClientRepository clientRepository;
     private Logger logger;
 
-    @Autowired
     public GetClientInformationSoapController(Logger logger, ClientRepository clientRepository) {
         logger.log(Level.INFO, "GetClientInformationSoapController(logger: {}, clientRepository: {}", logger, clientRepository);
         this.logger = logger;
