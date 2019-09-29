@@ -2,18 +2,16 @@ package se.jsquad.property;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-@Component("appPropertyConfigurationImpl")
-@Qualifier("appPropertyConfiguration")
+@Component
 @PropertySource("classpath:/META-INF/property/app.properties")
 public class AppPropertyConfigurationImpl implements AppPropertyConfiguration {
     private Logger logger;
 
-    public AppPropertyConfigurationImpl(@Qualifier("logger") Logger logger) {
+    public AppPropertyConfigurationImpl(Logger logger) {
         logger.log(Level.INFO, "AppPropertyImpl(logger: {})", logger);
         this.logger = logger;
     }

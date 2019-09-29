@@ -2,7 +2,6 @@ package se.jsquad.repository;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +11,11 @@ import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-@Repository("systemPropertyRepositoryImpl")
-@Qualifier("systemPropertyRepository")
+@Repository
 public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProducer implements SystemPropertyRepository {
     private Logger logger;
 
-    public SystemPropertyRepositoryImpl(@Qualifier("logger") Logger logger) {
+    public SystemPropertyRepositoryImpl(Logger logger) {
         logger.log(Level.INFO, "SystemPropertyRepositoryImpl(logger: {})", logger);
         this.logger = logger;
     }

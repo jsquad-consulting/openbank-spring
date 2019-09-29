@@ -4,7 +4,7 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-@Named(value = "openBankPersistenceUnitProducer")
+@Named
 public class OpenBankPersistenceUnitProducer {
     @PersistenceContext(unitName = "entityManagerFactory")
     protected EntityManager entityManager;

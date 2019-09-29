@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +26,7 @@ public class GetClientInformationRestController {
     private OpenBankService openBankService;
 
     @Autowired
-    private GetClientInformationRestController(@Qualifier("logger") Logger logger,
-                                               OpenBankService openBankService) {
+    private GetClientInformationRestController(Logger logger, OpenBankService openBankService) {
         logger.log(Level.INFO, "GetClientInformationREST(logger: {}, openBankService: {})",
                 logger, openBankService);
         this.logger = logger;
