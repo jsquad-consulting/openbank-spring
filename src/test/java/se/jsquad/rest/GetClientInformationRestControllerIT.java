@@ -100,7 +100,7 @@ public class GetClientInformationRestControllerIT {
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, HttpStatus.valueOf(response.getStatusCode()));
-        assertEquals("Personal identification number can't be empty and it must be twelve digits.",
+        assertEquals("Person identification number must be twelve digits.",
                 response.getBody().print());
     }
 }

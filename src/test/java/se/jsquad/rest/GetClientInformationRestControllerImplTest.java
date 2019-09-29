@@ -6,19 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TransactionTypeApi;
-import se.jsquad.exception.IllegalPersonIdentificationNumberException;
+
+import javax.validation.ConstraintViolationException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
@@ -31,6 +39,9 @@ public class GetClientInformationRestControllerImplTest {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private WebApplicationContext context;
 
     @Test
     public void testGetClientInformation() {
@@ -63,14 +74,59 @@ public class GetClientInformationRestControllerImplTest {
     }
 
     @Test
-    public void testInvalidPersonIdentificationNumber() {
+    public void testResponseEntityPersonIdentificationNumberInvalid() throws Exception {
+        // Given
+        String personIdentificationNumber = "123";
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+        // When and then
+        mockMvc.perform(get("/api/client/info/" + personIdentificationNumber)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Person identification number must be twelve digits."));
+
+    }
+
+    @Test
+    public void testInvalidPersonIdentificationNumberNull() {
+        // Given
+        String personalIdentificationNumber = null;
+
+        // When
+        Throwable throwable = assertThrows(ConstraintViolationException.class, () ->
+                getClientInformationRESTController.getClientInformation(personalIdentificationNumber));
+
+        // Then
+        assertEquals("Person identification number must be twelve digits.",
+                ((ConstraintViolationException) throwable).getConstraintViolations().iterator().next().getMessage());
+    }
+
+    @Test
+    public void testInvalidPersonIdentificationNumberEmpty() {
+        // Given
+        String personalIdentificationNumber = "";
+
+        // When
+        Throwable throwable = assertThrows(ConstraintViolationException.class, () ->
+                getClientInformationRESTController.getClientInformation(personalIdentificationNumber));
+
+        // Then
+        assertEquals("Person identification number must be twelve digits.",
+                ((ConstraintViolationException) throwable).getConstraintViolations().iterator().next().getMessage());
+    }
+
+    @Test
+    public void testInvalidPersonIdentificationNumberLessThenTwelveDigits() {
         // Given
         String personalIdentificationNumber = "123";
 
         // When
-        assertThrows(IllegalPersonIdentificationNumberException.class, () ->
-                getClientInformationRESTController.getClientInformation(personalIdentificationNumber), "Personal " +
-                "identification number can't be empty and it must be twelve digits.");
+        Throwable throwable = assertThrows(ConstraintViolationException.class, () ->
+                getClientInformationRESTController.getClientInformation(personalIdentificationNumber));
+
+        // Then
+        assertEquals("Person identification number must be twelve digits.",
+                ((ConstraintViolationException) throwable).getConstraintViolations().iterator().next().getMessage());
     }
 
     @Test

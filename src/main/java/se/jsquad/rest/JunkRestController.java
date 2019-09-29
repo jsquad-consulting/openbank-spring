@@ -1,4 +1,4 @@
-package se.jsquad.notrest;
+package se.jsquad.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.Level;

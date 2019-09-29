@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,10 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.business.OpenBankService;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.exception.ClientNotFoundException;
-import se.jsquad.exception.IllegalPersonIdentificationNumberException;
+import se.jsquad.validator.PersonIdentificationNumberConstraint;
 
 @RestController
 @RequestMapping(path = "/api")
+@Validated
 public class GetClientInformationRestController {
     private Logger logger;
     private OpenBankService openBankService;
@@ -44,14 +46,9 @@ public class GetClientInformationRestController {
                     @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
                             example = "Severe system failure has occured!")))})
     public ResponseEntity<ClientApi> getClientInformation(@Parameter(description = "The person identification number",
-            example = "191212121212", required = true) @PathVariable String personIdentification) {
+            example = "191212121212", required = true) @PathVariable @PersonIdentificationNumberConstraint
+                                                                  String personIdentification) {
         logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
-
-        if (personIdentification == null || personIdentification.isEmpty()
-                || !personIdentification.matches("[0-9]{12}")) {
-            throw new IllegalPersonIdentificationNumberException("Personal identification number can't be empty and " +
-                    "it must be twelve digits.");
-        }
 
             ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(personIdentification);
 

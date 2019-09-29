@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import se.jsquad.exception.ClientNotFoundException;
-import se.jsquad.exception.IllegalPersonIdentificationNumberException;
+
+import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
@@ -16,9 +17,19 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         super();
     }
 
-    @ExceptionHandler({IllegalPersonIdentificationNumberException.class})
+    @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Object> handleBadRequest(final RuntimeException runtimeException, final WebRequest webRequest) {
-        return handleExceptionInternal(runtimeException, runtimeException.getMessage(), new HttpHeaders(),
+        String message;
+
+        if (runtimeException instanceof ConstraintViolationException) {
+            message =
+                    ((ConstraintViolationException) runtimeException).getConstraintViolations().iterator().next()
+                            .getMessage();
+        } else {
+            message = runtimeException.getMessage();
+        }
+
+        return handleExceptionInternal(runtimeException, message, new HttpHeaders(),
                 HttpStatus.BAD_REQUEST, webRequest);
     }
 
