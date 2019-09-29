@@ -98,4 +98,10 @@
             <xs:enumeration value="WITHDRAWAL"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:complexType name="JunkApi">
+        <xs:sequence>
+            <xs:element name="junk" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>
