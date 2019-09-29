@@ -43,7 +43,7 @@ public class GetClientInformationRestController {
                     @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
                     @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
                             example = "Severe system failure has occured!")))})
-    public ResponseEntity getClientInformation(@Parameter(description = "The person identification number",
+    public ResponseEntity<ClientApi> getClientInformation(@Parameter(description = "The person identification number",
             example = "191212121212", required = true) @PathVariable String personIdentification) {
         logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
 

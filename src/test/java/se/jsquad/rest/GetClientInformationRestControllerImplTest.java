@@ -38,11 +38,12 @@ public class GetClientInformationRestControllerImplTest {
         String personIdentification = "191212121212";
 
         // When
-        ResponseEntity responseEntity = getClientInformationRESTController.getClientInformation(personIdentification);
+        ResponseEntity<ClientApi> responseEntity =
+                getClientInformationRESTController.getClientInformation(personIdentification);
 
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        ClientApi clientApi = (ClientApi) responseEntity.getBody();
+        ClientApi clientApi = responseEntity.getBody();
 
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
         assertEquals("John", clientApi.getPerson().getFirstName());

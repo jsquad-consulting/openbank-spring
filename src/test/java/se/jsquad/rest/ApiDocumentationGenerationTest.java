@@ -13,11 +13,16 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
@@ -45,6 +50,16 @@ public class ApiDocumentationGenerationTest {
 
         // Then
         assertNotNull(mvcResult);
+
+        Yaml yaml = new Yaml();
+
+        Map<String, Object> yamlMap =
+                yaml.load(new ByteArrayInputStream(mvcResult.getResponse().getContentAsByteArray()));
+
+        assertTrue(((Map) yamlMap.get("paths")).containsKey("/api/client/info/{personIdentification}"));
+        assertFalse(((Map) yamlMap.get("paths")).containsKey("/api/junk/info/test/{personIdentification}"));
+        assertFalse(((Map) ((Map) yamlMap.get("components")).get("schemas")).containsKey("JunkApi"));
+
 
         Files.write(Paths.get("src/main/resources/schema/OpenBankAPIv" + environment.getProperty("api.version") +
                 ".yaml"), mvcResult.getResponse().getContentAsByteArray());
