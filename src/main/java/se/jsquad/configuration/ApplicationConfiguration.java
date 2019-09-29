@@ -13,7 +13,6 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InjectionPoint;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -86,7 +85,6 @@ public class ApplicationConfiguration {
     }
 
     @Bean("entityManagerFactory")
-    @Autowired
     LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBean(
             JpaVendorAdapter jpaVendorAdapter, DataSource dataSource,
             @Value("#{dbProds.pu}") String persistenceUnitName) {
@@ -119,7 +117,6 @@ public class ApplicationConfiguration {
     }
 
     @Bean("transactionManager")
-    @Autowired
     JpaTransactionManager getJpaTransactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
         jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
