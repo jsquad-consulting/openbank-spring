@@ -2,7 +2,6 @@ package se.jsquad.business;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -16,11 +15,9 @@ import se.jsquad.entity.Client;
 import se.jsquad.repository.ClientRepository;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.concurrent.Future;
 
-@Service("openBankServiceImpl")
-@Qualifier("openBankService")
+@Service
 @Transactional(propagation = Propagation.REQUIRED)
 public class OpenBankServiceImpl implements OpenBankService {
     private Logger logger;
@@ -29,8 +26,7 @@ public class OpenBankServiceImpl implements OpenBankService {
     private ClientAdapter clientAdapter;
     private SlowMockBatch slowMockBatch;
 
-    public OpenBankServiceImpl(@Qualifier("logger") Logger logger, @Qualifier("clientRepository") ClientRepository
-            clientRepository, @Qualifier("slowMockBatch") SlowMockBatch slowMockBatch) {
+    public OpenBankServiceImpl(Logger logger, ClientRepository clientRepository, SlowMockBatch slowMockBatch) {
         logger.log(Level.INFO, "OpenBankControllerImpl(logger: {}, clientInformationService: {}, slowMockBatch: {})",
                 logger, clientRepository, slowMockBatch);
         this.clientRepository = clientRepository;
@@ -39,7 +35,7 @@ public class OpenBankServiceImpl implements OpenBankService {
     }
 
     @Inject
-    private void setClientAdapter(@Named("clientAdapterImpl") ClientAdapter clientAdapter) {
+    private void setClientAdapter(ClientAdapter clientAdapter) {
         this.clientAdapter = clientAdapter;
     }
 

@@ -8,7 +8,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.jsquad.generator.EntityGenerator;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -18,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
         "classpath:database.properties"})
 public class ClientTest {
     @Inject
-    @Named("entityGeneratorImpl")
     private EntityGenerator entityGenerator;
 
     @Test

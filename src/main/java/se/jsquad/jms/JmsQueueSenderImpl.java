@@ -2,21 +2,18 @@ package se.jsquad.jms;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.jms.Queue;
 
-@Component("jmsQueueSenderImpl")
-@Qualifier("jmsQueueSender")
+@Component
 public class JmsQueueSenderImpl implements JmsQueueSender {
     private Logger logger;
     private JmsTemplate jmsTemplate;
     private Queue queue;
 
-    JmsQueueSenderImpl(@Qualifier("logger") Logger logger, @Qualifier("jmsTemplate") JmsTemplate jmsTemplate,
-                       @Qualifier("destinationQueue") Queue queue) {
+    JmsQueueSenderImpl(Logger logger, JmsTemplate jmsTemplate, Queue queue) {
         logger.log(Level.INFO, "JmsQueueSender(logger: {}, jmsTemplate: {}, queue: {})", logger, jmsTemplate, queue);
         this.logger = logger;
         this.jmsTemplate = jmsTemplate;

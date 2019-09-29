@@ -3,7 +3,6 @@ package se.jsquad.rest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -28,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Transactional(propagation = Propagation.REQUIRED)
 public class GetClientInformationRestControllerImplTest {
     @Autowired
-    @Qualifier("getClientInformationRestController")
     private GetClientInformationRestController getClientInformationRESTController;
 
     @Autowired

@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -89,8 +88,7 @@ public class ApplicationConfiguration {
     @Bean("entityManagerFactory")
     @Autowired
     LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBean(
-            @Qualifier("hibernateVendorAdapter") JpaVendorAdapter jpaVendorAdapter,
-            @Qualifier("dataSource") DataSource dataSource,
+            JpaVendorAdapter jpaVendorAdapter, DataSource dataSource,
             @Value("#{dbProds.pu}") String persistenceUnitName) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
@@ -122,8 +120,7 @@ public class ApplicationConfiguration {
 
     @Bean("transactionManager")
     @Autowired
-    JpaTransactionManager getJpaTransactionManager(@Qualifier("entityManagerFactory")
-                                                           EntityManagerFactory entityManagerFactory) {
+    JpaTransactionManager getJpaTransactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
         jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
 
@@ -131,7 +128,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean("transactionTemplate")
-    TransactionTemplate getTransactionTemplate(@Qualifier("transactionManager") JpaTransactionManager
+    TransactionTemplate getTransactionTemplate(JpaTransactionManager
                                                        jpaTransactionManager) {
         TransactionTemplate transactionTemplate = new TransactionTemplate();
         transactionTemplate.setTransactionManager(jpaTransactionManager);
@@ -141,8 +138,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean("jmsTemplate")
-    JmsTemplate getJmsTemplate(@Qualifier("connectionFactory") ConnectionFactory connectionFactory,
-                               @Qualifier("destinationQueue") Queue queue) {
+    JmsTemplate getJmsTemplate(ConnectionFactory connectionFactory, Queue queue) {
         JmsTemplate jmsTemplate = new JmsTemplate();
 
         jmsTemplate.setDefaultDestination(queue);
@@ -157,7 +153,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean("connectionFactory")
-    ConnectionFactory getConnectionFactory(@Qualifier("activeMqConnectionFactory") ConnectionFactory connectionFactory) {
+    ConnectionFactory getConnectionFactory(ConnectionFactory connectionFactory) {
         return new SingleConnectionFactory(connectionFactory);
     }
 
@@ -167,11 +163,9 @@ public class ApplicationConfiguration {
     }
 
     @Bean("jmsContainer")
-    DefaultMessageListenerContainer getDefaultMessageListenerContainer(@Qualifier("connectionFactory")
-                                                                               ConnectionFactory connectionFactory,
-                                                                       @Qualifier("destinationQueue") Queue queue,
-                                                                       @Qualifier("jmsMessageListener")
-                                                                               MessageListener messageListener) {
+    DefaultMessageListenerContainer getDefaultMessageListenerContainer(ConnectionFactory connectionFactory,
+                                                                       Queue queue,
+                                                                       MessageListener messageListener) {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
 
         defaultMessageListenerContainer.setConnectionFactory(connectionFactory);

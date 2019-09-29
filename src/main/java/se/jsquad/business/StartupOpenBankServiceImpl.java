@@ -3,7 +3,6 @@ package se.jsquad.business;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,12 +18,10 @@ import se.jsquad.thread.NumberOfLocks;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Service("startupOpenBankServiceImpl")
-@Qualifier("startupOpenBankService")
+@Service
 public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private Logger logger;
 
@@ -33,15 +30,11 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private EntityGenerator entityGenerator;
     private SystemPropertyRepository systemPropertyRepository;
     private static final Lock lock = new ReentrantLock();
-    private BrokerService brokerService;
 
-    public StartupOpenBankServiceImpl(@Qualifier("logger") Logger logger,
-                                      @Qualifier("appPropertyConfiguration") AppPropertyConfiguration
-                                               appPropertyConfiguration,
-                                      @Qualifier("clientRepository") ClientRepository clientRepository, @Qualifier(
-            "systemPropertyRepository")
-                                               SystemPropertyRepository systemPropertyRepository,
-                                      @Qualifier("broker") BrokerService brokerService) {
+    public StartupOpenBankServiceImpl(Logger logger, AppPropertyConfiguration appPropertyConfiguration,
+                                      ClientRepository clientRepository,
+                                      SystemPropertyRepository systemPropertyRepository,
+                                      BrokerService brokerService) {
         logger.log(Level.INFO, "StartupOpenBankComponentImpl(logger: {}, appPropertyConfiguration: " +
                         "{}, clientRepository: " +
                         "{}, systemPropertyRepository: {}, brokerService: {})",
@@ -50,11 +43,10 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
         this.systemPropertyRepository = systemPropertyRepository;
         this.appPropertyConfiguration = appPropertyConfiguration;
         this.logger = logger;
-        this.brokerService = brokerService;
     }
 
     @Inject
-    private void setEntityGenerator(@Named("entityGeneratorImpl") EntityGenerator entityGenerator) {
+    private void setEntityGenerator(EntityGenerator entityGenerator) {
         this.entityGenerator = entityGenerator;
     }
 
