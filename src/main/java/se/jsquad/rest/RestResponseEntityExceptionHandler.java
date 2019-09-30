@@ -9,7 +9,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import se.jsquad.exception.ClientNotFoundException;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.util.Iterator;
 
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
@@ -22,9 +24,15 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         String message;
 
         if (runtimeException instanceof ConstraintViolationException) {
-            message =
-                    ((ConstraintViolationException) runtimeException).getConstraintViolations().iterator().next()
-                            .getMessage();
+            StringBuilder stringBuilder = new StringBuilder();
+            Iterator<ConstraintViolation<?>> iterator =
+                    ((ConstraintViolationException) runtimeException).getConstraintViolations().iterator();
+
+            while (iterator.hasNext()) {
+                stringBuilder.append(iterator.next().getMessage()).append(" ");
+            }
+
+            message = stringBuilder.toString().trim();
         } else {
             message = runtimeException.getMessage();
         }
