@@ -42,6 +42,14 @@ public class GetClientInformationRestController {
                             description = "The client", content = @Content(mediaType =
                             MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ClientApi.class))),
+                    @ApiResponse(responseCode = "400",
+                            description = "Invalid personal identification number", content = @Content(mediaType =
+                            MediaType.TEXT_PLAIN_VALUE,
+                            schema = @Schema(example = "Invalid personal identification number."))),
+                    @ApiResponse(responseCode = "404",
+                            description = "Client not found.", content = @Content(mediaType =
+                            MediaType.TEXT_PLAIN_VALUE,
+                            schema = @Schema(example = "Client not found."))),
                     @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
                     @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
                             example = "Severe system failure has occured!")))})
