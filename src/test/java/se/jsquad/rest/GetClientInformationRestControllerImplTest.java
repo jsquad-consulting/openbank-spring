@@ -1,9 +1,11 @@
 package se.jsquad.rest;
 
+import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,10 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:database.properties"})
+        "classpath:openbank_database.properties", "classpath:security_database.properties"})
 @SpringBootTest
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class GetClientInformationRestControllerImplTest {
+    @MockBean
+    BrokerService brokerService;
+
     @Autowired
     private GetClientInformationRestController getClientInformationRESTController;
 

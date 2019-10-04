@@ -15,4 +15,10 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
+
+    <persistence-unit name="securityPu">
+        <class>se.jsquad.entity.security.SecurityAccess</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+    </persistence-unit>
 </persistence>

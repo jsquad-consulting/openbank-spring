@@ -6,7 +6,7 @@ import javax.persistence.PersistenceContext;
 
 @Named
 public class OpenBankPersistenceUnitProducer {
-    @PersistenceContext(unitName = "entityManagerFactory")
+    @PersistenceContext(unitName = "entityManagerFactoryOpenBank")
     protected EntityManager entityManager;
 
     public EntityManager getEntityManager() {

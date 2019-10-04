@@ -18,7 +18,7 @@ import javax.inject.Inject;
 import java.util.concurrent.Future;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class OpenBankServiceImpl implements OpenBankService {
     private Logger logger;
 

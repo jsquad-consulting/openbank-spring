@@ -52,7 +52,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
 
     @Override
     @PostConstruct
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void initiateDatabase() {
         logger.log(Level.INFO, "initiateDatabase()");
 

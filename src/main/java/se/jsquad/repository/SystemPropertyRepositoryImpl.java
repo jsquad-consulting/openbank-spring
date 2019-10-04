@@ -21,7 +21,7 @@ public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProduce
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void persistSystemProperty(SystemProperty systemProperty) {
         logger.log(Level.INFO, "persistSystemProperty: systemProperty: {}", systemProperty);
         entityManager.persist(systemProperty);
