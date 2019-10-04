@@ -13,6 +13,7 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InjectionPoint;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -55,7 +56,8 @@ import java.util.Properties;
 @EnableJms
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
-@PropertySource("classpath:database.properties")
+@PropertySource("classpath:openbank_database.properties")
+@PropertySource("classpath:security_database.properties")
 @PropertySource("classpath:activemq.properties")
 public class ApplicationConfiguration {
     private Environment environment;
@@ -75,19 +77,28 @@ public class ApplicationConfiguration {
         return new LocalValidatorFactoryBean();
     }
 
-    @Bean("dataSource")
-    DataSource dataSource() {
+    @Bean("dataSourceOpenBank")
+    DataSource dataSourceOpenBank() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName(environment.getProperty("spring.datasource.driverClassName"));
-        dataSourceBuilder.url(environment.getProperty("spring.datasource.url"));
+        dataSourceBuilder.driverClassName(environment.getProperty("openbank.datasource.driverClassName"));
+        dataSourceBuilder.url(environment.getProperty("openbank.datasource.url"));
 
         return dataSourceBuilder.build();
     }
 
-    @Bean("entityManagerFactory")
-    LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBean(
-            JpaVendorAdapter jpaVendorAdapter, DataSource dataSource,
-            @Value("#{dbProds.pu}") String persistenceUnitName) {
+    @Bean("dataSourceSecurity")
+    DataSource dataSourceSecurity() {
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.driverClassName(environment.getProperty("security.datasource.driverClassName"));
+        dataSourceBuilder.url(environment.getProperty("security.datasource.url"));
+
+        return dataSourceBuilder.build();
+    }
+
+    @Bean("entityManagerFactoryOpenBank")
+    LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBeanOpenBank(
+            JpaVendorAdapter jpaVendorAdapter, @Qualifier("dataSourceOpenBank") DataSource dataSource,
+            @Value("#{dbProds.openbank_pu}") String persistenceUnitName) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
         factoryBean.setPersistenceUnitName(persistenceUnitName);
@@ -95,16 +106,43 @@ public class ApplicationConfiguration {
 
         Properties properties = new Properties();
 
-        properties.setProperty("hibernate.dialect", environment.getProperty("spring.jpa.database-platform"));
+        properties.setProperty("hibernate.dialect", environment.getProperty("openbank.jpa.database-platform"));
 
         properties.setProperty("javax.persistence.schema-generation.database.action", environment
-                .getProperty("spring.javax.persistence.schema-generation.database.action"));
+                .getProperty("openbank.javax.persistence.schema-generation.database.action"));
 
         properties.setProperty("hibernate.cache.use_second_level_cache", environment
-                .getProperty("spring.jpa.hibernate.cache.use_second_level_cache"));
+                .getProperty("openbank.jpa.hibernate.cache.use_second_level_cache"));
 
         properties.setProperty("hibernate.cache.region.factory_class", environment
-                .getProperty("spring.jpa.hibernate.cache.region.factory.class"));
+                .getProperty("openbank.jpa.hibernate.cache.region.factory.class"));
+
+        factoryBean.setJpaProperties(properties);
+
+        return factoryBean;
+    }
+
+    @Bean("entityManagerFactorySecurity")
+    LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBeanSecurity(
+            JpaVendorAdapter jpaVendorAdapter, @Qualifier("dataSourceSecurity") DataSource dataSource,
+            @Value("#{dbProds.security_pu}") String persistenceUnitName) {
+        LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+        factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
+        factoryBean.setPersistenceUnitName(persistenceUnitName);
+        factoryBean.setDataSource(dataSource);
+
+        Properties properties = new Properties();
+
+        properties.setProperty("hibernate.dialect", environment.getProperty("security.jpa.database-platform"));
+
+        properties.setProperty("javax.persistence.schema-generation.database.action", environment
+                .getProperty("security.javax.persistence.schema-generation.database.action"));
+
+        properties.setProperty("hibernate.cache.use_second_level_cache", environment
+                .getProperty("security.jpa.hibernate.cache.use_second_level_cache"));
+
+        properties.setProperty("hibernate.cache.region.factory_class", environment
+                .getProperty("security.jpa.hibernate.cache.region.factory.class"));
 
         factoryBean.setJpaProperties(properties);
 
@@ -116,17 +154,39 @@ public class ApplicationConfiguration {
         return new HibernateJpaVendorAdapter();
     }
 
-    @Bean("transactionManager")
-    JpaTransactionManager getJpaTransactionManager(EntityManagerFactory entityManagerFactory) {
+    @Bean("transactionManagerOpenBank")
+    JpaTransactionManager getJpaTransactionManagerOpenBank(@Qualifier("entityManagerFactoryOpenBank")
+                                                                   EntityManagerFactory entityManagerFactory) {
+        return getJpaTransactionManager(entityManagerFactory);
+    }
+
+    @Bean("transactionManagerSecurity")
+    JpaTransactionManager getJpaTransactionManagerSecurity(@Qualifier("entityManagerFactorySecurity")
+                                                                   EntityManagerFactory entityManagerFactory) {
+        return getJpaTransactionManager(entityManagerFactory);
+    }
+
+    private JpaTransactionManager getJpaTransactionManager(@Qualifier("entityManagerFactorySecurity") EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
         jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
 
         return jpaTransactionManager;
     }
 
-    @Bean("transactionTemplate")
-    TransactionTemplate getTransactionTemplate(JpaTransactionManager
+
+    @Bean("transactionTemplateOpenBank")
+    TransactionTemplate getTransactionTemplateOpenBank(@Qualifier("transactionManagerOpenBank") JpaTransactionManager
                                                        jpaTransactionManager) {
+        return getTransactionTemplate(jpaTransactionManager);
+    }
+
+    @Bean("transactionTemplateSecurity")
+    TransactionTemplate getTransactionTemplateSecurity(@Qualifier("transactionManagerSecurity") JpaTransactionManager
+                                                               jpaTransactionManager) {
+        return getTransactionTemplate(jpaTransactionManager);
+    }
+
+    private TransactionTemplate getTransactionTemplate(@Qualifier("transactionManagerSecurity") JpaTransactionManager jpaTransactionManager) {
         TransactionTemplate transactionTemplate = new TransactionTemplate();
         transactionTemplate.setTransactionManager(jpaTransactionManager);
         transactionTemplate.setPropagationBehavior(Propagation.REQUIRED.value());

@@ -38,7 +38,7 @@ public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducer implem
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void persistClient(Client client) {
         logger.log(Level.INFO, "persistClient(client: {})", client);
 

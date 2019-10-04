@@ -1,9 +1,11 @@
 package se.jsquad.repository;
 
+import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,9 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:database.properties"})
-@Transactional(propagation = Propagation.REQUIRED)
+        "classpath:security_database.properties", "classpath:openbank_database.properties"})
+@Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class ClientRepositoryImplTest {
+    @MockBean
+    BrokerService brokerService;
+
     @Autowired
     private ClientRepository clientRepository;
 

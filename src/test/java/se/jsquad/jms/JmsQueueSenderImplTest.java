@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:database.properties"})
+        "classpath:openbank_database.properties", "classpath:security_database.properties"})
 @SpringBootTest
 public class JmsQueueSenderImplTest {
     @Autowired
