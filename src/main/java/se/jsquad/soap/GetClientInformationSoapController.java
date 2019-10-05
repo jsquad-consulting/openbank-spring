@@ -32,7 +32,6 @@ public class GetClientInformationSoapController {
     private Logger logger;
 
     public GetClientInformationSoapController(Logger logger, ClientRepository clientRepository) {
-        logger.log(Level.INFO, "GetClientInformationSoapController(logger: {}, clientRepository: {}", logger, clientRepository);
         this.logger = logger;
         this.clientRepository = clientRepository;
     }
@@ -41,15 +40,12 @@ public class GetClientInformationSoapController {
     @PayloadRoot(namespace = "http://jsquad.se/GetClientService/", localPart = "GetClientRequest")
     @ResponsePayload
     public GetClientResponse getClientResponse(@RequestPayload GetClientRequest getClientRequest) {
-        logger.log(Level.INFO, "getClientResponse(getClientRequest: {}", getClientRequest);
-
         GetClientResponse getClientResponse = new GetClientResponse();
         getClientResponse.setClient(null);
         getClientResponse.setMessage("Client not found.");
         getClientResponse.setStatus(StatusType.ERROR);
 
         if (getClientRequest == null || getClientRequest.getPersonIdentification() == null || getClientRequest.getPersonIdentification().isEmpty()) {
-            logger.log(Level.INFO, "Request parameter must be set, can't be null.");
             getClientResponse.setMessage("Request parameter must be set with a proper identification number.");
             return getClientResponse;
         }

@@ -1,6 +1,5 @@
 package se.jsquad.business;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,12 +32,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
 
     public StartupOpenBankServiceImpl(Logger logger, AppPropertyConfiguration appPropertyConfiguration,
                                       ClientRepository clientRepository,
-                                      SystemPropertyRepository systemPropertyRepository,
-                                      BrokerService brokerService) {
-        logger.log(Level.INFO, "StartupOpenBankComponentImpl(logger: {}, appPropertyConfiguration: " +
-                        "{}, clientRepository: " +
-                        "{}, systemPropertyRepository: {}, brokerService: {})",
-                logger, appPropertyConfiguration, clientRepository, systemPropertyRepository, brokerService);
+                                      SystemPropertyRepository systemPropertyRepository) {
         this.clientRepository = clientRepository;
         this.systemPropertyRepository = systemPropertyRepository;
         this.appPropertyConfiguration = appPropertyConfiguration;
@@ -54,8 +48,6 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     @PostConstruct
     @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void initiateDatabase() {
-        logger.log(Level.INFO, "initiateDatabase()");
-
         if (clientRepository.getClientByPersonIdentification("191212121212") == null) {
             for (Client client : entityGenerator.generateClientSet()) {
                 clientRepository.persistClient(client);
@@ -72,7 +64,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     @Override
     @PreDestroy
     public void closeDatabase() {
-        logger.log(Level.INFO, "closeDatabase()");
+        // NO SONAR
     }
 
 
@@ -84,8 +76,6 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
      * @return
      */
     public void refreshJpaCache() {
-        logger.log(Level.INFO, "refreshJpaCache()");
-
         lock.lock();
         logger.log(Level.INFO, "Locked the batch thread.");
         NumberOfLocks.increaseNumberOfLocks();

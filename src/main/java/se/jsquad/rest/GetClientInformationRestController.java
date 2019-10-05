@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +26,6 @@ public class GetClientInformationRestController {
     private OpenBankService openBankService;
 
     public GetClientInformationRestController(Logger logger, OpenBankService openBankService) {
-        logger.log(Level.INFO, "GetClientInformationREST(logger: {}, openBankService: {})",
-                logger, openBankService);
         this.logger = logger;
         this.openBankService = openBankService;
     }
@@ -56,8 +53,6 @@ public class GetClientInformationRestController {
     public ResponseEntity<ClientApi> getClientInformation(@Parameter(description = "The person identification number",
             example = "191212121212", required = true) @PathVariable @PersonIdentificationNumberConstraint
                                                                   String personIdentification) {
-        logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
-
             ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(personIdentification);
 
             if (clientApi == null) {

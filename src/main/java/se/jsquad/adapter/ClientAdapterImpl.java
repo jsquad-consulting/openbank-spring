@@ -1,6 +1,5 @@
 package se.jsquad.adapter;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
@@ -27,15 +26,11 @@ public class ClientAdapterImpl implements ClientAdapter {
     private Logger logger;
 
     public ClientAdapterImpl(Logger logger) {
-        logger.log(Level.INFO, "ClientAdapterImpl(logger: {})", logger);
         this.logger = logger;
     }
 
     @Override
     public ClientApi translateClientToClientApi(Client client) {
-        logger.log(Level.INFO, "translateClientToClientApi: {})",
-                "hidden");
-
         ClientApi clientApi = new ClientApi();
         PersonApi personApi = new PersonApi();
         ClientTypeApi clientTypeApi = new ClientTypeApi();
@@ -91,9 +86,6 @@ public class ClientAdapterImpl implements ClientAdapter {
 
     @Override
     public Client translateClientApiToClient(ClientApi clientApi) {
-        logger.log(Level.INFO, "translateClientApiToClient: {})",
-                "hidden");
-
         Client client = new Client();
         client.setPerson(new Person());
 

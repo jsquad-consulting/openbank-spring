@@ -12,8 +12,6 @@ public class JmsMessageListenerImpl implements MessageListener {
     private Logger logger;
 
     public JmsMessageListenerImpl(Logger logger) {
-        logger.log(Level.INFO, "JmsQueueSender(logger: {}", logger);
-
         this.logger = logger;
     }
 

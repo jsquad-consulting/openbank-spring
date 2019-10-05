@@ -1,6 +1,5 @@
 package se.jsquad.repository;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,22 +15,17 @@ public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProduce
     private Logger logger;
 
     public SystemPropertyRepositoryImpl(Logger logger) {
-        logger.log(Level.INFO, "SystemPropertyRepositoryImpl(logger: {})", logger);
         this.logger = logger;
     }
 
     @Override
     @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void persistSystemProperty(SystemProperty systemProperty) {
-        logger.log(Level.INFO, "persistSystemProperty: systemProperty: {}", systemProperty);
         getEntityManager().persist(systemProperty);
     }
 
     @Override
     public List<SystemProperty> findAllUniqueSystemProperties() {
-        logger.log(Level.INFO, "findAllUniqueSystemProperties() is being called and caching the secondary cache level"
-                + " with SYSTEMPROPERTY entities.");
-
         TypedQuery<SystemProperty> query = getEntityManager().createNamedQuery(SystemProperty
                 .FIND_ALL_UNIQUE_SYSTEM_PROPERTIES, SystemProperty.class);
 
@@ -40,15 +34,11 @@ public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProduce
 
     @Override
     public void clearSecondaryLevelCache() {
-        logger.log(Level.INFO, "clearSecondaryLevelCache() method is called for clearing all of the SystemProperty " +
-                "entities from the secondary level JPA cache.");
         getEntityManager().getEntityManagerFactory().getCache().evictAll();
     }
 
     @Override
     public void refreshSecondaryLevelCache() {
-        logger.log(Level.INFO, "refreshSecondaryLevelCache() refreshing the secondary level cache for SYSTEMPROPERTY "
-                + "entities.");
         clearSecondaryLevelCache();
         findAllUniqueSystemProperties();
     }
