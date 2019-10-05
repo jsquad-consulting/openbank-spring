@@ -24,7 +24,7 @@ public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProduce
     @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void persistSystemProperty(SystemProperty systemProperty) {
         logger.log(Level.INFO, "persistSystemProperty: systemProperty: {}", systemProperty);
-        entityManager.persist(systemProperty);
+        getEntityManager().persist(systemProperty);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProduce
         logger.log(Level.INFO, "findAllUniqueSystemProperties() is being called and caching the secondary cache level"
                 + " with SYSTEMPROPERTY entities.");
 
-        TypedQuery<SystemProperty> query = entityManager.createNamedQuery(SystemProperty
+        TypedQuery<SystemProperty> query = getEntityManager().createNamedQuery(SystemProperty
                 .FIND_ALL_UNIQUE_SYSTEM_PROPERTIES, SystemProperty.class);
 
         return query.getResultList();
@@ -42,7 +42,7 @@ public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProduce
     public void clearSecondaryLevelCache() {
         logger.log(Level.INFO, "clearSecondaryLevelCache() method is called for clearing all of the SystemProperty " +
                 "entities from the secondary level JPA cache.");
-        entityManager.getEntityManagerFactory().getCache().evictAll();
+        getEntityManager().getEntityManagerFactory().getCache().evictAll();
     }
 
     @Override

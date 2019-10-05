@@ -1,6 +1,7 @@
 package se.jsquad.business;
 
 import org.apache.activemq.broker.BrokerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -16,6 +17,9 @@ import se.jsquad.property.AppPropertyConfiguration;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
 
+import javax.persistence.EntityManager;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -46,6 +50,16 @@ public class StartupOpenBankServiceImplTest {
 
     private boolean runningThreads = true;
 
+    private EntityManager entityManager;
+
+    @BeforeEach
+    void enableAccessToEntityManager() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = OpenBankPersistenceUnitProducer.class.getDeclaredMethod("getEntityManager");
+        method.setAccessible(true);
+
+        entityManager = (EntityManager) method.invoke(openBankPersistenceUnitProducer);
+    }
+
     @Test
     public void testSystemPropertyCacheIsPopulated() {
         // When
@@ -56,7 +70,7 @@ public class StartupOpenBankServiceImplTest {
 
         SystemProperty systemProperty = systemPropertyList.iterator().next();
 
-        assertTrue(openBankPersistenceUnitProducer.getEntityManager().getEntityManagerFactory().getCache()
+        assertTrue(entityManager.getEntityManagerFactory().getCache()
                 .contains(SystemProperty.class, systemProperty.getId()));
 
         assertEquals(appPropertyConfiguration.getName(), systemProperty.getName());
