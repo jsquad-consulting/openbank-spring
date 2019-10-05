@@ -1,6 +1,7 @@
 package se.jsquad.entity;
 
 import org.apache.activemq.broker.BrokerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,9 +42,19 @@ public class PersonTest {
     @Autowired
     private Validator validator;
 
+    private EntityManager entityManager;
+
+    @BeforeEach
+    void enableAccessToEntityManager() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = OpenBankPersistenceUnitProducer.class.getDeclaredMethod("getEntityManager");
+        method.setAccessible(true);
+
+        entityManager = (EntityManager) method.invoke(openBankPersistenceUnitProducer);
+    }
+
     @Test
     public void testEntityManager() {
-        assertNotNull(openBankPersistenceUnitProducer.getEntityManager());
+        assertNotNull(entityManager);
     }
 
     @Test
@@ -56,8 +70,8 @@ public class PersonTest {
 
         // When and then
         assertThrows(ConstraintViolationException.class, () -> {
-            openBankPersistenceUnitProducer.getEntityManager().persist(person);
-            openBankPersistenceUnitProducer.getEntityManager().flush();
+            entityManager.persist(person);
+            entityManager.flush();
         });
     }
 

@@ -25,7 +25,7 @@ public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducer implem
     public Client getClientByPersonIdentification(String personIdentification) {
         logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
 
-        TypedQuery<Client> query = entityManager.createNamedQuery(Client.PERSON_IDENTIFICATION, Client.class);
+        TypedQuery<Client> query = getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION, Client.class);
         query.setParameter(Client.PARAM_PERSON_IDENTIFICATION, personIdentification);
 
         List<Client> clientList = query.getResultList();
@@ -42,6 +42,6 @@ public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducer implem
     public void persistClient(Client client) {
         logger.log(Level.INFO, "persistClient(client: {})", client);
 
-        entityManager.persist(client);
+        getEntityManager().persist(client);
     }
 }
