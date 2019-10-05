@@ -1,6 +1,5 @@
 package se.jsquad.business;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -27,8 +26,6 @@ public class OpenBankServiceImpl implements OpenBankService {
     private SlowMockBatch slowMockBatch;
 
     public OpenBankServiceImpl(Logger logger, ClientRepository clientRepository, SlowMockBatch slowMockBatch) {
-        logger.log(Level.INFO, "OpenBankControllerImpl(logger: {}, clientInformationService: {}, slowMockBatch: {})",
-                logger, clientRepository, slowMockBatch);
         this.clientRepository = clientRepository;
         this.slowMockBatch = slowMockBatch;
         this.logger = logger;
@@ -41,8 +38,6 @@ public class OpenBankServiceImpl implements OpenBankService {
 
     @Override
     public ClientApi getClientInformationByPersonIdentification(String personIdentification) {
-        logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
-
         Client client = clientRepository.getClientByPersonIdentification(personIdentification);
 
         if (client == null) {
@@ -55,8 +50,6 @@ public class OpenBankServiceImpl implements OpenBankService {
     @Async
     @Override
     public Future<BatchStatus> startSlowBatch() throws InterruptedException {
-        logger.log(Level.INFO, "startSlowBatch()");
-
         return new AsyncResult<>(slowMockBatch.startBatch());
     }
 }

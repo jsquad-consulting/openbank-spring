@@ -1,7 +1,6 @@
 package se.jsquad.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +16,6 @@ public class JunkRestController {
     private Logger logger;
 
     public JunkRestController(Logger logger) {
-        logger.log(Level.INFO, "GetClientInformationREST(logger: {})",
-                logger);
         this.logger = logger;
     }
 

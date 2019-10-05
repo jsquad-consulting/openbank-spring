@@ -1,6 +1,5 @@
 package se.jsquad.repository;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,14 +16,11 @@ public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducer implem
     private Logger logger;
 
     public ClientRepositoryImpl(Logger logger) {
-        logger.log(Level.INFO, "ClientRepositoryImpl(logger: {})", logger);
         this.logger = logger;
     }
 
     @Override
     public Client getClientByPersonIdentification(String personIdentification) {
-        logger.log(Level.INFO, "getClientByPersonIdentification(personIdentification: {})", "hidden");
-
         TypedQuery<Client> query = getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION, Client.class);
         query.setParameter(Client.PARAM_PERSON_IDENTIFICATION, personIdentification);
 
@@ -40,8 +36,6 @@ public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducer implem
     @Override
     @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void persistClient(Client client) {
-        logger.log(Level.INFO, "persistClient(client: {})", client);
-
         getEntityManager().persist(client);
     }
 }

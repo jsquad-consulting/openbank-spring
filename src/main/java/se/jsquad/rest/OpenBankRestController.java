@@ -1,6 +1,5 @@
 package se.jsquad.rest;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,16 +20,12 @@ public class OpenBankRestController {
 
     public OpenBankRestController(Logger logger,
                                   OpenBankService openBankService) {
-        logger.log(Level.INFO, "OpenBankRestController(logger: {}, openBankService: {})",
-                logger, openBankService);
         this.logger = logger;
         this.openBankService = openBankService;
     }
 
     @GetMapping(value = "/openbank/start/slow/batch/mock", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity getOpenBankBatchStatus() {
-        logger.log(Level.INFO, "getOpenBankBatchStatus()");
-
         try {
             Future<BatchStatus> batchStatusFuture = openBankService.startSlowBatch();
 

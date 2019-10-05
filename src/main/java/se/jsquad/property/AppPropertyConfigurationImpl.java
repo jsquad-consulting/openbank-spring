@@ -1,6 +1,5 @@
 package se.jsquad.property;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -12,7 +11,6 @@ public class AppPropertyConfigurationImpl implements AppPropertyConfiguration {
     private Logger logger;
 
     public AppPropertyConfigurationImpl(Logger logger) {
-        logger.log(Level.INFO, "AppPropertyImpl(logger: {})", logger);
         this.logger = logger;
     }
 
@@ -27,22 +25,16 @@ public class AppPropertyConfigurationImpl implements AppPropertyConfiguration {
 
     @Override
     public String getVersion() {
-        logger.log(Level.INFO, "getVersion(), version: {}", version);
-
         return version;
     }
 
     @Override
     public String getName() {
-        logger.log(Level.INFO, "getName(), name: {}", name);
-
         return name;
     }
 
     @Override
     public Integer getBatchSleepTime() {
-        logger.log(Level.INFO, "getBatchSleepTime()");
-
         return batchSleepTime;
     }
 }

@@ -1,6 +1,5 @@
 package se.jsquad.generator;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
@@ -23,13 +22,11 @@ public class EntityGeneratorImpl implements EntityGenerator {
     public static final String IN_WITHDRAWAL = "500$ in withdrawal";
 
     public EntityGeneratorImpl(Logger logger) {
-        logger.log(Level.INFO, "EntityGeneratorImpl(logger: {})", logger);
         this.logger = logger;
     }
 
     @Override
     public Set<Client> generateClientSet() {
-        logger.log(Level.INFO, "generateClientSet()");
         Set<Client> clientSet = new HashSet<>();
 
         Client client1 = new Client();
