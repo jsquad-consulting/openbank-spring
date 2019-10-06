@@ -1,0 +1,11 @@
+openbank.datasource:
+  url: jdbc:mysql://openbankdb:3306/openbank
+  username: openbank_user
+  password: ENC(DSQpSyewyvrR8AurZvZC0DUax5oSZSqRvGmcAVFwKGcTZTnshKQiTw==)
+  driverclassname: com.mysql.cj.jdbc.Driver
+
+security.datasource:
+  url: jdbc:mysql://securitydb:3306/security
+  username: security_user
+  password: ENC(vNq9+oOFXPNeXnQwwcPWWjMCgjNMOS5z2tt1TkE7WVxXK4bib+K8/w==)
+  driverclassname: com.mysql.cj.jdbc.Driver

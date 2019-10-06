@@ -12,16 +12,21 @@ import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TransactionTypeApi;
+import se.jsquad.component.database.FlywayDatabaseMigration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:openbank_database.properties", "classpath:security_database.properties"})
+        "classpath:configuration/configuration_test.yaml", "classpath:configuration/openbank_persistence.properties",
+        "classpath:configuration/security_persistence.properties"})
 public class OpenBankServiceImplTest {
     @MockBean
-    BrokerService brokerService;
+    private BrokerService brokerService;
+
+    @MockBean
+    private FlywayDatabaseMigration flywayDatabaseMigration;
 
     @Autowired
     private OpenBankService openBankService;

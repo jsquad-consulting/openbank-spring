@@ -11,6 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
 import javax.inject.Inject;
@@ -30,11 +31,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:security_database.properties", "classpath:openbank_database.properties"})
+        "classpath:configuration/configuration_test.yaml", "classpath:configuration/openbank_persistence.properties",
+        "classpath:configuration/security_persistence.properties"})
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class PersonTest {
     @MockBean
-    BrokerService brokerService;
+    private BrokerService brokerService;
+
+    @MockBean
+    private FlywayDatabaseMigration flywayDatabaseMigration;
 
     @Inject
     private OpenBankPersistenceUnitProducer openBankPersistenceUnitProducer;

@@ -1,11 +1,47 @@
 version: "3.7"
 services:
+  openbankdb:
+    image: mysql:8.0.17
+    environment:
+      MYSQL_DATABASE: 'openbank'
+      MYSQL_USER: openbank_user
+      MYSQL_PASSWORD: ${OPENBANK_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+    expose:
+      - 3306
+    cap_add:
+      - SYS_NICE
+    healthcheck:
+      test: ["CMD", "mysql", "--user=root", "--password=${ROOT_PASSWORD}", "-e", "'SHOW DATABASES;'"]
+      timeout: 5s
+      retries: 10
+  securitydb:
+    image: mysql:8.0.17
+    environment:
+      MYSQL_DATABASE: 'security'
+      MYSQL_USER: security_user
+      MYSQL_PASSWORD: ${SECURITY_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+    expose:
+      - 3306
+    cap_add:
+      - SYS_NICE
+    healthcheck:
+      test: ["CMD", "mysql", "--user=root", "--password=${ROOT_PASSWORD}", "-e", "'SHOW DATABASES;'"]
+      timeout: 5s
+      retries: 5
   openbank:
     image: openbank
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      MASTER_SECRET: "${MASTER_KEY}"
+      CONFIG_FILE_LOCATIONS: "classpath:application.properties,classpath:configuration_local.yaml,classpath:activemq.properties,classpath:openbank_persistence.properties,classpath:security_persistence.properties"
     ports:
       - 8080:8080
       - 9990:9990
+    depends_on:
+      - openbankdb
+      - securitydb
     restart: on-failure
