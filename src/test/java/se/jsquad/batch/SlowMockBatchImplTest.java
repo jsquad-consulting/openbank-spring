@@ -10,6 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.batch.status.Status;
+import se.jsquad.component.database.FlywayDatabaseMigration;
 
 import java.lang.reflect.Field;
 
@@ -18,10 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:security_database.properties", "classpath:openbank_database.properties"})
+        "classpath:configuration/configuration_test.yaml", "classpath:configuration/openbank_persistence.properties",
+        "classpath:configuration/security_persistence.properties"})
 public class SlowMockBatchImplTest {
     @MockBean
-    BrokerService brokerService;
+    private BrokerService brokerService;
+
+    @MockBean
+    private FlywayDatabaseMigration flywayDatabaseMigration;
 
     @Autowired
     private SlowMockBatch slowMockBatch;

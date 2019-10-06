@@ -1,7 +1,8 @@
 FROM openjdk:11-jre-slim
 
-COPY target/openbank-spring-0.0.1-SNAPSHOT.jar /app/openbank-spring-0.0.1-SNAPSHOT.jar
+COPY target/openbank-spring-0.0.1-SNAPSHOT.jar /app/openbank-spring.jar
 
-EXPOSE 8080 9990
+EXPOSE 8080 8000
 
-CMD ["java", "-jar", "/app/openbank-spring-0.0.1-SNAPSHOT.jar"]
+CMD ["sh", "-c", "java -jar /app/openbank-spring.jar --jasypt.encryptor.password=${MASTER_SECRET} \
+--spring.config.location=${CONFIG_FILE_LOCATIONS}"]

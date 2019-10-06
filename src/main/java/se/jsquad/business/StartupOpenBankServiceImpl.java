@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.EntityGenerator;
@@ -27,6 +28,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
     private AppPropertyConfiguration appPropertyConfiguration;
     private ClientRepository clientRepository;
     private EntityGenerator entityGenerator;
+    private FlywayDatabaseMigration flywayDatabaseMigration;
     private SystemPropertyRepository systemPropertyRepository;
     private static final Lock lock = new ReentrantLock();
 
@@ -44,10 +46,17 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
         this.entityGenerator = entityGenerator;
     }
 
+    @Inject
+    private void setFlywayDatabaseMigration(FlywayDatabaseMigration flywayDatabaseMigration) {
+        this.flywayDatabaseMigration = flywayDatabaseMigration;
+    }
+
     @Override
     @PostConstruct
     @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void initiateDatabase() {
+        flywayDatabaseMigration.migrateToDatabase();
+
         if (clientRepository.getClientByPersonIdentification("191212121212") == null) {
             for (Client client : entityGenerator.generateClientSet()) {
                 clientRepository.persistClient(client);

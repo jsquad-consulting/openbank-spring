@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 import se.jsquad.property.AppPropertyConfiguration;
@@ -30,11 +31,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:security_database.properties", "classpath:openbank_database.properties"})
+        "classpath:configuration/configuration_test.yaml", "classpath:configuration/openbank_persistence.properties",
+        "classpath:configuration/security_persistence.properties"})
 @Execution(ExecutionMode.SAME_THREAD)
 public class StartupOpenBankServiceImplTest {
     @MockBean
-    BrokerService brokerService;
+    private BrokerService brokerService;
+
+    @MockBean
+    private FlywayDatabaseMigration flywayDatabaseMigration;
 
     @Autowired
     StartupOpenBankService startupOpenBankService;

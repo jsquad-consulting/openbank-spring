@@ -21,6 +21,7 @@ import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TransactionTypeApi;
+import se.jsquad.component.database.FlywayDatabaseMigration;
 
 import javax.validation.ConstraintViolationException;
 
@@ -32,12 +33,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:openbank_database.properties", "classpath:security_database.properties"})
+        "classpath:configuration/configuration_test.yaml", "classpath:configuration/openbank_persistence.properties",
+        "classpath:configuration/security_persistence.properties"})
 @SpringBootTest
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class GetClientInformationRestControllerImplTest {
     @MockBean
-    BrokerService brokerService;
+    private BrokerService brokerService;
+
+    @MockBean
+    private FlywayDatabaseMigration flywayDatabaseMigration;
 
     @Autowired
     private GetClientInformationRestController getClientInformationRESTController;
