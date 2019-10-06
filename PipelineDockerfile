@@ -2,13 +2,14 @@ FROM maven:3.6.0-jdk-11 as build
 
 ADD . /usr/openbank-spring
 
-RUN mvn -f /usr/openbank-spring clean install
+RUN mvn -f /usr/openbank-spring clean install -DskipTests
 
 FROM openjdk:11-jre-slim
 
 COPY --from=build /usr/openbank-spring/target/openbank-spring-0.0.1-SNAPSHOT.jar \
-/app/openbank-spring-0.0.1-SNAPSHOT.jar
+/app/openbank-spring.jar
 
-EXPOSE 8080 9990
+EXPOSE 8080 8000
 
-CMD ["java", "-jar", "/app/openbank-spring-0.0.1-SNAPSHOT.jar"]
+CMD ["sh", "-c", "java -jar /app/openbank-spring.jar --jasypt.encryptor.password=${MASTER_SECRET} \
+--spring.config.location=${CONFIG_FILE_LOCATIONS}"]
