@@ -1,18 +1,17 @@
 package se.jsquad.interceptor;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 @Aspect
-@Order(value = 2)
 public class LoggingAspect {
-    @Around("execution(* se.jsquad.*.*(..))")
+    @Around("within(se.jsquad..*)")
     public Object logMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         final Logger logger = LogManager.getLogger(joinPoint.getTarget().getClass().getName());
         Object returnValue;
@@ -33,7 +32,7 @@ public class LoggingAspect {
 
             startMessageStringBuilder.append(")");
 
-            logger.trace(startMessageStringBuilder.toString());
+            logger.log(Level.INFO, startMessageStringBuilder.toString());
 
             returnValue = joinPoint.proceed();
 
@@ -41,10 +40,10 @@ public class LoggingAspect {
             endMessageStringBuilder.append("Finish method ");
             endMessageStringBuilder.append(joinPoint.getSignature().getName());
 
-            logger.trace(endMessageStringBuilder.toString());
+            logger.log(Level.INFO, endMessageStringBuilder.toString());
         } catch (Throwable e) {
             StringBuilder errorMessageStringBuilder = new StringBuilder();
-            logger.error(errorMessageStringBuilder.toString(), e);
+            logger.log(Level.ERROR, errorMessageStringBuilder.toString(), e);
 
             throw e;
         }

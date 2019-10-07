@@ -36,10 +36,10 @@ public class SlowMockBatchImplTest {
         // Given
         int seconds = 0;
 
-        Field field = ((SlowMockBatchImpl) slowMockBatch).getClass().getDeclaredField("sleepTime");
+        Field field = SlowMockBatchImpl.class.getDeclaredField("sleepTime");
         field.setAccessible(true);
 
-        field.set(((SlowMockBatchImpl) slowMockBatch), seconds);
+        field.set((SlowMockBatchImpl) slowMockBatch, seconds);
 
         // When
         BatchStatus batchStatus = slowMockBatch.startBatch();
