@@ -20,6 +20,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -58,6 +59,7 @@ import java.util.Properties;
 @EnableJms
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
+@EnableAspectJAutoProxy
 public class ApplicationConfiguration {
     public static final String OPENBANK_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION = "openbank.javax.persistence.schema-generation.database.action";
     public static final String OPENBANK_JPA_DATABASE_PLATFORM = "openbank.jpa.database-platform";
