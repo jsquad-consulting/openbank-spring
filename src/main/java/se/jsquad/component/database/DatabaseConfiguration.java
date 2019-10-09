@@ -1,8 +1,11 @@
 package se.jsquad.component.database;
 
+import org.springframework.validation.annotation.Validated;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+@Validated
 public class DatabaseConfiguration {
     @NotNull
     @NotEmpty
