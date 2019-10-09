@@ -16,6 +16,7 @@ import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -60,6 +61,7 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
 @EnableAspectJAutoProxy
+@EnableConfigurationProperties(value = {OpenBankDatabaseConfiguration.class, SecurityDatabaseConfiguration.class})
 public class ApplicationConfiguration {
     public static final String OPENBANK_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION = "openbank.javax.persistence.schema-generation.database.action";
     public static final String OPENBANK_JPA_DATABASE_PLATFORM = "openbank.jpa.database-platform";
