@@ -2,31 +2,23 @@ package se.jsquad.component.database;
 
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.configuration.ClassicConfiguration;
 import org.flywaydb.core.api.configuration.Configuration;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContextException;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.inject.Named;
 import javax.sql.DataSource;
 
 @Named
 public class FlywayDatabaseMigration {
-    private Logger logger;
-    DataSource openBankDataSource;
+    private Logger logger = LogManager.getLogger(FlywayDatabaseMigration.class.getName());
 
-    public FlywayDatabaseMigration(Logger logger,
-                                   @Qualifier("openBankJdbcTemplate") JdbcTemplate jdbcTemplateOpenBank) {
-        this.logger = logger;
-        openBankDataSource = jdbcTemplateOpenBank.getDataSource();
-    }
-
-    public void migrateToDatabase() {
-        if (openBankDataSource == null) {
+    public void migrateToDatabase(String location, DataSource dataSource) {
+        if (dataSource == null) {
             logger.log(Level.ERROR, "No data source found to execute the database migrations.");
             throw new ApplicationContextException("No data source found to execute the database migrations.");
         }
@@ -34,7 +26,8 @@ public class FlywayDatabaseMigration {
         Configuration configuration = new ClassicConfiguration();
 
         ((ClassicConfiguration) configuration).setBaselineOnMigrate(true);
-        ((ClassicConfiguration) configuration).setDataSource(openBankDataSource);
+        ((ClassicConfiguration) configuration).setDataSource(dataSource);
+        ((ClassicConfiguration) configuration).setLocationsAsStrings(location);
 
         Flyway flyway = new Flyway(configuration);
 

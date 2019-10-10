@@ -42,6 +42,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.ws.config.annotation.EnableWs;
+import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.component.database.OpenBankDatabaseConfiguration;
 import se.jsquad.component.database.SecurityDatabaseConfiguration;
 
@@ -75,12 +76,17 @@ public class ApplicationConfiguration {
     private Environment environment;
     private OpenBankDatabaseConfiguration openBankDatabaseConfiguration;
     private SecurityDatabaseConfiguration securityDatabaseConfiguration;
+    private FlywayDatabaseMigration flywayDatabaseMigration;
+    private boolean migratedOpenBank = false;
+    private boolean migratedSecurity = false;
 
     public ApplicationConfiguration(Environment environment, OpenBankDatabaseConfiguration
-            openBankDatabaseConfiguration, SecurityDatabaseConfiguration securityDatabaseConfiguration) {
+            openBankDatabaseConfiguration, SecurityDatabaseConfiguration securityDatabaseConfiguration,
+                                    FlywayDatabaseMigration flywayDatabaseMigration) {
         this.environment = environment;
         this.openBankDatabaseConfiguration = openBankDatabaseConfiguration;
         this.securityDatabaseConfiguration = securityDatabaseConfiguration;
+        this.flywayDatabaseMigration = flywayDatabaseMigration;
     }
 
     @Bean("logger")
@@ -102,6 +108,12 @@ public class ApplicationConfiguration {
         dataSourceBuilder.url(openBankDatabaseConfiguration.getUrl());
         dataSourceBuilder.username(openBankDatabaseConfiguration.getUsername());
         dataSourceBuilder.password(openBankDatabaseConfiguration.getPassword());
+
+        if (!migratedOpenBank) {
+            flywayDatabaseMigration.migrateToDatabase("db/migration/openbank", dataSourceBuilder.build());
+            migratedOpenBank = true;
+        }
+
         return new JdbcTemplate(dataSourceBuilder.build(), true);
     }
 
@@ -112,6 +124,12 @@ public class ApplicationConfiguration {
         dataSourceBuilder.url(securityDatabaseConfiguration.getUrl());
         dataSourceBuilder.username(securityDatabaseConfiguration.getUsername());
         dataSourceBuilder.password(securityDatabaseConfiguration.getPassword());
+
+        if (!migratedSecurity) {
+            flywayDatabaseMigration.migrateToDatabase("db/migration/security", dataSourceBuilder.build());
+            migratedSecurity = true;
+        }
+
         return new JdbcTemplate(dataSourceBuilder.build(), true);
     }
 
@@ -126,6 +144,12 @@ public class ApplicationConfiguration {
         factoryBean.setDataSource(jdbcTemplate.getDataSource());
 
         Properties properties = new Properties();
+
+        if (environment.getProperty("openbank.hibernate.hbm2ddl.auto") != null
+                && !environment.getProperty("openbank.hibernate.hbm2ddl.auto").isEmpty()) {
+            properties.setProperty("hibernate.hbm2ddl.auto",
+                    environment.getProperty("openbank.hibernate.hbm2ddl.auto"));
+        }
 
         if (environment.getProperty(OPENBANK_JPA_DATABASE_PLATFORM) != null
                 && !environment.getProperty(OPENBANK_JPA_DATABASE_PLATFORM).isEmpty()) {
@@ -165,6 +189,12 @@ public class ApplicationConfiguration {
         factoryBean.setDataSource(jdbcTemplate.getDataSource());
 
         Properties properties = new Properties();
+
+        if (environment.getProperty("security.hibernate.hbm2ddl.auto") != null
+                && !environment.getProperty("security.hibernate.hbm2ddl.auto").isEmpty()) {
+            properties.setProperty("hibernate.hbm2ddl.auto",
+                    environment.getProperty("security.hibernate.hbm2ddl.auto"));
+        }
 
         if (environment.getProperty(SECURITY_JPA_DATABASE_PLATFORM) != null
                 && !environment.getProperty(SECURITY_JPA_DATABASE_PLATFORM).isEmpty()) {
