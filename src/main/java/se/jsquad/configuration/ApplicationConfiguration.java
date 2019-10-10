@@ -78,7 +78,6 @@ public class ApplicationConfiguration {
     private SecurityDatabaseConfiguration securityDatabaseConfiguration;
     private FlywayDatabaseMigration flywayDatabaseMigration;
     private boolean migratedOpenBank = false;
-    private boolean migratedSecurity = false;
 
     public ApplicationConfiguration(Environment environment, OpenBankDatabaseConfiguration
             openBankDatabaseConfiguration, SecurityDatabaseConfiguration securityDatabaseConfiguration,
@@ -124,11 +123,6 @@ public class ApplicationConfiguration {
         dataSourceBuilder.url(securityDatabaseConfiguration.getUrl());
         dataSourceBuilder.username(securityDatabaseConfiguration.getUsername());
         dataSourceBuilder.password(securityDatabaseConfiguration.getPassword());
-
-        if (!migratedSecurity) {
-            flywayDatabaseMigration.migrateToDatabase("db/migration/security", dataSourceBuilder.build());
-            migratedSecurity = true;
-        }
 
         return new JdbcTemplate(dataSourceBuilder.build(), true);
     }
