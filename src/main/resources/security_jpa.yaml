@@ -1,0 +1,2 @@
+security.jpa.databasePlatform: org.hibernate.dialect.MySQL8Dialect
+security.jpa.entityValidation: validate

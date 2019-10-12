@@ -22,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:configuration/configuration_test.yaml", "classpath:configuration/openbank_persistence.properties",
-        "classpath:configuration/security_persistence.properties"})
+        "classpath:configuration/configuration_test.yaml",
+        "classpath:configuration/openbank_jpa.yaml",
+        "classpath:configuration/security_jpa.yaml"})
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class ClientRepositoryImplTest {
     @MockBean

@@ -45,6 +45,8 @@ import org.springframework.ws.config.annotation.EnableWs;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.component.database.OpenBankDatabaseConfiguration;
 import se.jsquad.component.database.SecurityDatabaseConfiguration;
+import se.jsquad.component.jpa.OpenBankJpaConfiguration;
+import se.jsquad.component.jpa.SecurityJpaConfiguration;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
@@ -62,30 +64,28 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
 @EnableAspectJAutoProxy
-@EnableConfigurationProperties(value = {OpenBankDatabaseConfiguration.class, SecurityDatabaseConfiguration.class})
+@EnableConfigurationProperties(value = {OpenBankDatabaseConfiguration.class, SecurityDatabaseConfiguration.class,
+        SecurityJpaConfiguration.class, OpenBankJpaConfiguration.class})
 public class ApplicationConfiguration {
-    public static final String OPENBANK_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION = "openbank.javax.persistence.schema-generation.database.action";
-    public static final String OPENBANK_JPA_DATABASE_PLATFORM = "openbank.jpa.database-platform";
-    public static final String OPENBANK_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS = "openbank.jpa.hibernate.cache.region.factory.class";
-    public static final String OPENBANK_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = "openbank.jpa.hibernate.cache.use_second_level_cache";
-    public static final String SECURITY_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION = "security.javax.persistence.schema-generation.database.action";
-    public static final String SECURITY_JPA_DATABASE_PLATFORM = "security.jpa.database-platform";
-    public static final String SECURITY_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS = "security.jpa.hibernate.cache.region.factory.class";
-    public static final String SECURITY_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = "security.jpa.hibernate.cache.use_second_level_cache";
-
     private Environment environment;
     private OpenBankDatabaseConfiguration openBankDatabaseConfiguration;
     private SecurityDatabaseConfiguration securityDatabaseConfiguration;
+    private SecurityJpaConfiguration securityJpaConfiguration;
+    private OpenBankJpaConfiguration openBankJpaConfiguration;
     private FlywayDatabaseMigration flywayDatabaseMigration;
     private boolean migratedOpenBank = false;
 
     public ApplicationConfiguration(Environment environment, OpenBankDatabaseConfiguration
             openBankDatabaseConfiguration, SecurityDatabaseConfiguration securityDatabaseConfiguration,
+                                    OpenBankJpaConfiguration openBankJpaConfiguration,
+                                    SecurityJpaConfiguration securityJpaConfiguration,
                                     FlywayDatabaseMigration flywayDatabaseMigration) {
         this.environment = environment;
         this.openBankDatabaseConfiguration = openBankDatabaseConfiguration;
         this.securityDatabaseConfiguration = securityDatabaseConfiguration;
         this.flywayDatabaseMigration = flywayDatabaseMigration;
+        this.securityJpaConfiguration = securityJpaConfiguration;
+        this.openBankJpaConfiguration = openBankJpaConfiguration;
     }
 
     @Bean("logger")
@@ -139,33 +139,25 @@ public class ApplicationConfiguration {
 
         Properties properties = new Properties();
 
-        if (environment.getProperty("openbank.hibernate.hbm2ddl.auto") != null
-                && !environment.getProperty("openbank.hibernate.hbm2ddl.auto").isEmpty()) {
-            properties.setProperty("hibernate.hbm2ddl.auto",
-                    environment.getProperty("openbank.hibernate.hbm2ddl.auto"));
+        properties.setProperty("hibernate.dialect", openBankJpaConfiguration.getDatabasePlatform());
+        properties.setProperty("hibernate.hbm2ddl.auto", openBankJpaConfiguration.getEntityValidation());
+
+        if (openBankJpaConfiguration.getSecondaryLevelCache() != null
+                && !openBankJpaConfiguration.getSecondaryLevelCache().isEmpty()) {
+            properties.setProperty("hibernate.cache.use_second_level_cache",
+                    openBankJpaConfiguration.getSecondaryLevelCache());
         }
 
-        if (environment.getProperty(OPENBANK_JPA_DATABASE_PLATFORM) != null
-                && !environment.getProperty(OPENBANK_JPA_DATABASE_PLATFORM).isEmpty()) {
-            properties.setProperty("hibernate.dialect", environment.getProperty(OPENBANK_JPA_DATABASE_PLATFORM));
+        if (openBankJpaConfiguration.getCacheRegionFactory() != null
+                && !openBankJpaConfiguration.getCacheRegionFactory().isEmpty()) {
+            properties.setProperty("hibernate.cache.region.factory_class",
+                    openBankJpaConfiguration.getCacheRegionFactory());
         }
 
-        if (environment.getProperty(OPENBANK_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION) != null
-                && !environment.getProperty(OPENBANK_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION).isEmpty()) {
-            properties.setProperty("javax.persistence.schema-generation.database.action", environment
-                    .getProperty(OPENBANK_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION));
-        }
-
-        if (environment.getProperty(OPENBANK_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) != null
-                && !environment.getProperty(OPENBANK_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE).isEmpty()) {
-            properties.setProperty("hibernate.cache.use_second_level_cache", environment
-                    .getProperty(OPENBANK_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-        }
-
-        if (environment.getProperty(OPENBANK_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS) != null
-                && !environment.getProperty(OPENBANK_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS).isEmpty()) {
-            properties.setProperty("hibernate.cache.region.factory_class", environment
-                    .getProperty(OPENBANK_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS));
+        if (openBankJpaConfiguration.getDatabaseAction() != null
+                && !openBankJpaConfiguration.getDatabaseAction().isEmpty()) {
+            properties.setProperty("javax.persistence.schema-generation.database.action",
+                    openBankJpaConfiguration.getDatabaseAction());
         }
 
         factoryBean.setJpaProperties(properties);
@@ -184,33 +176,25 @@ public class ApplicationConfiguration {
 
         Properties properties = new Properties();
 
-        if (environment.getProperty("security.hibernate.hbm2ddl.auto") != null
-                && !environment.getProperty("security.hibernate.hbm2ddl.auto").isEmpty()) {
-            properties.setProperty("hibernate.hbm2ddl.auto",
-                    environment.getProperty("security.hibernate.hbm2ddl.auto"));
+        properties.setProperty("hibernate.dialect", securityJpaConfiguration.getDatabasePlatform());
+        properties.setProperty("hibernate.hbm2ddl.auto", securityJpaConfiguration.getEntityValidation());
+
+        if (securityJpaConfiguration.getSecondaryLevelCache() != null
+                && !securityJpaConfiguration.getSecondaryLevelCache().isEmpty()) {
+            properties.setProperty("hibernate.cache.use_second_level_cache",
+                    securityJpaConfiguration.getSecondaryLevelCache());
         }
 
-        if (environment.getProperty(SECURITY_JPA_DATABASE_PLATFORM) != null
-                && !environment.getProperty(SECURITY_JPA_DATABASE_PLATFORM).isEmpty()) {
-            properties.setProperty("hibernate.dialect", environment.getProperty(SECURITY_JPA_DATABASE_PLATFORM));
+        if (securityJpaConfiguration.getCacheRegionFactory() != null
+                && !securityJpaConfiguration.getCacheRegionFactory().isEmpty()) {
+            properties.setProperty("hibernate.cache.region.factory_class",
+                    securityJpaConfiguration.getCacheRegionFactory());
         }
 
-        if (environment.getProperty(SECURITY_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION) != null
-                && !environment.getProperty(SECURITY_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION).isEmpty()) {
-            properties.setProperty("javax.persistence.schema-generation.database.action", environment
-                    .getProperty(SECURITY_JAVAX_PERSISTENCE_SCHEMA_GENERATION_DATABASE_ACTION));
-        }
-
-        if (environment.getProperty(SECURITY_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) != null
-                && !environment.getProperty(SECURITY_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE).isEmpty()) {
-            properties.setProperty("hibernate.cache.use_second_level_cache", environment
-                    .getProperty(SECURITY_JPA_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-        }
-
-        if (environment.getProperty(SECURITY_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS) != null
-                && !environment.getProperty(SECURITY_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS).isEmpty()) {
-            properties.setProperty("hibernate.cache.region.factory_class", environment
-                    .getProperty(SECURITY_JPA_HIBERNATE_CACHE_REGION_FACTORY_CLASS));
+        if (securityJpaConfiguration.getDatabaseAction() != null
+                && !securityJpaConfiguration.getDatabaseAction().isEmpty()) {
+            properties.setProperty("javax.persistence.schema-generation.database.action",
+                    securityJpaConfiguration.getDatabaseAction());
         }
 
         factoryBean.setJpaProperties(properties);

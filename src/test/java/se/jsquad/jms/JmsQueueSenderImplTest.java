@@ -14,8 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:configuration/configuration_test.yaml", "classpath:configuration/openbank_persistence.properties",
-        "classpath:configuration/security_persistence.properties"})
+        "classpath:configuration/configuration_test.yaml",
+        "classpath:configuration/openbank_jpa.yaml",
+        "classpath:configuration/security_jpa.yaml"})
 @SpringBootTest
 public class JmsQueueSenderImplTest {
     @MockBean
