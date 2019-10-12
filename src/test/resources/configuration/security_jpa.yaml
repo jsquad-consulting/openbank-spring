@@ -1,0 +1,5 @@
+security.jpa.databasePlatform: org.hibernate.dialect.H2Dialect
+security.jpa.entityValidation: validate
+security.jpa.databaseAction: drop-and-create
+security.jpa.secondaryLevelCache: true
+security.jpa.cacheRegionFactory: org.hibernate.cache.ehcache.EhCacheRegionFactory
