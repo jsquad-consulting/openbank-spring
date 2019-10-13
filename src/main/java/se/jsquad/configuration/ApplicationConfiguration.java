@@ -1,6 +1,7 @@
 package se.jsquad.configuration;
 
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -64,6 +65,7 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
 @EnableAspectJAutoProxy
+@EnableEncryptableProperties
 @EnableConfigurationProperties(value = {OpenBankDatabaseConfiguration.class, SecurityDatabaseConfiguration.class,
         SecurityJpaConfiguration.class, OpenBankJpaConfiguration.class})
 public class ApplicationConfiguration {

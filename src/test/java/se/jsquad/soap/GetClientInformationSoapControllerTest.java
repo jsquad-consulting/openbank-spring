@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
         "classpath:configuration/configuration_test.yaml",
         "classpath:configuration/openbank_jpa.yaml",
-        "classpath:configuration/security_jpa.yaml"})
+        "classpath:configuration/security_jpa.yaml"}, properties = {"jasypt.encryptor.password = testencryption"})
 public class GetClientInformationSoapControllerTest {
     @MockBean
     private BrokerService brokerService;
