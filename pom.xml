@@ -240,6 +240,7 @@
 					<sources>
 						<source>${project.basedir}/src/main/resources/schema/xsd/dummy.xsd</source>
 						<source>${project.basedir}/src/main/resources/schema/xsd/batch-status.xsd</source>
+						<source>${project.basedir}/src/main/resources/schema/xsd/date-time.xsd</source>
 						<source>${project.basedir}/src/main/resources/schema/xsd/client-information.xsd</source>
 					</sources>
 					<clearOutputDir>false</clearOutputDir>

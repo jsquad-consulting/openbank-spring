@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+		   jaxb:version="2.1"
+		   targetNamespace="http://jsquad.se/date/time" version="1.0"
+		   xmlns:annox="http://annox.dev.java.net"
+		   jaxb:extensionBindingPrefixes="annox">
+
+    <xs:complexType name="DateTime">
+        <xs:sequence>
+            <xs:element name="dateTime" type="xs:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "Date time", example = "2019-11-05T11:33:11ZZ")</annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

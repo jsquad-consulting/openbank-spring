@@ -53,7 +53,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return getObjectResponseEntity(runtimeException, webRequest);
     }
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<Object> handleGlobalException(final RuntimeException runtimeException,
                                                         final WebRequest webRequest) {
         return getObjectResponseEntity(runtimeException, webRequest);
