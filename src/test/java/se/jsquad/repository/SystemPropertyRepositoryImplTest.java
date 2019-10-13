@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
         "classpath:configuration/configuration_test.yaml",
         "classpath:configuration/openbank_jpa.yaml",
-        "classpath:configuration/security_jpa.yaml"})
+        "classpath:configuration/security_jpa.yaml"}, properties = {"jasypt.encryptor.password = testencryption"})
 @Execution(ExecutionMode.SAME_THREAD)
 public class SystemPropertyRepositoryImplTest {
     @MockBean

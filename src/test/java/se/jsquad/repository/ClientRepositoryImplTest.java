@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
         "classpath:configuration/configuration_test.yaml",
         "classpath:configuration/openbank_jpa.yaml",
-        "classpath:configuration/security_jpa.yaml"})
+        "classpath:configuration/security_jpa.yaml"}, properties = {"jasypt.encryptor.password = testencryption"})
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class ClientRepositoryImplTest {
     @MockBean
