@@ -10,7 +10,8 @@ import java.lang.annotation.Target;
 
 @Documented
 @Constraint(validatedBy = PersonIdentificationNumberValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR,
+        ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PersonIdentificationNumberConstraint {
     String message() default "Person identification number must be twelve digits.";

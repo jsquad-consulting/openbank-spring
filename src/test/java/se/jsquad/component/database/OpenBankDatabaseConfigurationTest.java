@@ -19,7 +19,8 @@ public class OpenBankDatabaseConfigurationTest {
 
         // When
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<DatabaseConfiguration>> constraintViolationSet = validator.validate(openBankDatabaseConfiguration);
+        Set<ConstraintViolation<DatabaseConfiguration>> constraintViolationSet = validator
+                .validate(openBankDatabaseConfiguration);
 
         // Then
         assertEquals(8, constraintViolationSet.size());
@@ -28,7 +29,8 @@ public class OpenBankDatabaseConfigurationTest {
                 constraintViolationSet.stream()
                         .filter(databaseConfigurationConstraintViolation1 -> "must not be null"
                                 .equals(databaseConfigurationConstraintViolation1.getMessage())
-                                && "url".equals(databaseConfigurationConstraintViolation1.getPropertyPath().toString()))
+                                && "url".equals(databaseConfigurationConstraintViolation1.getPropertyPath()
+                                .toString()))
                         .findFirst();
 
         assertTrue(constraintViolationOptional.isPresent());
@@ -38,8 +40,8 @@ public class OpenBankDatabaseConfigurationTest {
                 constraintViolationSet.stream()
                         .filter(databaseConfigurationConstraintViolation1 -> "must not be empty"
                                 .equals(databaseConfigurationConstraintViolation1.getMessage())
-                                && "url".equals(databaseConfigurationConstraintViolation1.getPropertyPath().toString()))
-                        .findFirst();
+                                && "url".equals(databaseConfigurationConstraintViolation1.getPropertyPath()
+                                .toString())).findFirst();
 
         assertTrue(constraintViolationOptional.isPresent());
 
@@ -47,8 +49,8 @@ public class OpenBankDatabaseConfigurationTest {
                 constraintViolationSet.stream()
                         .filter(databaseConfigurationConstraintViolation1 -> "must not be null"
                                 .equals(databaseConfigurationConstraintViolation1.getMessage())
-                                && "username".equals(databaseConfigurationConstraintViolation1.getPropertyPath().toString()))
-                        .findFirst();
+                                && "username".equals(databaseConfigurationConstraintViolation1.getPropertyPath()
+                                .toString())).findFirst();
 
         assertTrue(constraintViolationOptional.isPresent());
 
@@ -57,17 +59,17 @@ public class OpenBankDatabaseConfigurationTest {
                 constraintViolationSet.stream()
                         .filter(databaseConfigurationConstraintViolation1 -> "must not be empty"
                                 .equals(databaseConfigurationConstraintViolation1.getMessage())
-                                && "username".equals(databaseConfigurationConstraintViolation1.getPropertyPath().toString()))
-                        .findFirst();
+                                && "username".equals(databaseConfigurationConstraintViolation1.getPropertyPath()
+                                .toString())).findFirst();
 
         assertTrue(constraintViolationOptional.isPresent());
 
         constraintViolationOptional =
                 constraintViolationSet.stream()
-                        .filter(databaseConfigurationConstraintViolation1 -> "must not be null"
-                                .equals(databaseConfigurationConstraintViolation1.getMessage())
-                                && "password".equals(databaseConfigurationConstraintViolation1.getPropertyPath().toString()))
-                        .findFirst();
+                        .filter(databaseConfigurationConstraintViolation1 -> "must not be null".equals(
+                                databaseConfigurationConstraintViolation1.getMessage()) &&
+                                "password".equals(databaseConfigurationConstraintViolation1.getPropertyPath()
+                                        .toString())).findFirst();
 
         assertTrue(constraintViolationOptional.isPresent());
 
@@ -76,8 +78,8 @@ public class OpenBankDatabaseConfigurationTest {
                 constraintViolationSet.stream()
                         .filter(databaseConfigurationConstraintViolation1 -> "must not be empty"
                                 .equals(databaseConfigurationConstraintViolation1.getMessage())
-                                && "password".equals(databaseConfigurationConstraintViolation1.getPropertyPath().toString()))
-                        .findFirst();
+                                && "password".equals(databaseConfigurationConstraintViolation1.getPropertyPath()
+                                .toString())).findFirst();
 
         assertTrue(constraintViolationOptional.isPresent());
 
@@ -86,8 +88,7 @@ public class OpenBankDatabaseConfigurationTest {
                         .filter(databaseConfigurationConstraintViolation1 -> "must not be null"
                                 .equals(databaseConfigurationConstraintViolation1.getMessage())
                                 && "driverclassname".equals(databaseConfigurationConstraintViolation1.getPropertyPath()
-                                .toString()))
-                        .findFirst();
+                                .toString())).findFirst();
 
         assertTrue(constraintViolationOptional.isPresent());
 

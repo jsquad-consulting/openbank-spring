@@ -53,12 +53,12 @@ public class GetClientInformationRestController {
     public ResponseEntity<ClientApi> getClientInformation(@Parameter(description = "The person identification number",
             example = "191212121212", required = true) @PathVariable @PersonIdentificationNumberConstraint
                                                                   String personIdentification) {
-            ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(personIdentification);
+        ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(personIdentification);
 
-            if (clientApi == null) {
-                throw new ClientNotFoundException("Client not found.");
-            }
+        if (clientApi == null) {
+            throw new ClientNotFoundException("Client not found.");
+        }
 
-            return ResponseEntity.ok(clientApi);
+        return ResponseEntity.ok(clientApi);
     }
 }

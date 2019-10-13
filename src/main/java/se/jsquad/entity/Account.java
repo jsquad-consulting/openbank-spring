@@ -16,7 +16,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "ACCOUNT")
-@NamedQuery(name = Account.ACCOUNT_ID, query = "SELECT a FROM Account a WHERE a.accountNumber =:" + Account.PARAM_ACCOUNT_NUMBER)
+@NamedQuery(name = Account.ACCOUNT_ID, query =
+        "SELECT a FROM Account a WHERE a.accountNumber =:" + Account.PARAM_ACCOUNT_NUMBER)
 public class Account implements Serializable {
     public static final String ACCOUNT_ID = "ACCOUNT_ID";
     public static final String PARAM_ACCOUNT_NUMBER = "PARAM_ACCOUNT_NUMBER";

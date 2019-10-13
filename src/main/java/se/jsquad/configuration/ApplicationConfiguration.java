@@ -227,7 +227,7 @@ public class ApplicationConfiguration {
 
     @Bean("transactionTemplateOpenBank")
     TransactionTemplate getTransactionTemplateOpenBank(@Qualifier("transactionManagerOpenBank") JpaTransactionManager
-                                                       jpaTransactionManager) {
+                                                               jpaTransactionManager) {
         return getTransactionTemplate(jpaTransactionManager);
     }
 
@@ -305,7 +305,8 @@ public class ApplicationConfiguration {
                         "This is an OpenBank server. You can find out more about OpenBank at " +
                                 "[http://jsquad.se](http://jsquad.se).")
                         .termsOfService("http://jsquad.se/terms/")
-                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0.html")))
+                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0" +
+                                ".html")))
                 .addServersItem(new Server().description("Local OpenBank API server.").url("http://localhost:8080"));
     }
 }
