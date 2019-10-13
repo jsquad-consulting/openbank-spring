@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.business.OpenBankService;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.date.time.DateTime;
 import se.jsquad.exception.ClientNotFoundException;
 import se.jsquad.validator.PersonIdentificationNumberConstraint;
+
+import java.time.Instant;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -61,4 +64,27 @@ public class GetClientInformationRestController {
 
         return ResponseEntity.ok(clientApi);
     }
+
+    @GetMapping(value = "/date/time/{dateTime}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "Get date time",
+            description = "Get the date time RFC3339 string",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "The date time", content = @Content(mediaType =
+                            MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = DateTime.class))),
+                    @ApiResponse(responseCode = "400",
+                            description = "Date time", content = @Content(mediaType =
+                            MediaType.TEXT_PLAIN_VALUE,
+                            schema = @Schema(example = "Invalid date time format."))),
+                    @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
+                    @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
+                            example = "Severe system failure has occured!")))})
+    public ResponseEntity<DateTime> getDateTime(@Parameter(description = "The get date time.",
+            example = "2019-11-01T00:00:00ZZ", required = true) @PathVariable("dateTime") String dateTime) {
+        DateTime dateTimeResponse = new DateTime();
+        dateTimeResponse.setDateTime(Instant.parse(dateTime).toString());
+        return ResponseEntity.ok(dateTimeResponse);
+    }
+
 }
