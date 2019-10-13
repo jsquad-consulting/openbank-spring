@@ -12,7 +12,8 @@ public class JpaConfiguration {
     @NotEmpty
     private String databasePlatform;
 
-    @Pattern(regexp = "validate")
+    @NotNull
+    @Pattern(regexp = "^validate$")
     private String entityValidation;
 
     private String databaseAction;
