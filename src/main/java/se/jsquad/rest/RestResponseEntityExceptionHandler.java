@@ -20,7 +20,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
-    public ResponseEntity<Object> handleBadRequest(final RuntimeException runtimeException, final WebRequest webRequest) {
+    public ResponseEntity<Object> handleBadRequest(final RuntimeException runtimeException,
+                                                   final WebRequest webRequest) {
         String message;
 
         if (runtimeException instanceof ConstraintViolationException) {
@@ -53,7 +54,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<Object> handleGlobalException(final RuntimeException runtimeException, final WebRequest webRequest) {
+    public ResponseEntity<Object> handleGlobalException(final RuntimeException runtimeException,
+                                                        final WebRequest webRequest) {
         return getObjectResponseEntity(runtimeException, webRequest);
     }
 

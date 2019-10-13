@@ -51,7 +51,8 @@ public class GetClientInformationSoapController {
         }
 
         try {
-            Client client = clientRepository.getClientByPersonIdentification(getClientRequest.getPersonIdentification());
+            Client client =
+                    clientRepository.getClientByPersonIdentification(getClientRequest.getPersonIdentification());
 
             createClientType(getClientResponse, client);
             getClientResponse.setStatus(StatusType.OK);

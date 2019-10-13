@@ -17,7 +17,8 @@ public class OpenBankJpaConfigurationTest {
 
         // When
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<JpaConfiguration>> constraintViolationSet = validator.validate(openBankJpaConfiguration);
+        Set<ConstraintViolation<JpaConfiguration>> constraintViolationSet = validator
+                .validate(openBankJpaConfiguration);
 
         // Then
         assertEquals(3, constraintViolationSet.size());
@@ -25,8 +26,8 @@ public class OpenBankJpaConfigurationTest {
         ConstraintViolation<JpaConfiguration> jpaConfigurationConstraintViolation = constraintViolationSet.stream()
                 .filter(jpaConfigurationConstraintViolation1 -> "must not be null"
                         .equals(jpaConfigurationConstraintViolation1.getMessage())
-                        && "databasePlatform".equals(jpaConfigurationConstraintViolation1.getPropertyPath().toString()))
-                .findFirst().get();
+                        && "databasePlatform".equals(jpaConfigurationConstraintViolation1.getPropertyPath()
+                        .toString())).findFirst().get();
 
         assertEquals("must not be null", jpaConfigurationConstraintViolation.getMessage());
         assertEquals("databasePlatform", jpaConfigurationConstraintViolation.getPropertyPath().toString());
@@ -41,7 +42,8 @@ public class OpenBankJpaConfigurationTest {
         jpaConfigurationConstraintViolation = constraintViolationSet.stream()
                 .filter(jpaConfigurationConstraintViolation1 -> "must not be null"
                         .equals(jpaConfigurationConstraintViolation1.getMessage())
-                        && "entityValidation".equals(jpaConfigurationConstraintViolation1.getPropertyPath().toString()))
+                        && "entityValidation".equals(jpaConfigurationConstraintViolation1.getPropertyPath()
+                        .toString()))
                 .findFirst().get();
 
         assertEquals("must not be null", jpaConfigurationConstraintViolation.getMessage());
@@ -61,7 +63,8 @@ public class OpenBankJpaConfigurationTest {
                 .filter(jpaConfigurationConstraintViolation1 -> "must match \"^validate$\""
                         .equals(jpaConfigurationConstraintViolation1.getMessage())).findFirst().get();
 
-        assertEquals("entityValidation", jpaConfigurationConstraintViolation.getPropertyPath().toString());
+        assertEquals("entityValidation", jpaConfigurationConstraintViolation.getPropertyPath()
+                .toString());
 
         // Given
         openBankJpaConfiguration.setDatabasePlatform("test");
