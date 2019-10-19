@@ -68,9 +68,36 @@ http://localhost:8080/swagger-ui.html
 http://spec.openapis.org/oas/v3.0.1
 
 
-# Test the RESTful contracts
+## Test the RESTful contracts
 
 Load the src/main/resources/schema/OpenBankAPIv1.yaml file with the 
 http://editor.swagger.io/ editor to easily test the RESTful 
 contracts.
 
+## Work with SSL
+
+[Working with SSL](doc/working_with_ssl.MD)
+
+## For SSL encryption for the application
+
+Following commands was used:
+
+````bash
+# Generate private key and private csr file
+openssl req -newkey rsa:2048 -nodes -keyout jsquad.key -out jsquad.csr
+
+# Generate self signed key
+openssl x509 -signkey jsquad.key -in jsquad.csr -req -days 365 -out jsquad.crt
+
+# Generate PKCS12 key
+openssl pkcs12 -inkey jsquad.key -in jsquad.crt -export -out jsquad.pfx
+````
+
+### Generate JKS encryption for integration test communicating with SSL encrypted OpenBank app server
+
+````bash
+openssl pkcs12 -export -in jsquad.crt -inkey jsquad.key -certfile jsquad.crt -name "jsquad" -out jsquad.p12
+
+keytool -importkeystore  -srckeystore jsquad.p12 -destkeystore jsquad.jks -srcstoretype PKCS12 -deststoretype jks \
+-srcstorepass \<secret password\> -deststorepass test1234 -destkeypass test1234
+````
