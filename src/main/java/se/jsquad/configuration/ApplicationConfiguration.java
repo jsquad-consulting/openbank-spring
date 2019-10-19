@@ -304,11 +304,11 @@ public class ApplicationConfiguration {
                 .components(new Components().addSecuritySchemes("basicScheme",
                         new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")))
                 .info(new Info().title("OpenBank API").version(appVersion).description(
-                        "This is an OpenBank server. You can find out more about OpenBank at " +
+                        "This is an local HTTPS OpenBank server. You can find out more about OpenBank at " +
                                 "[http://jsquad.se](http://jsquad.se).")
                         .termsOfService("http://jsquad.se/terms/")
                         .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0" +
                                 ".html")))
-                .addServersItem(new Server().description("Local OpenBank API server.").url("http://localhost:8080"));
+                .addServersItem(new Server().description("Local OpenBank API server.").url("https://localhost:8080"));
     }
 }

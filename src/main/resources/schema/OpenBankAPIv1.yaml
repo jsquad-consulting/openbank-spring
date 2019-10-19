@@ -1,15 +1,15 @@
 openapi: 3.0.1
 info:
   title: OpenBank API
-  description: This is an OpenBank server. You can find out more about OpenBank at
-    [http://jsquad.se](http://jsquad.se).
+  description: This is an local HTTPS OpenBank server. You can find out more about
+    OpenBank at [http://jsquad.se](http://jsquad.se).
   termsOfService: http://jsquad.se/terms/
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: "1"
 servers:
-- url: http://localhost:8080
+- url: https://localhost:8080
   description: Local OpenBank API server.
 paths:
   /api/client/info/{personIdentification}:

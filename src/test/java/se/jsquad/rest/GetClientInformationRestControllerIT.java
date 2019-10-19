@@ -33,12 +33,15 @@ public class GetClientInformationRestControllerIT {
             .withLocalCompose(true);
 
     @BeforeAll
-    static void setupDocker() {
+    static void setupDocker()  {
         dockerComposeContainer.start();
 
-        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", 8080);
+        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", 8080);
         RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", 8080);
         RestAssured.basePath = "/api";
+
+        RestAssured.trustStore("src/main/resources/ssl/truststore/jsquad.jks", "test1234");
+
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
