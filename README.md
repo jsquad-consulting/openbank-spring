@@ -42,7 +42,7 @@ java -jar target/openbank-spring-0.0.1-SNAPSHOT.jar
 
 ````bash
 # With Docker
-docker run --rm -p 8080:8080 -p 9990:9990 -it --name openbank_container openbank
+docker run --rm -p 8443:8443 -p 9990:9990 -it --name openbank_container openbank
 # With Docker Compose (build included) with env dependicies
 docker-compose -f docker-compose.yaml up --build --force-recreate
 # With Docker Compose (build included) with no env dependicies
@@ -59,9 +59,7 @@ docker-compose -f docker-compose-pipeline.yaml up --build --force-recreate
 
 ## Access on the fly RESTful API code generation
 
-http://localhost:8080/v1/OpenBankAPI
-
-http://localhost:8080/swagger-ui.html
+https://localhost:8443/v1/OpenBankAPI
 
 ## Reference to OpenApi version 3.0.1 for documentation tasks
 
@@ -96,8 +94,6 @@ openssl pkcs12 -inkey jsquad.key -in jsquad.crt -export -out jsquad.pfx
 ### Generate JKS encryption for integration test communicating with SSL encrypted OpenBank app server
 
 ````bash
-openssl pkcs12 -export -in jsquad.crt -inkey jsquad.key -certfile jsquad.crt -name "jsquad" -out jsquad.p12
-
-keytool -importkeystore  -srckeystore jsquad.p12 -destkeystore jsquad.jks -srcstoretype PKCS12 -deststoretype jks \
+keytool -importkeystore -srckeystore jsquad.pfx -destkeystore jsquad.jks -srcstoretype PKCS12 -deststoretype JKS \
 -srcstorepass \<secret password\> -deststorepass test1234 -destkeypass test1234
 ````

@@ -33,9 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:configuration/configuration_test.yaml",
-        "classpath:configuration/openbank_jpa.yaml",
-        "classpath:configuration/security_jpa.yaml"}, properties = {"jasypt.encryptor.password = testencryption"})
+        "classpath:test/configuration/configuration_test.yaml",
+        "classpath:test/configuration/openbank_jpa.yaml",
+        "classpath:test/configuration/security_jpa.yaml"},
+        properties = {"jasypt.encryptor.password = testencryption"})
 @SpringBootTest
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class GetClientInformationRestControllerImplTest {

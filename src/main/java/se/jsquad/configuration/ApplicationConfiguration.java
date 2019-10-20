@@ -309,6 +309,6 @@ public class ApplicationConfiguration {
                         .termsOfService("http://jsquad.se/terms/")
                         .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0" +
                                 ".html")))
-                .addServersItem(new Server().description("Local OpenBank API server.").url("https://localhost:8080"));
+                .addServersItem(new Server().description("Local OpenBank API server.").url("https://localhost:8443"));
     }
 }
