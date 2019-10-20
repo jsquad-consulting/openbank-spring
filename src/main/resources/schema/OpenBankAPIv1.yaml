@@ -9,7 +9,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: "1"
 servers:
-- url: https://localhost:8080
+- url: https://localhost:8443
   description: Local OpenBank API server.
 paths:
   /api/client/info/{personIdentification}:

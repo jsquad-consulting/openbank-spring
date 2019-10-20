@@ -15,9 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
-        "classpath:configuration/configuration_test.yaml",
-        "classpath:configuration/openbank_jpa.yaml",
-        "classpath:configuration/security_jpa.yaml"}, properties = {"jasypt.encryptor.password = testencryption"})
+        "classpath:test/configuration/configuration_test.yaml",
+        "classpath:test/configuration/openbank_jpa.yaml",
+        "classpath:test/configuration/security_jpa.yaml"},
+        properties = {"jasypt.encryptor.password = testencryption"})
 public class AppPropertyImplTest {
     @MockBean
     private BrokerService brokerService;

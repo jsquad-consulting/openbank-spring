@@ -25,9 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GetClientInformationRestControllerIT {
     private Gson gson = new Gson();
 
+    private static int servicePort = 8443;
+
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
             new File("docker-compose.yaml"))
-            .withExposedService("openbank_1", 8080)
+            .withExposedService("openbank_1", servicePort)
             .withPull(false)
             .withTailChildContainers(false) // set to true for trace purpose when things fails
             .withLocalCompose(true);
@@ -36,11 +38,11 @@ public class GetClientInformationRestControllerIT {
     static void setupDocker()  {
         dockerComposeContainer.start();
 
-        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", 8080);
-        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", 8080);
+        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
+        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
         RestAssured.basePath = "/api";
 
-        RestAssured.trustStore("src/main/resources/ssl/truststore/jsquad.jks", "test1234");
+        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks", "test1234");
 
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
