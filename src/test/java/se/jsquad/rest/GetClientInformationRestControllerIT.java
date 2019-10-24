@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,13 @@ public class GetClientInformationRestControllerIT {
         RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
         RestAssured.basePath = "/api";
 
-        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks", "test1234");
+        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
+
+        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+        textEncryptor.setPassword(System.getenv("MASTER_KEY"));
+
+        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
+                textEncryptor.decrypt(encryptedPassword));
 
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
