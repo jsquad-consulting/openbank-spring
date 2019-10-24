@@ -13,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(locations = {"classpath:application.properties", "classpath:activemq.properties",
+@TestPropertySource(locations = {"classpath:test/application.properties",
+        "classpath:activemq.properties",
         "classpath:test/configuration/configuration_test.yaml",
         "classpath:test/configuration/openbank_jpa.yaml",
         "classpath:test/configuration/security_jpa.yaml"},
