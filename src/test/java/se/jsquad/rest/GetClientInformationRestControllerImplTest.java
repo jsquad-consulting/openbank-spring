@@ -1,5 +1,6 @@
 package se.jsquad.rest;
 
+import com.google.gson.Gson;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 
@@ -55,6 +57,75 @@ public class GetClientInformationRestControllerImplTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    private Gson gson = new Gson();
+
+    @Test
+    public void testGetClientImformationByRequestBody() throws Exception {
+        // Given
+        ClientRequest clientRequest = new ClientRequest();
+        clientRequest.setPersonIdentificationNumber("191212121212");
+
+        // When
+        ResponseEntity<ClientApi> responseEntity =
+                getClientInformationRESTController.getClientInformationByRequestBody(clientRequest);
+
+        // Then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        ClientApi clientApi = responseEntity.getBody();
+
+        assertEquals(clientRequest.getPersonIdentificationNumber(), clientApi.getPerson().getPersonIdentification());
+        assertEquals("John", clientApi.getPerson().getFirstName());
+        assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+
+        assertEquals(500, clientApi.getClientType().getRating());
+
+        AccountApi accountApi = clientApi.getAccountList().get(0);
+
+        assertEquals(500, accountApi.getBalance());
+
+        AccountTransactionApi accountTransactionApi = accountApi.getAccountTransactionList().get(0);
+
+        assertEquals("500$ in deposit", accountTransactionApi.getMessage());
+        assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
+
+        // Given
+        clientRequest.setPersonIdentificationNumber("");
+
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+        // When and then
+        mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(clientRequest))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Person identification number must be twelve digits."));
+
+        // Given
+        clientRequest.setPersonIdentificationNumber(null);
+
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+        // When and then
+        mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(clientRequest))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Person identification number must be twelve digits."));
+
+        // Given
+        clientRequest = null;
+
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+        // When and then
+        mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(clientRequest))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(""));
+    }
 
     @Test
     public void testGetClientInformation() {

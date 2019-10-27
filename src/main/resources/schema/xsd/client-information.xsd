@@ -8,6 +8,25 @@
            xmlns:annox="http://annox.dev.java.net"
            jaxb:extensionBindingPrefixes="annox">
 
+    <xs:complexType name="ClientRequest">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                    "The client request body.")</annox:annotate>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xs:sequence>
+            <xs:element name="personIdentificationNumber" type="xs:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "The client person identification number.", example = "191212121212")</annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:complexType name="ClientApi">
         <xs:sequence>
             <xs:element name="person" type="tns:PersonApi"/>

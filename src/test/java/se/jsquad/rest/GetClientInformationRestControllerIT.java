@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.TypeApi;
 
 import java.io.File;
@@ -114,5 +115,63 @@ public class GetClientInformationRestControllerIT {
         assertEquals(HttpStatus.BAD_REQUEST, HttpStatus.valueOf(response.getStatusCode()));
         assertEquals("Person identification number must be twelve digits.",
                 response.getBody().print());
+    }
+
+    @Test
+    public void testGetClientInformationByClientRequestBody() {
+        // Given
+        ClientRequest clientRequest = new ClientRequest();
+        clientRequest.setPersonIdentificationNumber("191212121212");
+
+        // When
+        Response response = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .body(gson.toJson(clientRequest))
+                .get(URI.create("/get/client/info/")).andReturn();
+
+        ClientApi clientApi = gson.fromJson(response.getBody().print(), ClientApi.class);
+
+        // Then
+        assertEquals(200, response.getStatusCode());
+
+        assertEquals(clientRequest.getPersonIdentificationNumber(), clientApi.getPerson().getPersonIdentification());
+        assertEquals("John", clientApi.getPerson().getFirstName());
+        assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals(clientRequest.getPersonIdentificationNumber(), clientApi.getPerson().getPersonIdentification());
+        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+
+        assertEquals(1, clientApi.getAccountList().size());
+        assertEquals(500.0, clientApi.getAccountList().get(0).getBalance());
+
+        assertEquals(1, clientApi.getAccountList().get(0).getAccountTransactionList().size());
+        assertEquals("DEPOSIT", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getTransactionType().name());
+        assertEquals("500$ in deposit", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getMessage());
+
+        assertEquals(TypeApi.REGULAR, clientApi.getClientType().getType());
+        assertEquals(500, clientApi.getClientType().getRating());
+    }
+
+    @Test
+    public void testGetClientInformationWithRequestBodyConstraints() {
+        // Given
+        ClientRequest clientRequest = null;
+
+        // When
+        Response response = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .body(gson.toJson(clientRequest))
+                .get(URI.create("/get/client/info/")).andReturn();
+
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, HttpStatus.valueOf(response.getStatusCode()));
     }
 }
