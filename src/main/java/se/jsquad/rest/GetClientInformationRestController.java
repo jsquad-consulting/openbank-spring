@@ -71,6 +71,8 @@ public class GetClientInformationRestController {
     @GetMapping(value = "/get/client/info/", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces =
             {MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "Get client by client request body",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "ClientRequest body.",
+                    content = @Content(schema = @Schema(implementation = ClientRequest.class)), required = true),
             description = "Get the ClientAPI response object with uniqueue personal identification number as " +
                     "part of the request body.",
             responses = {
@@ -89,11 +91,9 @@ public class GetClientInformationRestController {
                     @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
                     @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
                             example = "Severe system failure has occured!")))})
-    public ResponseEntity<ClientApi> getClientInformationByRequestBody(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "ClientRequest body.",
-                    content = @Content(schema = @Schema(implementation = ClientRequest.class)), required = true)
-            @ClientRequestBodyConstraint
-            @RequestBody ClientRequest clientRequest) {
+    public ResponseEntity<ClientApi> getClientInformationByRequestBody(@Parameter(hidden = true)
+                                                                       @ClientRequestBodyConstraint
+                                                                       @RequestBody ClientRequest clientRequest) {
         ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(clientRequest
                 .getPersonIdentificationNumber());
 
@@ -101,7 +101,7 @@ public class GetClientInformationRestController {
             throw new ClientNotFoundException("Client not found.");
         }
 
-         return ResponseEntity.ok(clientApi);
+        return ResponseEntity.ok(clientApi);
     }
 
     @GetMapping(value = "/date/time/{dateTime}", produces = {MediaType.APPLICATION_JSON_VALUE})

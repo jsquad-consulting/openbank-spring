@@ -19,10 +19,12 @@ paths:
         number as part of the request body.
       operationId: getClientInformationByRequestBody
       requestBody:
+        description: ClientRequest body.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ClientRequest'
+        required: true
       responses:
         200:
           description: The client
@@ -139,6 +141,16 @@ paths:
                 type: string
 components:
   schemas:
+    ClientRequest:
+      required:
+      - personIdentificationNumber
+      type: object
+      properties:
+        personIdentificationNumber:
+          type: string
+          description: The client person identification number.
+          example: "191212121212"
+      description: The client request body.
     AccountApi:
       type: object
       properties:
@@ -225,16 +237,6 @@ components:
           example: john.doe@mail.com
       description: PersonAPI contains person's firstname, lastname and email address
         information.
-    ClientRequest:
-      required:
-      - personIdentificationNumber
-      type: object
-      properties:
-        personIdentificationNumber:
-          type: string
-          description: The client person identification number.
-          example: "191212121212"
-      description: The client request body.
     DateTime:
       required:
       - dateTime
