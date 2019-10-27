@@ -11,12 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.business.OpenBankService;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.ClientRequest;
 import se.jsquad.date.time.DateTime;
 import se.jsquad.exception.ClientNotFoundException;
+import se.jsquad.validator.ClientRequestBodyConstraint;
 import se.jsquad.validator.PersonIdentificationNumberConstraint;
 
 import java.time.Instant;
@@ -63,6 +66,42 @@ public class GetClientInformationRestController {
         }
 
         return ResponseEntity.ok(clientApi);
+    }
+
+    @GetMapping(value = "/get/client/info/", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces =
+            {MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "Get client by client request body",
+            description = "Get the ClientAPI response object with uniqueue personal identification number as " +
+                    "part of the request body.",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "The client", content = @Content(mediaType =
+                            MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ClientApi.class))),
+                    @ApiResponse(responseCode = "400",
+                            description = "Invalid personal identification number", content = @Content(mediaType =
+                            MediaType.TEXT_PLAIN_VALUE,
+                            schema = @Schema(example = "Invalid personal identification number."))),
+                    @ApiResponse(responseCode = "404",
+                            description = "Client not found.", content = @Content(mediaType =
+                            MediaType.TEXT_PLAIN_VALUE,
+                            schema = @Schema(example = "Client not found."))),
+                    @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
+                    @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
+                            example = "Severe system failure has occured!")))})
+    public ResponseEntity<ClientApi> getClientInformationByRequestBody(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "ClientRequest body.",
+                    content = @Content(schema = @Schema(implementation = ClientRequest.class)), required = true)
+            @ClientRequestBodyConstraint
+            @RequestBody ClientRequest clientRequest) {
+        ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(clientRequest
+                .getPersonIdentificationNumber());
+
+        if (clientApi == null) {
+            throw new ClientNotFoundException("Client not found.");
+        }
+
+         return ResponseEntity.ok(clientApi);
     }
 
     @GetMapping(value = "/date/time/{dateTime}", produces = {MediaType.APPLICATION_JSON_VALUE})
