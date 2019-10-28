@@ -10,17 +10,24 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.model.Delay;
+import org.mockserver.model.Header;
 import org.springframework.http.HttpStatus;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.TypeApi;
+import se.jsquad.client.info.WorldApiResponse;
 
 import java.io.File;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
@@ -32,12 +39,13 @@ public class GetClientInformationRestControllerIT {
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
             new File("docker-compose.yaml"))
             .withExposedService("openbank_1", servicePort)
+            .withExposedService("worldapi_1", 1080)
             .withPull(false)
             .withTailChildContainers(false) // set to true for trace purpose when things fails
             .withLocalCompose(true);
 
     @BeforeAll
-    static void setupDocker()  {
+    static void setupDocker() {
         dockerComposeContainer.start();
 
         RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
@@ -59,6 +67,40 @@ public class GetClientInformationRestControllerIT {
     static void destroyDocker() {
         dockerComposeContainer.stop();
     }
+
+    @Test
+    public void testGetHelloWorldRestResponse() {
+        // Given
+        WorldApiResponse worldApiResponse = new WorldApiResponse();
+        worldApiResponse.setMessage("Hello world");
+
+        new MockServerClient(dockerComposeContainer.getServiceHost("worldapi_1", 1080),
+                dockerComposeContainer.getServicePort("worldapi_1", 1080))
+                .when(request()
+                        .withMethod("GET")
+                        .withPath("/api/get/hello/world"))
+                        .respond(response()
+                        .withStatusCode(200)
+                        .withHeaders(new Header("Content-Type", "application/json"))
+                        .withBody(gson.toJson(worldApiResponse))
+                        .withDelay(new Delay(TimeUnit.SECONDS, 1)));
+
+        // When
+        Response response = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .get(URI.create("/get/hello/world")).andReturn();
+
+        // Then
+        WorldApiResponse worldApiResponseResult = gson.fromJson(response.getBody().print(), WorldApiResponse.class);
+
+        assertEquals(200, response.getStatusCode());
+
+        assertEquals("Hello world", worldApiResponseResult.getMessage());
+    }
+
 
     @Test
     public void testGetClientInformation() {

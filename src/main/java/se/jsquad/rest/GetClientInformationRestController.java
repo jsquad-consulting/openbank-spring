@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.business.OpenBankService;
+import se.jsquad.business.WebClientBusiness;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.ClientRequest;
+import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.date.time.DateTime;
 import se.jsquad.exception.ClientNotFoundException;
 import se.jsquad.validator.ClientRequestBodyConstraint;
@@ -30,10 +32,28 @@ import java.time.Instant;
 public class GetClientInformationRestController {
     private Logger logger;
     private OpenBankService openBankService;
+    private WebClientBusiness webClientBusiness;
 
-    public GetClientInformationRestController(Logger logger, OpenBankService openBankService) {
+    public GetClientInformationRestController(Logger logger, OpenBankService openBankService, WebClientBusiness
+            webClientBusiness) {
         this.logger = logger;
         this.openBankService = openBankService;
+        this.webClientBusiness = webClientBusiness;
+    }
+
+    @GetMapping(value = "/get/hello/world", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Operation(hidden = false, summary = "Get hello world by the remote http server",
+            description = "Get The hello world by the remote HTTP REST server",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Hello world", content = @Content(mediaType =
+                            MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = WorldApiResponse.class))),
+                    @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
+                    @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
+                            example = "Severe system failure has occured!")))})
+    public ResponseEntity<WorldApiResponse> getHelloWorld() {
+        return ResponseEntity.ok(webClientBusiness.getWorldApiResponse());
     }
 
     @GetMapping(value = "/client/info/{personIdentification}", produces = {MediaType.APPLICATION_JSON_VALUE})

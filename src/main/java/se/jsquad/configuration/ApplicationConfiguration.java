@@ -27,6 +27,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.connection.SingleConnectionFactory;
@@ -42,18 +44,21 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.ws.config.annotation.EnableWs;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.component.database.OpenBankDatabaseConfiguration;
 import se.jsquad.component.database.SecurityDatabaseConfiguration;
 import se.jsquad.component.jpa.OpenBankJpaConfiguration;
 import se.jsquad.component.jpa.SecurityJpaConfiguration;
+import se.jsquad.component.webclient.WorldWebClientConfiguration;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.persistence.EntityManagerFactory;
 import javax.validation.Validator;
+import java.util.Collections;
 import java.util.Properties;
 
 @Configuration
@@ -67,7 +72,7 @@ import java.util.Properties;
 @EnableAspectJAutoProxy
 @EnableEncryptableProperties
 @EnableConfigurationProperties(value = {OpenBankDatabaseConfiguration.class, SecurityDatabaseConfiguration.class,
-        SecurityJpaConfiguration.class, OpenBankJpaConfiguration.class})
+        SecurityJpaConfiguration.class, OpenBankJpaConfiguration.class, WorldWebClientConfiguration.class})
 public class ApplicationConfiguration {
     private Environment environment;
     private OpenBankDatabaseConfiguration openBankDatabaseConfiguration;
@@ -75,19 +80,22 @@ public class ApplicationConfiguration {
     private SecurityJpaConfiguration securityJpaConfiguration;
     private OpenBankJpaConfiguration openBankJpaConfiguration;
     private FlywayDatabaseMigration flywayDatabaseMigration;
+    private WorldWebClientConfiguration worldWebClientConfiguration;
     private boolean migratedOpenBank = false;
 
     public ApplicationConfiguration(Environment environment, OpenBankDatabaseConfiguration
             openBankDatabaseConfiguration, SecurityDatabaseConfiguration securityDatabaseConfiguration,
                                     OpenBankJpaConfiguration openBankJpaConfiguration,
                                     SecurityJpaConfiguration securityJpaConfiguration,
-                                    FlywayDatabaseMigration flywayDatabaseMigration) {
+                                    FlywayDatabaseMigration flywayDatabaseMigration,
+                                    WorldWebClientConfiguration worldWebClientConfiguration) {
         this.environment = environment;
         this.openBankDatabaseConfiguration = openBankDatabaseConfiguration;
         this.securityDatabaseConfiguration = securityDatabaseConfiguration;
         this.flywayDatabaseMigration = flywayDatabaseMigration;
         this.securityJpaConfiguration = securityJpaConfiguration;
         this.openBankJpaConfiguration = openBankJpaConfiguration;
+        this.worldWebClientConfiguration = worldWebClientConfiguration;
     }
 
     @Bean("logger")
@@ -296,6 +304,14 @@ public class ApplicationConfiguration {
         brokerService.start();
 
         return brokerService;
+    }
+
+    @Bean("WorldApiClient")
+    WebClient getWorldApiClient() {
+        return WebClient.builder().baseUrl(worldWebClientConfiguration.getBaseUrl())
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultUriVariables(Collections.singletonMap("url", worldWebClientConfiguration.getBaseUrl()))
+                .build();
     }
 
     @Bean

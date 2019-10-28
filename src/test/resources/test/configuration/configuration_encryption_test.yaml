@@ -7,3 +7,5 @@ security.datasource.url: jdbc:h2:mem:securitydb
 security.datasource.username: security_user
 security.datasource.password: ENC(BQTo3e4DqD/TddLkfKufj5sEqurb3dPdnbukNo/jgsw=)
 security.datasource.driverclassname: org.h2.Driver
+
+world.webclient.baseUrl: http://world.mock/api

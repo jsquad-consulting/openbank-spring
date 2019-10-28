@@ -123,4 +123,10 @@
             <xs:element name="junk" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:complexType name="WorldApiResponse">
+        <xs:sequence>
+            <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>

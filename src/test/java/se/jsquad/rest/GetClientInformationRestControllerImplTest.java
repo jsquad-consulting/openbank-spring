@@ -1,13 +1,21 @@
 package se.jsquad.rest;
 
 import com.google.gson.Gson;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.apache.activemq.broker.BrokerService;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,16 +26,22 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.reactive.function.client.WebClient;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.TransactionTypeApi;
+import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.component.database.FlywayDatabaseMigration;
+import se.jsquad.configuration.ApplicationConfiguration;
 
 import javax.validation.ConstraintViolationException;
+import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -43,6 +57,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class GetClientInformationRestControllerImplTest {
+    static String baseUrl;
+
+    @Configuration
+    @Import(ApplicationConfiguration.class)
+    public static class TestConfig {
+        @Bean("WorldApiClient")
+        WebClient getWorldApiClient() {
+            return WebClient.builder().baseUrl(baseUrl)
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .defaultUriVariables(Collections.singletonMap("url", baseUrl))
+                    .build();
+        }
+    }
+
+    private static MockWebServer mockBackEnd;
+
+    @BeforeAll
+    public static void init() throws IOException {
+        mockBackEnd = new MockWebServer();
+        mockBackEnd.start();
+        baseUrl = String.format("http://localhost:%s",
+                mockBackEnd.getPort());
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException {
+        mockBackEnd.shutdown();
+    }
+
     @MockBean
     private BrokerService brokerService;
 
@@ -59,6 +102,28 @@ public class GetClientInformationRestControllerImplTest {
     private WebApplicationContext context;
 
     private Gson gson = new Gson();
+
+    @Test
+    public void testGetHelloWorldByMockedRemoteRestfulServer() {
+        // Given
+        WorldApiResponse worldApiResponse = new WorldApiResponse();
+        worldApiResponse.setMessage("Hello world");
+        mockBackEnd.enqueue(new MockResponse()
+                .setBody(gson.toJson(worldApiResponse))
+                .addHeader("Content-Type", "application/json"));
+
+        // When
+        ResponseEntity<WorldApiResponse> worldApiResponseResponseEntity =
+                getClientInformationRESTController.getHelloWorld();
+
+        // Then
+        assertEquals(HttpStatus.OK, worldApiResponseResponseEntity.getStatusCode());
+
+        WorldApiResponse worldApiResponseResult = worldApiResponseResponseEntity.getBody();
+
+        assertNotNull(worldApiResponseResult);
+        assertEquals("Hello world", worldApiResponseResult.getMessage());
+    }
 
     @Test
     public void testGetClientImformationByRequestBody() throws Exception {
@@ -168,7 +233,6 @@ public class GetClientInformationRestControllerImplTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Person identification number must be twelve digits."));
-
     }
 
     @Test
