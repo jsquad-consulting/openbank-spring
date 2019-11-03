@@ -6,8 +6,9 @@ services:
       - 1080
     ports:
       - 1080:1080
-    environment:
-      - LOG_LEVEL=INFO
+    volumes:
+      - ./src/test/resources/test/ssl/truststore:/ssl
+    entrypoint: /opt/mockserver/run_mockserver.sh -serverPort 1080 -logLevel INFO -jvmOptions "-Dmockserver.javaKeyStoreFilePath='/ssl/jsquad.jks' -Dmockserver.javaKeyStorePassword='test1234' -Dmockserver.javaKeyStoreType='jks'"
   openbankdb:
     image: mysql:8.0.17
     environment:
