@@ -2,6 +2,9 @@ package se.jsquad.configuration;
 
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -29,6 +32,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.connection.SingleConnectionFactory;
@@ -46,6 +50,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.ws.config.annotation.EnableWs;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.TcpClient;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.component.database.OpenBankDatabaseConfiguration;
 import se.jsquad.component.database.SecurityDatabaseConfiguration;
@@ -58,6 +64,7 @@ import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.persistence.EntityManagerFactory;
 import javax.validation.Validator;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -307,8 +314,17 @@ public class ApplicationConfiguration {
     }
 
     @Bean("WorldApiClient")
-    WebClient getWorldApiClient() {
-        return WebClient.builder().baseUrl(worldWebClientConfiguration.getBaseUrl())
+    WebClient getWorldApiClient() throws IOException {
+        SslContext sslContext = SslContextBuilder
+                .forClient()
+                .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                .build();
+        TcpClient tcpClient =
+                TcpClient.create().secure(sslProviderBuilder -> sslProviderBuilder.sslContext(sslContext));
+        HttpClient httpClient = HttpClient.from(tcpClient);
+
+        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient))
+                .baseUrl(worldWebClientConfiguration.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultUriVariables(Collections.singletonMap("url", worldWebClientConfiguration.getBaseUrl()))
                 .build();

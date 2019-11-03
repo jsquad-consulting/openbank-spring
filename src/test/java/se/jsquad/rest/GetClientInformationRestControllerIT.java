@@ -101,7 +101,6 @@ public class GetClientInformationRestControllerIT {
         assertEquals("Hello world", worldApiResponseResult.getMessage());
     }
 
-
     @Test
     public void testGetClientInformation() {
         // Given
