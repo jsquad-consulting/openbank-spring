@@ -7,7 +7,8 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
+import org.springframework.test.context.web.WebAppConfiguration;
 import se.jsquad.configuration.ApplicationConfiguration;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
@@ -23,7 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigWebContextLoader.class)
 @Execution(ExecutionMode.SAME_THREAD)
 public class StartupOpenBankServiceImplTest {
     @Autowired
