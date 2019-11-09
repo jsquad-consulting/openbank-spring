@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
            xmlns:tns="http://jsquad.se/client/info"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           jaxb:version="2.1"
+           xmlns:annox="http://annox.dev.java.net"
+           jaxb:extensionBindingPrefixes="annox"
            targetNamespace="http://jsquad.se/client/info" version="1.0">
 
     <xs:complexType name="ClientApi">
@@ -31,7 +36,14 @@
 
     <xs:complexType name="PersonApi">
         <xs:sequence>
-            <xs:element name="personIdentification" type="xs:string"/>
+            <xs:element name="personIdentification" type="xs:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "The client person identification number.", example = "191212121212")</annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
             <xs:element name="firstName" type="xs:string"/>
             <xs:element name="lastName" type="xs:string"/>
             <xs:element name="mail" type="xs:string"/>

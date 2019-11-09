@@ -32,12 +32,20 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.ws.config.annotation.EnableWs;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.persistence.EntityManagerFactory;
 import javax.validation.Validator;
+import java.util.Collections;
 
 @Configuration
 @EnableTransactionManagement
@@ -46,6 +54,7 @@ import javax.validation.Validator;
 @EnableAsync
 @EnableJms
 @EnableWebMvc
+@EnableSwagger2
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
 public class ApplicationConfiguration {
@@ -147,5 +156,27 @@ public class ApplicationConfiguration {
         brokerService.start();
 
         return brokerService;
+    }
+
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .host("localhost:8080/openbank-spring-1.0-SNAPSHOT");
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfo(
+                "OpenBank API",
+                "OpenBank API.",
+                "1",
+                "http://jsquad.se/terms/",
+                new Contact("John Doe", "http://jsquad.se", "info@jsquad.se"),
+                "Apache 2.0", "https://www.apache.org/licenses/LICENSE-2.0.html", Collections.emptyList());
+
     }
 }
