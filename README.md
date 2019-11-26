@@ -1,4 +1,4 @@
-# OpenBank Spring Boot application
+# OpenBank - Spring Boot 2 application server
 
 ## Requirements
 
