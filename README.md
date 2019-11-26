@@ -1,4 +1,4 @@
-# OpenBank application
+# OpenBank - Spring Framework 5 application server
 
 INSTALLATION
 ------------
