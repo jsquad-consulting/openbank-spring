@@ -39,9 +39,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:test/application.properties",
         "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.yaml",
-        "classpath:test/configuration/openbank_jpa.yaml",
-        "classpath:test/configuration/security_jpa.yaml"},
+        "classpath:test/configuration/configuration_test.properties",
+        "classpath:test/configuration/openbank_jpa.properties",
+        "classpath:test/configuration/security_jpa.properties"},
         properties = {"jasypt.encryptor.password = testencryption"})
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class ClientRepositoryImplTest {

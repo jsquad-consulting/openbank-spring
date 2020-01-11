@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,11 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import javax.jms.ConnectionFactory;
+import javax.jms.MessageListener;
+import javax.jms.Queue;
+import javax.persistence.EntityManagerFactory;
+import javax.validation.Validator;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -75,11 +80,6 @@ import se.jsquad.component.jpa.OpenBankJpaConfiguration;
 import se.jsquad.component.jpa.SecurityJpaConfiguration;
 import se.jsquad.component.webclient.WorldWebClientConfiguration;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
-import javax.jms.Queue;
-import javax.persistence.EntityManagerFactory;
-import javax.validation.Validator;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
@@ -329,8 +329,8 @@ public class ApplicationConfiguration {
         return brokerService;
     }
 
-    @Bean("WorldApiClient")
-    WebClient getWorldApiClient() throws IOException {
+    @Bean("WorldApiWebClient")
+    WebClient getWorldApiWebClient() throws IOException {
         SslContext sslContext = SslContextBuilder
                 .forClient()
                 .trustManager(InsecureTrustManagerFactory.INSTANCE)
@@ -343,6 +343,23 @@ public class ApplicationConfiguration {
                 .baseUrl(worldWebClientConfiguration.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultUriVariables(Collections.singletonMap("url", worldWebClientConfiguration.getBaseUrl()))
+                .build();
+    }
+
+    @Bean("InternalApiWebClient")
+    WebClient getInternalApiWebClient() throws IOException {
+        SslContext sslContext = SslContextBuilder
+                .forClient()
+                .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                .build();
+        TcpClient tcpClient =
+                TcpClient.create().secure(sslProviderBuilder -> sslProviderBuilder.sslContext(sslContext));
+        HttpClient httpClient = HttpClient.from(tcpClient);
+
+        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient))
+                .baseUrl("https://localhost:8443")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultUriVariables(Collections.singletonMap("url", "https://localhost:8443"))
                 .build();
     }
 

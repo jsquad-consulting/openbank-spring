@@ -47,9 +47,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:test/application.properties",
         "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.yaml",
-        "classpath:test/configuration/openbank_jpa.yaml",
-        "classpath:test/configuration/security_jpa.yaml"},
+        "classpath:test/configuration/configuration_test.properties",
+        "classpath:test/configuration/openbank_jpa.properties",
+        "classpath:test/configuration/security_jpa.properties"},
         properties = {"jasypt.encryptor.password = testencryption"})
 @SpringBootTest
 public class WebClientBusinessTest {
@@ -59,8 +59,8 @@ public class WebClientBusinessTest {
     @Configuration
     @Import(ApplicationConfiguration.class)
     public static class TestConfig {
-        @Bean("WorldApiClient")
-        WebClient getWorldApiClient() {
+        @Bean("WorldApiWebClient")
+        WebClient getWorldApiWebClient() {
             return WebClient.builder().baseUrl(baseUrl)
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .defaultUriVariables(Collections.singletonMap("url", baseUrl))

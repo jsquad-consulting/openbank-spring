@@ -17,6 +17,7 @@
 package se.jsquad.rest;
 
 import com.google.gson.Gson;
+import javax.validation.ConstraintViolationException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.activemq.broker.BrokerService;
@@ -52,7 +53,6 @@ import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
 
-import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -66,9 +66,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = {"classpath:test/application.properties",
         "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.yaml",
-        "classpath:test/configuration/openbank_jpa.yaml",
-        "classpath:test/configuration/security_jpa.yaml"},
+        "classpath:test/configuration/configuration_test.properties",
+        "classpath:test/configuration/openbank_jpa.properties",
+        "classpath:test/configuration/security_jpa.properties"},
         properties = {"jasypt.encryptor.password = testencryption"})
 @SpringBootTest
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
@@ -78,7 +78,7 @@ public class GetClientInformationRestControllerImplTest {
     @Configuration
     @Import(ApplicationConfiguration.class)
     public static class TestConfig {
-        @Bean("WorldApiClient")
+        @Bean("WorldApiWebClient")
         WebClient getWorldApiClient() {
             return WebClient.builder().baseUrl(baseUrl)
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

@@ -16,6 +16,11 @@
 
 package se.jsquad.entity;
 
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,11 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -48,9 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:test/application.properties",
         "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.yaml",
-        "classpath:test/configuration/openbank_jpa.yaml",
-        "classpath:test/configuration/security_jpa.yaml"},
+        "classpath:test/configuration/configuration_test.properties",
+        "classpath:test/configuration/openbank_jpa.properties",
+        "classpath:test/configuration/security_jpa.properties"},
         properties = {"jasypt.encryptor.password = testencryption"})
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class PersonTest {

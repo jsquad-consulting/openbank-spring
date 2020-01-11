@@ -16,20 +16,20 @@
 
 package se.jsquad.client;
 
+import javax.inject.Named;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.exception.WebClientException;
-
-import javax.inject.Named;
 
 @Named
 public class WorldApiClient {
     private WebClient webClient;
     private Logger logger;
 
-    public WorldApiClient(Logger logger, WebClient webClient) {
+    public WorldApiClient(Logger logger, @Qualifier("WorldApiWebClient") WebClient webClient) {
         this.webClient = webClient;
         this.logger = logger;
     }

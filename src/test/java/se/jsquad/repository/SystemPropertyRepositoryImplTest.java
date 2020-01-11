@@ -16,6 +16,7 @@
 
 package se.jsquad.repository;
 
+import javax.persistence.EntityManager;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,6 @@ import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -42,9 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @TestPropertySource(locations = {"classpath:test/application.properties",
         "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.yaml",
-        "classpath:test/configuration/openbank_jpa.yaml",
-        "classpath:test/configuration/security_jpa.yaml"},
+        "classpath:test/configuration/configuration_test.properties",
+        "classpath:test/configuration/openbank_jpa.properties",
+        "classpath:test/configuration/security_jpa.properties"},
         properties = {"jasypt.encryptor.password = testencryption"})
 @Execution(ExecutionMode.SAME_THREAD)
 public class SystemPropertyRepositoryImplTest {

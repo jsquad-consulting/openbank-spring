@@ -17,3 +17,12 @@ server.ssl.key-store-password: ENC(M5JhYsUTMq6n1OKArpvF+TvuBjQTDO+/)
 server.ssl.enabled: true
 
 world.webclient.baseUrl: https://worldapi:1080
+
+management.endpoint:
+  metrics.enabled: true
+  prometheus.enabled: true
+
+management.endpoints.web.exposure.include: 'system-status,prometheus'
+management.metrics.export.prometheus.enabled: true
+
+system.health.check.interval: '5 * * * * ?'

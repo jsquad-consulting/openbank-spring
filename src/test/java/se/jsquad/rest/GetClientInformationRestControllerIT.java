@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,8 @@ public class GetClientInformationRestControllerIT {
                 .get(URI.create("/get/hello/world")).andReturn();
 
         // Then
-        WorldApiResponse worldApiResponseResult = gson.fromJson(response.getBody().print(), WorldApiResponse.class);
+        WorldApiResponse worldApiResponseResult = gson.fromJson(response.getBody().print(),
+                WorldApiResponse.class);
 
         assertEquals(200, response.getStatusCode());
 
