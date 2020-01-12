@@ -25,4 +25,4 @@ management.endpoint:
 management.endpoints.web.exposure.include: 'system-status,prometheus'
 management.metrics.export.prometheus.enabled: true
 
-system.health.check.interval: '5 * * * * ?'
+system.health.check.interval: '1 * * * * ?'
