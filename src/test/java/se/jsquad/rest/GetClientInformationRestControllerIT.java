@@ -33,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.ClientData;
 import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.TypeApi;
 import se.jsquad.client.info.WorldApiResponse;
@@ -179,7 +180,9 @@ public class GetClientInformationRestControllerIT {
     public void testGetClientInformationByClientRequestBody() {
         // Given
         ClientRequest clientRequest = new ClientRequest();
-        clientRequest.setPersonIdentificationNumber("191212121212");
+        clientRequest.setClientData(new ClientData());
+
+        clientRequest.getClientData().setPersonIdentificationNumber("191212121212");
 
         // When
         Response response = RestAssured
@@ -195,10 +198,12 @@ public class GetClientInformationRestControllerIT {
         // Then
         assertEquals(200, response.getStatusCode());
 
-        assertEquals(clientRequest.getPersonIdentificationNumber(), clientApi.getPerson().getPersonIdentification());
+        assertEquals(clientRequest.getClientData().getPersonIdentificationNumber(),
+                clientApi.getPerson().getPersonIdentification());
         assertEquals("John", clientApi.getPerson().getFirstName());
         assertEquals("Doe", clientApi.getPerson().getLastName());
-        assertEquals(clientRequest.getPersonIdentificationNumber(), clientApi.getPerson().getPersonIdentification());
+        assertEquals(clientRequest.getClientData().getPersonIdentificationNumber(),
+                clientApi.getPerson().getPersonIdentification());
         assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
 
         assertEquals(1, clientApi.getAccountList().size());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package se.jsquad.validator;
 
-import se.jsquad.client.info.ClientRequest;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import se.jsquad.client.info.ClientRequest;
 
 public class ClientRequestBodyValidator implements ConstraintValidator<ClientRequestBodyConstraint, ClientRequest> {
     @Override
@@ -32,8 +31,9 @@ public class ClientRequestBodyValidator implements ConstraintValidator<ClientReq
             constraintValidatorContext.buildConstraintViolationWithTemplate("Client request can't be null.")
                     .addConstraintViolation();
             return false;
-        } else if (clientRequest.getPersonIdentificationNumber() == null || !clientRequest
-                .getPersonIdentificationNumber().matches("[0-9]{12}")) {
+        } else if (clientRequest.getClientData() == null ||
+                clientRequest.getClientData().getPersonIdentificationNumber() == null || !clientRequest
+                .getClientData().getPersonIdentificationNumber().matches("[0-9]{12}")) {
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate("Person identification number must" +
                     " be twelve digits.").addConstraintViolation();

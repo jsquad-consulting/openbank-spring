@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.ClientData;
 import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.client.info.WorldApiResponse;
@@ -142,10 +143,12 @@ public class GetClientInformationRestControllerImplTest {
     }
 
     @Test
-    public void testGetClientImformationByRequestBody() throws Exception {
+    public void testGetClientInformationByRequestBody() throws Exception {
         // Given
         ClientRequest clientRequest = new ClientRequest();
-        clientRequest.setPersonIdentificationNumber("191212121212");
+
+        clientRequest.setClientData(new ClientData());
+        clientRequest.getClientData().setPersonIdentificationNumber("191212121212");
 
         // When
         ResponseEntity<ClientApi> responseEntity =
@@ -155,7 +158,8 @@ public class GetClientInformationRestControllerImplTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         ClientApi clientApi = responseEntity.getBody();
 
-        assertEquals(clientRequest.getPersonIdentificationNumber(), clientApi.getPerson().getPersonIdentification());
+        assertEquals(clientRequest.getClientData().getPersonIdentificationNumber(),
+                clientApi.getPerson().getPersonIdentification());
         assertEquals("John", clientApi.getPerson().getFirstName());
         assertEquals("Doe", clientApi.getPerson().getLastName());
         assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
@@ -172,7 +176,7 @@ public class GetClientInformationRestControllerImplTest {
         assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
 
         // Given
-        clientRequest.setPersonIdentificationNumber("");
+        clientRequest.getClientData().setPersonIdentificationNumber("");
 
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
@@ -184,7 +188,19 @@ public class GetClientInformationRestControllerImplTest {
                 .andExpect(content().string("Person identification number must be twelve digits."));
 
         // Given
-        clientRequest.setPersonIdentificationNumber(null);
+        clientRequest.getClientData().setPersonIdentificationNumber(null);
+
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+        // When and then
+        mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(clientRequest))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Person identification number must be twelve digits."));
+
+        // Given
+        clientRequest.setClientData(null);
 
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 

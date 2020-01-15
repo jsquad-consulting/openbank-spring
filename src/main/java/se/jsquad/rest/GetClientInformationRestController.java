@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,7 @@ public class GetClientInformationRestController {
                                                                        @ClientRequestBodyConstraint
                                                                        @RequestBody ClientRequest clientRequest) {
         ClientApi clientApi = openBankService.getClientInformationByPersonIdentification(clientRequest
-                .getPersonIdentificationNumber());
+                .getClientData().getPersonIdentificationNumber());
 
         if (clientApi == null) {
             throw new ClientNotFoundException("Client not found.");

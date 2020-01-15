@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
-  ~ Copyright 2019 JSquad AB
+  ~ Copyright 2020 JSquad AB
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -31,6 +31,12 @@
                     "The client request body.")</annox:annotate>
             </xsd:appinfo>
         </xsd:annotation>
+        <xs:sequence>
+            <xs:element name="clientData" type="tns:ClientData"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ClientData">
         <xs:sequence>
             <xs:element name="personIdentificationNumber" type="xs:string">
                 <xsd:annotation>

@@ -176,7 +176,7 @@ components:
       properties:
         message:
           type: string
-    ClientRequest:
+    ClientData:
       required:
       - personIdentificationNumber
       type: object
@@ -185,6 +185,13 @@ components:
           type: string
           description: The client person identification number.
           example: "191212121212"
+    ClientRequest:
+      required:
+      - clientData
+      type: object
+      properties:
+        clientData:
+          $ref: '#/components/schemas/ClientData'
       description: The client request body.
     AccountApi:
       type: object
