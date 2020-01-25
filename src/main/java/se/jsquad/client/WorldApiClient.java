@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.exception.WebClientException;
 
@@ -36,12 +37,12 @@ public class WorldApiClient {
 
     public WorldApiResponse getWorldApiResponse() {
         return webClient.get().uri("/api/get/hello/world")
-                .accept(MediaType.APPLICATION_JSON).retrieve()
-                .bodyToMono(WorldApiResponse.class)
-                .doOnError(throwable -> {
-                    logger.error(throwable.getMessage(), throwable);
-                    throw new WebClientException("World Api Client not available at this time.");
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is5xxServerError(), clientResponse -> {
+                    return Mono.error(new WebClientException("Webclient is not available at this time."));
                 })
+                .bodyToMono(WorldApiResponse.class)
                 .block();
     }
 }
