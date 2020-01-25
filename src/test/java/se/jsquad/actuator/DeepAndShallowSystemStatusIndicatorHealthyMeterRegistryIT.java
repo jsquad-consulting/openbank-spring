@@ -28,21 +28,17 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import se.jsquad.health.check.HealthStatus;
-import se.jsquad.health.check.SystemStatusResponse;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class SystemStatusNotHealthyIT {
+public class DeepAndShallowSystemStatusIndicatorHealthyMeterRegistryIT {
     private Gson gson = new Gson();
-
     private static int servicePort = 8443;
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
@@ -50,7 +46,7 @@ public class SystemStatusNotHealthyIT {
             .withExposedService("openbank_1", servicePort)
             .withExposedService("worldapi_1", 1080)
             .withPull(false)
-            .withTailChildContainers(false)
+            .withTailChildContainers(true)
             .withLocalCompose(true);
 
     @BeforeAll
@@ -78,29 +74,20 @@ public class SystemStatusNotHealthyIT {
     }
 
     @Test
-    public void testSystemHealthCheckStatusIsNotOk() throws NoSuchMethodException, InvocationTargetException,
-            IllegalAccessException {
+    public void testDeepSystemHealthCheckIsScrapedByPrometheues() throws InterruptedException {
         // Given
-        Method method = DockerComposeContainer.class.getDeclaredMethod("runWithCompose", String.class);
-        method.setAccessible(true);
-        method.invoke(dockerComposeContainer, "kill openbankdb");
-        method.invoke(dockerComposeContainer, "kill securitydb");
+        Thread.sleep(5);
 
         // When
         Response response = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
+                .contentType(ContentType.ANY)
+                .accept(ContentType.ANY)
                 .when()
-                .get(URI.create("/actuator/system-status")).andReturn();
+                .get(URI.create("/actuator/prometheus")).andReturn();
 
         // Then
-        SystemStatusResponse systemStatusResponse = gson.fromJson(response.getBody().print(),
-                SystemStatusResponse.class);
-
         assertEquals(200, response.getStatusCode());
-
-        assertEquals(HealthStatus.DOWN, systemStatusResponse.getDeep().getOpenbankDb());
-        assertEquals(HealthStatus.DOWN, systemStatusResponse.getDeep().getSecurityDb());
-        assertEquals(HealthStatus.DOWN, systemStatusResponse.getStatus());
+        assertTrue(response.getBody().print().contains("deep_system_status{status=\"up\",} 1.0"));
+        assertTrue(response.getBody().print().contains("shallow_system_status{status=\"up\",} 1.0"));
     }
 }

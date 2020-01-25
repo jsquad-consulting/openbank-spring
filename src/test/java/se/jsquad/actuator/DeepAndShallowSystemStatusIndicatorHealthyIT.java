@@ -28,17 +28,20 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import se.jsquad.health.check.DeepSystemStatusResponse;
+import se.jsquad.health.check.HealthStatus;
+import se.jsquad.health.check.ShallowSystemStatusResponse;
 
 import java.io.File;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class SystemStatusHealthySchedulerIT {
+public class DeepAndShallowSystemStatusIndicatorHealthyIT {
     private Gson gson = new Gson();
+
     private static int servicePort = 8443;
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
@@ -46,7 +49,7 @@ public class SystemStatusHealthySchedulerIT {
             .withExposedService("openbank_1", servicePort)
             .withExposedService("worldapi_1", 1080)
             .withPull(false)
-            .withTailChildContainers(false)
+            .withTailChildContainers(true)
             .withLocalCompose(true);
 
     @BeforeAll
@@ -74,19 +77,41 @@ public class SystemStatusHealthySchedulerIT {
     }
 
     @Test
-    public void testSystemHealthCheckIsScrapedByPrometheues() throws InterruptedException {
-        // Given
-        Thread.sleep(60000);
-
+    public void testDeepSystemHealthCheckStatusIsOk() {
         // When
         Response response = RestAssured.given()
-                .contentType(ContentType.ANY)
-                .accept(ContentType.ANY)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/actuator/prometheus")).andReturn();
+                .get(URI.create("/actuator/deep-system-status")).andReturn();
 
         // Then
+        DeepSystemStatusResponse deepSystemStatusResponse = gson.fromJson(response.getBody().print(),
+                DeepSystemStatusResponse.class);
+
         assertEquals(200, response.getStatusCode());
-        assertTrue(response.getBody().print().contains("uri=\"/actuator/system-status\""));
+
+        assertEquals(HealthStatus.UP, deepSystemStatusResponse.getStatus());
+        assertEquals(HealthStatus.UP, deepSystemStatusResponse.getService());
+        assertEquals(HealthStatus.UP, deepSystemStatusResponse.getDependencies().getOpenbankDb());
+        assertEquals(HealthStatus.UP, deepSystemStatusResponse.getDependencies().getSecurityDb());
+    }
+
+    @Test
+    public void testShallowSystemHealthCheckStatusIsOk() {
+        // When
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .get(URI.create("/actuator/shallow-system-status")).andReturn();
+
+        // Then
+        ShallowSystemStatusResponse shallowSystemStatusResponse = gson.fromJson(response.getBody().print(),
+                ShallowSystemStatusResponse.class);
+
+        assertEquals(200, response.getStatusCode());
+
+        assertEquals(HealthStatus.UP, shallowSystemStatusResponse.getStatus());
     }
 }

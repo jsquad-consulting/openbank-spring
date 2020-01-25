@@ -23,14 +23,21 @@
 		   targetNamespace="http://jsquad.se/health/check" version="1.0"
 		   jaxb:extensionBindingPrefixes="annox">
 
-	<xs:complexType name="SystemStatusResponse">
+	<xs:complexType name="DeepSystemStatusResponse">
 		<xs:sequence>
 			<xs:element name="status" type="tns:HealthStatus"/>
-			<xs:element name="deep" type="tns:Deep"/>
+			<xs:element name="service" type="tns:HealthStatus"/>
+			<xs:element name="dependencies" type="tns:Dependencies"/>
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="Deep">
+	<xs:complexType name="ShallowSystemStatusResponse">
+		<xs:sequence>
+			<xs:element name="status" type="tns:HealthStatus"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Dependencies">
 		<xs:sequence>
 			<xs:element name="openbank-db" type="tns:HealthStatus"/>
 			<xs:element name="security-db" type="tns:HealthStatus"/>

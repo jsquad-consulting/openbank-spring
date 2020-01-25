@@ -1,5 +1,7 @@
 # OpenBank - Spring Boot 2 application server
 
+[![Build Status](https://travis-ci.org/jsquad-consulting/openbank-spring.svg?branch=master)](https://travis-ci.org/jsquad-consulting/openbank-spring)
+
 ## Requirements
 
 * JDK 11

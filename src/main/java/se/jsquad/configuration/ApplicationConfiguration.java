@@ -41,6 +41,8 @@ import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -134,7 +136,7 @@ public class ApplicationConfiguration {
 
     @Bean
     @Qualifier("openBankJdbcTemplate")
-    JdbcTemplate openBankJdbcTemplate() {
+    public JdbcTemplate openBankJdbcTemplate() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName(openBankDatabaseConfiguration.getDriverclassname());
         dataSourceBuilder.url(openBankDatabaseConfiguration.getUrl());
@@ -150,7 +152,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean("securityJdbcTemplate")
-    JdbcTemplate securityJdbcTemplate() {
+    public JdbcTemplate securityJdbcTemplate() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName(securityDatabaseConfiguration.getDriverclassname());
         dataSourceBuilder.url(securityDatabaseConfiguration.getUrl());
@@ -346,23 +348,6 @@ public class ApplicationConfiguration {
                 .build();
     }
 
-    @Bean("InternalApiWebClient")
-    WebClient getInternalApiWebClient() throws IOException {
-        SslContext sslContext = SslContextBuilder
-                .forClient()
-                .trustManager(InsecureTrustManagerFactory.INSTANCE)
-                .build();
-        TcpClient tcpClient =
-                TcpClient.create().secure(sslProviderBuilder -> sslProviderBuilder.sslContext(sslContext));
-        HttpClient httpClient = HttpClient.from(tcpClient);
-
-        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient))
-                .baseUrl("https://localhost:8443")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", "https://localhost:8443"))
-                .build();
-    }
-
     @Bean
     public OpenAPI customOpenAPI(@Value("${api.version}") String appVersion) {
         return new OpenAPI()
@@ -375,5 +360,25 @@ public class ApplicationConfiguration {
                         .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0" +
                                 ".html")))
                 .addServersItem(new Server().description("Local OpenBank API server.").url("https://localhost:8443"));
+    }
+
+    @Bean("openbankDatabaseHealthIndicator")
+    public HealthIndicator openbankDatabaseHealthIndicator() {
+        DataSourceHealthIndicator dataSourceHealthIndicator =
+                new DataSourceHealthIndicator(openBankJdbcTemplate().getDataSource());
+
+        dataSourceHealthIndicator.setQuery("SELECT 1");
+
+        return dataSourceHealthIndicator;
+    }
+
+    @Bean("securityDatabaseHealthIndicator")
+    public HealthIndicator securityDatabaseHealthIndicator() {
+        DataSourceHealthIndicator dataSourceHealthIndicator =
+                new DataSourceHealthIndicator(securityJdbcTemplate().getDataSource());
+
+        dataSourceHealthIndicator.setQuery("SELECT 1");
+
+        return dataSourceHealthIndicator;
     }
 }

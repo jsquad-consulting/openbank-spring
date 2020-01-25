@@ -46,6 +46,19 @@ services:
       - ./security/sql:/flyway/sql
     depends_on:
       - securitydb
+  prometheus:
+    image: prom/prometheus
+    volumes:
+    - ./monitoring/prometheus/configs:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    depends_on:
+      - openbank
+    restart: on-failure
+    expose:
+      - "9090"
+    ports:
+    - 9091:9090
   openbank:
     image: openbank
     build:
