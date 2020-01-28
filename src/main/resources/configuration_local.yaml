@@ -18,10 +18,20 @@ server.ssl.enabled: true
 
 world.webclient.baseUrl: https://worldapi:1080
 
-management.endpoint.metrics.enabled: true
+management.endpoint:
+  prometheus:
+    enabled: true
+  metrics.enabled: true
+
+management:
+  server:
+    port: 8081
+    ssl:
+      enabled: false
 
 management.endpoints:
-  web.exposure.include: 'shallow-system-status,deep-system-status,prometheus'
-  prometheus.enabled: true
+  web:
+    base-path: /actuator
+    exposure.include: 'shallowhealth,deephealth,metrics,prometheus'
 
 management.metrics.export.prometheus.enabled: true

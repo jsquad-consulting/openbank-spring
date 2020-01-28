@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package se.jsquad.actuator;
+package se.jsquad.integration;
 
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,15 +38,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class DeepAndShallowSystemStatusIndicatorHealthyIT {
+public class DeepAndShallowHealthCheckOkIT {
     private Gson gson = new Gson();
 
-    private static int servicePort = 8443;
+    private static int servicePort = 8081;
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("docker-compose.yaml"))
+            new File("src/test/resources/docker-compose-int.yaml"))
             .withExposedService("openbank_1", servicePort)
-            .withExposedService("worldapi_1", 1080)
             .withPull(false)
             .withTailChildContainers(true)
             .withLocalCompose(true);
@@ -56,19 +54,9 @@ public class DeepAndShallowSystemStatusIndicatorHealthyIT {
     static void setupDocker() {
         dockerComposeContainer.start();
 
-        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
+        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
         RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
-        RestAssured.basePath = "/";
-
-        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
-
-        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-        textEncryptor.setPassword(System.getenv("MASTER_KEY"));
-
-        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
-                textEncryptor.decrypt(encryptedPassword));
-
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssured.basePath = "/actuator";
     }
 
     @AfterAll
@@ -77,41 +65,41 @@ public class DeepAndShallowSystemStatusIndicatorHealthyIT {
     }
 
     @Test
-    public void testDeepSystemHealthCheckStatusIsOk() {
+    public void testShallowHealthCheck() {
         // When
-        Response response = RestAssured.given()
+        Response response = RestAssured
+                .given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/actuator/deep-system-status")).andReturn();
+                .get(URI.create("/shallowhealth")).andReturn();
 
         // Then
-        DeepSystemStatusResponse deepSystemStatusResponse = gson.fromJson(response.getBody().print(),
+        ShallowSystemStatusResponse shallowSystemStatusResponse = gson.fromJson(response.getBody().asString(),
+                ShallowSystemStatusResponse.class);
+
+        assertEquals(200, response.getStatusCode());
+        assertEquals(HealthStatus.UP, shallowSystemStatusResponse.getStatus());
+    }
+
+    @Test
+    public void testDeepHealthCheck() {
+        // When
+        Response response = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .get(URI.create("/deephealth")).andReturn();
+
+        // Then
+        DeepSystemStatusResponse deepSystemStatusResponse = gson.fromJson(response.getBody().asString(),
                 DeepSystemStatusResponse.class);
 
         assertEquals(200, response.getStatusCode());
-
         assertEquals(HealthStatus.UP, deepSystemStatusResponse.getStatus());
         assertEquals(HealthStatus.UP, deepSystemStatusResponse.getService());
         assertEquals(HealthStatus.UP, deepSystemStatusResponse.getDependencies().getOpenbankDb());
         assertEquals(HealthStatus.UP, deepSystemStatusResponse.getDependencies().getSecurityDb());
-    }
-
-    @Test
-    public void testShallowSystemHealthCheckStatusIsOk() {
-        // When
-        Response response = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .when()
-                .get(URI.create("/actuator/shallow-system-status")).andReturn();
-
-        // Then
-        ShallowSystemStatusResponse shallowSystemStatusResponse = gson.fromJson(response.getBody().print(),
-                ShallowSystemStatusResponse.class);
-
-        assertEquals(200, response.getStatusCode());
-
-        assertEquals(HealthStatus.UP, shallowSystemStatusResponse.getStatus());
     }
 }

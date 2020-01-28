@@ -6,11 +6,14 @@ rule_files:
 # - "first_ruless.yaml"
 
 scrape_configs:
-  - job_name: 'openbank-prometheus'
-    scheme: https
-    tls_config:
-      insecure_skip_verify: true
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
+  - job_name: 'prometheus'
+    scrape_interval: 1m
     static_configs:
-      - targets: ['openbank:8443']
+      - targets: ['localhost:9090']
+  - job_name: 'openbank-prometheus'
+    scheme: http
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 60s
+    scrape_timeout: 60s
+    static_configs:
+      - targets: ['openbank:8081']

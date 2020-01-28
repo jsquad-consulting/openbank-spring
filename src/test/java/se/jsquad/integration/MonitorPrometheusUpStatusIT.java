@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package se.jsquad.actuator;
+package se.jsquad.integration;
 
-import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,14 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class DeepAndShallowSystemStatusIndicatorHealthyMeterRegistryIT {
-    private Gson gson = new Gson();
-    private static int servicePort = 8443;
+public class MonitorPrometheusUpStatusIT {
+    private static int servicePort = 8081;
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("docker-compose.yaml"))
+            new File("src/test/resources/docker-compose-int.yaml"))
             .withExposedService("openbank_1", servicePort)
-            .withExposedService("worldapi_1", 1080)
             .withPull(false)
             .withTailChildContainers(true)
             .withLocalCompose(true);
@@ -53,19 +49,9 @@ public class DeepAndShallowSystemStatusIndicatorHealthyMeterRegistryIT {
     static void setupDocker() {
         dockerComposeContainer.start();
 
-        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
+        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
         RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
-        RestAssured.basePath = "/";
-
-        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
-
-        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-        textEncryptor.setPassword(System.getenv("MASTER_KEY"));
-
-        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
-                textEncryptor.decrypt(encryptedPassword));
-
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssured.basePath = "/actuator";
     }
 
     @AfterAll
@@ -74,20 +60,21 @@ public class DeepAndShallowSystemStatusIndicatorHealthyMeterRegistryIT {
     }
 
     @Test
-    public void testDeepSystemHealthCheckIsScrapedByPrometheues() throws InterruptedException {
-        // Given
-        Thread.sleep(5);
-
+    public void testDeepHealthMetricsOk() {
         // When
-        Response response = RestAssured.given()
+        Response response = RestAssured
+                .given()
                 .contentType(ContentType.ANY)
                 .accept(ContentType.ANY)
                 .when()
-                .get(URI.create("/actuator/prometheus")).andReturn();
+                .get(URI.create("/prometheus")).andReturn();
 
         // Then
         assertEquals(200, response.getStatusCode());
-        assertTrue(response.getBody().print().contains("deep_system_status{status=\"up\",} 1.0"));
-        assertTrue(response.getBody().print().contains("shallow_system_status{status=\"up\",} 1.0"));
+
+        assertTrue(response.getBody().asString().contains("deep_health{status=\"up\",} 1.0"));
+        assertTrue(response.getBody().asString().contains("deep_health_service{status=\"up\",} 1.0"));
+        assertTrue(response.getBody().asString().contains("deep_health_openbank_database{status=\"up\",} 1.0"));
+        assertTrue(response.getBody().asString().contains("deep_health_security_database{status=\"up\",} 1.0"));
     }
 }
