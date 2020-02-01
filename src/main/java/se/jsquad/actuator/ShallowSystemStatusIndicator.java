@@ -27,7 +27,7 @@ import se.jsquad.health.check.HealthStatus;
 import se.jsquad.health.check.ShallowSystemStatusResponse;
 
 @Component
-@Endpoint(id = "shallow-system-status")
+@Endpoint(id = "shallowhealth")
 public class ShallowSystemStatusIndicator {
     private Logger logger;
 

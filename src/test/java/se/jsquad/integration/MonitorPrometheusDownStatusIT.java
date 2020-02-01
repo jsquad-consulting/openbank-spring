@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package se.jsquad.actuator;
+package se.jsquad.integration;
 
-import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,8 +26,6 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import se.jsquad.health.check.DeepSystemStatusResponse;
-import se.jsquad.health.check.HealthStatus;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -37,18 +33,16 @@ import java.lang.reflect.Method;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class DeepSystemStatusIndicatorNotHealthyIT {
-    private Gson gson = new Gson();
-
-    private static int servicePort = 8443;
+public class MonitorPrometheusDownStatusIT {
+    private static int servicePort = 8081;
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("docker-compose.yaml"))
+            new File("src/test/resources/docker-compose-int.yaml"))
             .withExposedService("openbank_1", servicePort)
-            .withExposedService("worldapi_1", 1080)
             .withPull(false)
             .withTailChildContainers(true)
             .withLocalCompose(true);
@@ -57,19 +51,9 @@ public class DeepSystemStatusIndicatorNotHealthyIT {
     static void setupDocker() {
         dockerComposeContainer.start();
 
-        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
+        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
         RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
-        RestAssured.basePath = "/";
-
-        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
-
-        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-        textEncryptor.setPassword(System.getenv("MASTER_KEY"));
-
-        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
-                textEncryptor.decrypt(encryptedPassword));
-
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssured.basePath = "/actuator";
     }
 
     @AfterAll
@@ -78,7 +62,7 @@ public class DeepSystemStatusIndicatorNotHealthyIT {
     }
 
     @Test
-    public void testDeepSystemHealthCheckStatusIsNotOk() throws NoSuchMethodException, InvocationTargetException,
+    public void testDeepHealthMetricsNotOk() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException {
         // Given
         Method method = DockerComposeContainer.class.getDeclaredMethod("runWithCompose", String.class);
@@ -87,21 +71,19 @@ public class DeepSystemStatusIndicatorNotHealthyIT {
         method.invoke(dockerComposeContainer, "kill securitydb");
 
         // When
-        Response response = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
+        Response response = RestAssured
+                .given()
+                .contentType(ContentType.ANY)
+                .accept(ContentType.ANY)
                 .when()
-                .get(URI.create("/actuator/deep-system-status")).andReturn();
+                .get(URI.create("/prometheus")).andReturn();
 
         // Then
-        DeepSystemStatusResponse deepSystemStatusResponse = gson.fromJson(response.getBody().print(),
-                DeepSystemStatusResponse.class);
-
         assertEquals(200, response.getStatusCode());
 
-        assertEquals(HealthStatus.DOWN, deepSystemStatusResponse.getDependencies().getOpenbankDb());
-        assertEquals(HealthStatus.DOWN, deepSystemStatusResponse.getDependencies().getSecurityDb());
-        assertEquals(HealthStatus.UP, deepSystemStatusResponse.getService());
-        assertEquals(HealthStatus.DOWN, deepSystemStatusResponse.getStatus());
+        assertTrue(response.getBody().asString().contains("deep_health{status=\"up\",} 0.0"));
+        assertTrue(response.getBody().asString().contains("deep_health_service{status=\"up\",} 1.0"));
+        assertTrue(response.getBody().asString().contains("deep_health_openbank_database{status=\"up\",} 0.0"));
+        assertTrue(response.getBody().asString().contains("deep_health_security_database{status=\"up\",} 0.0"));
     }
 }

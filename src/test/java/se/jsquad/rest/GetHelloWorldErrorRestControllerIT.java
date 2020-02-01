@@ -51,7 +51,7 @@ public class GetHelloWorldErrorRestControllerIT {
     private static int servicePort = 8443;
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("docker-compose.yaml"))
+            new File("src/test/resources/docker-compose-int.yaml"))
             .withExposedService("openbank_1", servicePort)
             .withExposedService("worldapi_1", 1080)
             .withPull(false)

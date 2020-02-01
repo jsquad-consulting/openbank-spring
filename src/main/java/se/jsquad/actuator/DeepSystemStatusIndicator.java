@@ -16,6 +16,9 @@
 
 package se.jsquad.actuator;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -29,25 +32,58 @@ import se.jsquad.health.check.HealthStatus;
 import se.jsquad.health.check.ShallowSystemStatusResponse;
 
 @Component
-@Endpoint(id = "deep-system-status")
+@Endpoint(id = "deephealth")
 public class DeepSystemStatusIndicator {
     private Logger logger;
 
     private ShallowSystemStatusIndicator shallowSystemStatusIndicator;
     private HealthIndicator openbankDatabaseHealthIndicator;
     private HealthIndicator securityDatabaseHealthIndicator;
-
+    private Gauge gaugeDeepHealth;
+    private Gauge gaugeService;
+    private Gauge gaugeOpenBankDatabase;
+    private Gauge gaugeSecurityDatabase;
 
     public DeepSystemStatusIndicator(Logger logger,
                                      ShallowSystemStatusIndicator shallowSystemStatusIndicator,
                                      @Qualifier("openbankDatabaseHealthIndicator")
                                              HealthIndicator openbankDatabaseHealthIndicator,
                                      @Qualifier("securityDatabaseHealthIndicator")
-                                             HealthIndicator securityDatabaseHealthIndicator) {
+                                             HealthIndicator securityDatabaseHealthIndicator,
+                                     MeterRegistry meterRegistry) {
         this.logger = logger;
         this.shallowSystemStatusIndicator = shallowSystemStatusIndicator;
         this.openbankDatabaseHealthIndicator = openbankDatabaseHealthIndicator;
         this.securityDatabaseHealthIndicator = securityDatabaseHealthIndicator;
+
+        gaugeDeepHealth = Gauge.builder("deep_health", this,
+                deepSystemStatusIndicator -> "UP".equals(deepSystemStatusIndicator.getDeepSystemStatus()
+                        .getBody().getStatus().value()) ? 1 : 0)
+                .strongReference(true)
+                .description("Deep health of this service and it's dependencies")
+                .tags(Tags.of("status", "up"))
+                .register(meterRegistry);
+
+        gaugeService = Gauge.builder("deep_health_service", shallowSystemStatusIndicator,
+                s -> "UP".equals(s.getShallowSystemStatus().getBody().getStatus().value()) ? 1 : 0)
+                .strongReference(true)
+                .description("Health of just this service")
+                .tags(Tags.of("status", "up"))
+                .register(meterRegistry);
+
+        gaugeOpenBankDatabase = Gauge.builder("deep_health_openbank_database", openbankDatabaseHealthIndicator,
+                o -> "UP".equals(o.health().getStatus().getCode()) ? 1 : 0)
+                .strongReference(true)
+                .description("Health of the openbank database")
+                .tags(Tags.of("status", "up"))
+                .register(meterRegistry);
+
+        gaugeSecurityDatabase = Gauge.builder("deep_health_security_database", securityDatabaseHealthIndicator,
+                s -> "UP".equals(s.health().getStatus().getCode()) ? 1 : 0)
+                .strongReference(true)
+                .description("Health of the security database")
+                .tags(Tags.of("status", "up"))
+                .register(meterRegistry);
     }
 
     @ReadOperation
@@ -86,6 +122,11 @@ public class DeepSystemStatusIndicator {
                 && HealthStatus.UP.equals(deepSystemStatusResponse.getService())) {
             deepSystemStatusResponse.setStatus(HealthStatus.UP);
         }
+
+        gaugeDeepHealth.measure();
+        gaugeService.measure();
+        gaugeOpenBankDatabase.measure();
+        gaugeSecurityDatabase.measure();
 
         return deepSystemStatusResponse;
     }
