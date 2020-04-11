@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.jsquad.rest;
+package se.jsquad.integration;
 
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
@@ -29,9 +29,9 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Delay;
 import org.mockserver.model.Header;
+import org.springframework.http.MediaType;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import se.jsquad.client.info.WorldApiResponse;
 
 import java.io.File;
 import java.net.URI;
@@ -43,7 +43,7 @@ import static org.mockserver.model.HttpResponse.response;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class GetHelloWorldOkRestControllerIT {
+public class GetHelloWorldErrorRestControllerIT {
     private Gson gson = new Gson();
 
     private static MockServerClient mockServerClient;
@@ -55,7 +55,7 @@ public class GetHelloWorldOkRestControllerIT {
             .withExposedService("openbank_1", servicePort)
             .withExposedService("worldapi_1", 1080)
             .withPull(false)
-            .withTailChildContainers(true)
+            .withTailChildContainers(true) // set to true for trace purpose when things fails
             .withLocalCompose(true);
 
     @BeforeAll
@@ -85,19 +85,16 @@ public class GetHelloWorldOkRestControllerIT {
     }
 
     @Test
-    public void testGetHelloWorldRestResponse() {
+    public void testGetHelloWorldRestResponseServerError() throws InterruptedException {
         // Given
-        WorldApiResponse worldApiResponse = new WorldApiResponse();
-        worldApiResponse.setMessage("Hello world");
-
         mockServerClient
                 .when(request()
                         .withMethod("GET")
                         .withPath("/api/get/hello/world"))
-                        .respond(response()
-                        .withStatusCode(200)
-                        .withHeaders(new Header("Content-Type", "application/json"))
-                        .withBody(gson.toJson(worldApiResponse))
+                .respond(response()
+                        .withStatusCode(500)
+                        .withHeaders(new Header("Content-Type", MediaType.TEXT_PLAIN_VALUE))
+                        .withBody("Internal server error")
                         .withDelay(new Delay(TimeUnit.SECONDS, 1)));
 
         // When
@@ -109,11 +106,8 @@ public class GetHelloWorldOkRestControllerIT {
                 .get(URI.create("/get/hello/world")).andReturn();
 
         // Then
-        WorldApiResponse worldApiResponseResult = gson.fromJson(response.getBody().print(),
-                WorldApiResponse.class);
+        assertEquals(500, response.getStatusCode());
 
-        assertEquals(200, response.getStatusCode());
-
-        assertEquals("Hello world", worldApiResponseResult.getMessage());
+        assertEquals("Webclient is not available at this time.", response.getBody().print());
     }
 }

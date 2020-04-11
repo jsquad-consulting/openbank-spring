@@ -49,6 +49,18 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:complexType name="ClientInformationRequest">
+        <xs:complexContent>
+            <xs:extension base="tns:ClientApi"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ClientInformationResponse">
+        <xs:complexContent>
+            <xs:extension base="tns:ClientApi"/>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:complexType name="ClientApi">
         <xs:sequence>
             <xs:element name="person" type="tns:PersonApi"/>

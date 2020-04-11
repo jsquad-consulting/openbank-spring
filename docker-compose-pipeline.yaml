@@ -1,5 +1,19 @@
-version: "3.7"
+version: "2.4"
 services:
+  worldapi:
+    image: jamesdbloom/mockserver:mockserver-5.7.0
+    expose:
+      - "1080"
+    ports:
+      - 1080:1080
+    volumes:
+      - ./src/test/resources/test/ssl/truststore:/ssl
+    entrypoint: /opt/mockserver/run_mockserver.sh -serverPort 1080 -logLevel INFO -jvmOptions "-Dmockserver.javaKeyStoreFilePath='/ssl/jsquad.jks' -Dmockserver.javaKeyStorePassword='test1234' -Dmockserver.javaKeyStoreType='jks'"
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
   openbankdb:
     image: mysql:8.0.17
     environment:
@@ -8,13 +22,12 @@ services:
       MYSQL_PASSWORD: ${OPENBANK_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
     expose:
-      - 3306
-    cap_add:
-      - SYS_NICE
+      - "3306"
     healthcheck:
-      test: ["CMD", "mysql", "--user=root", "--password=${ROOT_PASSWORD}", "-e", "'SHOW DATABASES;'"]
-      timeout: 5s
-      retries: 10
+      test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
   securitydb:
     image: mysql:8.0.17
     environment:
@@ -23,25 +36,78 @@ services:
       MYSQL_PASSWORD: ${SECURITY_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
     expose:
-      - 3306
-    cap_add:
-      - SYS_NICE
+      - "3306"
     healthcheck:
-      test: ["CMD", "mysql", "--user=root", "--password=${ROOT_PASSWORD}", "-e", "'SHOW DATABASES;'"]
-      timeout: 5s
+      test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  flyway:
+    image: flyway/flyway:6.0.6
+    command: -url=jdbc:mysql://securitydb -schemas=security -user=root -password=${ROOT_PASSWORD} -connectRetries=60 migrate
+    volumes:
+      - ./security/sql:/flyway/sql
+    depends_on:
+      securitydb:
+        condition: service_healthy
+  grafana:
+    image: grafana/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: test1234
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    expose:
+      - "3000"
+    ports:
+      - 3000:3000
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus/configs:/etc/prometheus
+    command: '--config.file=/etc/prometheus/prometheus.yaml'
+    depends_on:
+      openbank:
+        condition: service_healthy
+    expose:
+      - "9090"
+    ports:
+      - 9091:9090
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
+      interval: 10s
+      timeout: 10s
       retries: 5
   openbank:
-    image: openbank
     build:
       context: .
       dockerfile: PipelineDockerfile
     environment:
       MASTER_SECRET: "${MASTER_KEY}"
       CONFIG_FILE_LOCATIONS: "classpath:application.properties,classpath:configuration_local.yaml,classpath:activemq.properties,classpath:openbank_jpa.yaml,classpath:security_jpa.yaml"
+    expose:
+      - "8443"
+      - "8081"
     ports:
       - 8443:8443
-      - 9990:9990
+      - 8081:8081
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     depends_on:
-      - openbankdb
-      - securitydb
-    restart: on-failure
+      openbankdb:
+        condition: service_healthy
+      securitydb:
+        condition: service_healthy
+      worldapi:
+        condition: service_healthy
