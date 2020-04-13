@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.jsquad.rest;
+package se.jsquad.integration;
 
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
@@ -31,7 +31,10 @@ import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.ClientData;
+import se.jsquad.client.info.ClientInformationRequest;
+import se.jsquad.client.info.ClientInformationResponse;
 import se.jsquad.client.info.ClientRequest;
+import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TypeApi;
 
 import java.io.File;
@@ -76,6 +79,57 @@ public class GetClientInformationRestControllerIT {
     @AfterAll
     static void destroyDocker() {
         dockerComposeContainer.stop();
+    }
+
+    @Test
+    public void updateClientInformation() {
+        // Given
+        ClientInformationRequest clientInformationRequest = new ClientInformationRequest();
+
+        clientInformationRequest.setPerson(new PersonApi());
+        String personIdentification = "191212121212";
+
+        clientInformationRequest.getPerson().setPersonIdentification(personIdentification);
+
+        // When
+        Response response = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(clientInformationRequest)
+                .when()
+                .put(URI.create("/update/client/information/")).andReturn();
+
+        ClientInformationResponse clientApiResponse = gson.fromJson(response.getBody().asString(),
+                ClientInformationResponse.class);
+
+        // Then
+        assertEquals(200, response.getStatusCode());
+        assertEquals(personIdentification, clientApiResponse.getPerson().getPersonIdentification());
+    }
+
+    @Test
+    public void updateClientInformationWithBadContent() {
+        // Given
+        ClientInformationRequest clientInformationRequest = new ClientInformationRequest();
+
+        clientInformationRequest.setPerson(new PersonApi());
+        String personIdentification = "19121212121";
+
+        clientInformationRequest.getPerson().setPersonIdentification(personIdentification);
+
+        // When
+        Response response = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(clientInformationRequest)
+                .when()
+                .put(URI.create("/update/client/information/")).andReturn();
+
+        // Then
+        assertEquals(400, response.getStatusCode());
+        assertEquals("Person identification number must be twelve digits.", response.getBody().asString());
     }
 
     @Test

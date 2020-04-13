@@ -27,16 +27,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.business.OpenBankService;
 import se.jsquad.business.WebClientBusiness;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.ClientInformationRequest;
+import se.jsquad.client.info.ClientInformationResponse;
 import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.date.time.DateTime;
 import se.jsquad.exception.ClientNotFoundException;
+import se.jsquad.validator.ClientInformationBodyConstraint;
 import se.jsquad.validator.ClientRequestBodyConstraint;
 import se.jsquad.validator.PersonIdentificationNumberConstraint;
 
@@ -55,6 +59,33 @@ public class GetClientInformationRestController {
         this.logger = logger;
         this.openBankService = openBankService;
         this.webClientBusiness = webClientBusiness;
+    }
+
+    @PutMapping(value = "/update/client/information", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces =
+            {MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "Update client information, mock implementation",
+            description = "Update the client information based with common constraint vaidation for ClientApi xsd " +
+                    "model.",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Get ClientApi model as base response", content = @Content(mediaType =
+                            MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ClientInformationResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Bad content", content =
+                    @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
+                            example = "ClientApi payload contains bad content."))),
+                    @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
+                    @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
+                            example = "Severe system failure has occured!")))})
+    public ResponseEntity<ClientInformationResponse> updateClientInformation(@RequestBody @ClientInformationBodyConstraint
+                                                                                        ClientInformationRequest clientInformationRequest) {
+        ClientInformationResponse clientInformationResponse =
+                new ClientInformationResponse();
+
+        clientInformationResponse.setClientType(clientInformationRequest.getClientType());
+        clientInformationResponse.setPerson(clientInformationRequest.getPerson());
+
+        return ResponseEntity.ok(clientInformationResponse);
     }
 
     @GetMapping(value = "/get/hello/world", produces = {MediaType.APPLICATION_JSON_VALUE})
