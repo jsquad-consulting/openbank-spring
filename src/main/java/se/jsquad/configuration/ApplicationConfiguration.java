@@ -17,7 +17,6 @@
 package se.jsquad.configuration;
 
 
-import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -95,7 +94,6 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"se.jsquad"})
 @EnableJpaRepositories(basePackages = {"se.jsquad.repository"})
 @EnableAspectJAutoProxy
-@EnableEncryptableProperties
 @EnableConfigurationProperties(value = {OpenBankDatabaseConfiguration.class, SecurityDatabaseConfiguration.class,
         SecurityJpaConfiguration.class, OpenBankJpaConfiguration.class, WorldWebClientConfiguration.class})
 public class ApplicationConfiguration {
