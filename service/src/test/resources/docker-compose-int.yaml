@@ -44,7 +44,7 @@ services:
     image: flyway/flyway:6.0.6
     command: -url=jdbc:mysql://securitydb -schemas=security -user=root -password=${ROOT_PASSWORD} -connectRetries=60 migrate
     volumes:
-      - ../../../security/sql:/flyway/sql
+      - ../../../../security/sql:/flyway/sql
     depends_on:
       securitydb:
         condition: service_healthy
