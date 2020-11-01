@@ -12,38 +12,6 @@ servers:
 - url: https://localhost:8443
   description: Local OpenBank API server.
 paths:
-  /api/update/client/information:
-    put:
-      summary: Update client information, mock implementation
-      description: Update the client information based with common constraint vaidation
-        for ClientApi xsd model.
-      operationId: updateClientInformation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClientInformationRequest'
-      responses:
-        200:
-          description: Get ClientApi model as base response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientInformationResponse'
-        400:
-          description: Bad content
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: ClientApi payload contains bad content.
-        500:
-          description: Severe system failure has occured!
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Severe system failure has occured!
   /api/date/time/{dateTime}:
     get:
       summary: Get date time
@@ -58,80 +26,52 @@ paths:
           type: string
         example: 2019-11-01T00:00:00ZZ
       responses:
-        200:
+        "200":
           description: The date time
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DateTime'
-        400:
+        "400":
           description: Date time
           content:
             text/plain:
               schema:
                 type: string
                 example: Invalid date time format.
-        500:
+        "500":
           description: Severe system failure has occured!
           content:
             text/plain:
               schema:
                 type: string
                 example: Severe system failure has occured!
-  /api/get/hello/world:
-    get:
-      summary: Get hello world by the remote http server
-      description: Get The hello world by the remote HTTP REST server
-      operationId: getHelloWorld
-      responses:
-        200:
-          description: Hello world
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorldApiResponse'
-        500:
-          description: Severe system failure has occured!
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Severe system failure has occured!
-  /api/get/client/info/:
-    get:
-      summary: Get client by client request body
-      description: Get the ClientAPI response object with uniqueue personal identification
-        number as part of the request body.
-      operationId: getClientInformationByRequestBody
+  /api/update/client/information:
+    put:
+      summary: Update client information, mock implementation
+      description: Update the client information based with common constraint vaidation
+        for ClientApi xsd model.
+      operationId: updateClientInformation
       requestBody:
-        description: ClientRequest body.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientRequest'
-        required: true
+              $ref: '#/components/schemas/ClientInformationRequest'
       responses:
-        200:
-          description: The client
+        "200":
+          description: Get ClientApi model as base response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientApi'
-        400:
-          description: Invalid personal identification number
+                $ref: '#/components/schemas/ClientInformationResponse'
+        "400":
+          description: Bad content
           content:
             text/plain:
               schema:
                 type: string
-                example: Invalid personal identification number.
-        404:
-          description: Client not found.
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Client not found.
-        500:
+                example: ClientApi payload contains bad content.
+        "500":
           description: Severe system failure has occured!
           content:
             text/plain:
@@ -153,27 +93,87 @@ paths:
           type: string
         example: 191212121212
       responses:
-        200:
+        "200":
           description: The client
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientApi'
-        400:
+        "400":
           description: Invalid personal identification number
           content:
             text/plain:
               schema:
                 type: string
                 example: Invalid personal identification number.
-        404:
+        "404":
           description: Client not found.
           content:
             text/plain:
               schema:
                 type: string
                 example: Client not found.
-        500:
+        "500":
+          description: Severe system failure has occured!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Severe system failure has occured!
+  /api/get/hello/world:
+    get:
+      summary: Get hello world by the remote http server
+      description: Get The hello world by the remote HTTP REST server
+      operationId: getHelloWorld
+      responses:
+        "200":
+          description: Hello world
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorldApiResponse'
+        "500":
+          description: Severe system failure has occured!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Severe system failure has occured!
+  /api/get/client/info/:
+    get:
+      summary: Get client by client request body
+      description: Get the ClientAPI response object with uniqueue personal identification
+        number as part of the request body.
+      operationId: getClientInformationByRequestBody
+      requestBody:
+        description: ClientRequest body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+        required: true
+      responses:
+        "200":
+          description: The client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientApi'
+        "400":
+          description: Invalid personal identification number
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid personal identification number.
+        "404":
+          description: Client not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Client not found.
+        "500":
           description: Severe system failure has occured!
           content:
             text/plain:
@@ -184,7 +184,7 @@ paths:
     get:
       operationId: getOpenBankBatchStatus
       responses:
-        200:
+        "200":
           description: default response
           content:
             application/json:
@@ -192,6 +192,15 @@ paths:
                 type: string
 components:
   schemas:
+    DateTime:
+      required:
+      - dateTime
+      type: object
+      properties:
+        dateTime:
+          type: string
+          description: Date time
+          example: 2019-11-05T11:33:11ZZ
     AccountApi:
       type: object
       properties:
@@ -289,15 +298,20 @@ components:
             $ref: '#/components/schemas/AccountApi'
         clientType:
           $ref: '#/components/schemas/ClientTypeApi'
-    DateTime:
+    ClientApi:
       required:
-      - dateTime
+      - clientType
+      - person
       type: object
       properties:
-        dateTime:
-          type: string
-          description: Date time
-          example: 2019-11-05T11:33:11ZZ
+        person:
+          $ref: '#/components/schemas/PersonApi'
+        accountList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountApi'
+        clientType:
+          $ref: '#/components/schemas/ClientTypeApi'
     WorldApiResponse:
       required:
       - message
@@ -322,20 +336,6 @@ components:
         clientData:
           $ref: '#/components/schemas/ClientData'
       description: The client request body.
-    ClientApi:
-      required:
-      - clientType
-      - person
-      type: object
-      properties:
-        person:
-          $ref: '#/components/schemas/PersonApi'
-        accountList:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountApi'
-        clientType:
-          $ref: '#/components/schemas/ClientTypeApi'
   securitySchemes:
     basicScheme:
       type: http

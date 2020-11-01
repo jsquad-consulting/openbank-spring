@@ -1,4 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
+
+# Ignore generated UML diagrams
+
+diagrams
+
 ### Java template
 # Compiled class file
 *.class
