@@ -22,48 +22,82 @@ import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+
+import static java.util.List.of;
 
 @Component
 @Aspect
 public class LoggingAspect {
-    @Around("within(se.jsquad..*)")
-    public Object logMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Pointcut("within(se.jsquad..*)")
+    private void anyJsquadPackage() {
+    }
+    
+    @Pointcut("!within(se.jsquad.interceptor.*)")
+    private void avoidInterceptorPackage() {
+    }
+    
+    @Around("anyJsquadPackage() && avoidInterceptorPackage()")
+    public Object logEntranceAndExitToAllConsumerPowerPricingMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         final Logger logger = LogManager.getLogger(joinPoint.getTarget().getClass().getName());
         Object returnValue;
-
+        
         try {
-            StringBuilder startMessageStringBuilder = new StringBuilder();
-
-            startMessageStringBuilder.append(joinPoint.getSignature().getName());
-            startMessageStringBuilder.append("(");
-
-            Object[] args = joinPoint.getArgs();
-            for (int i = 0; i < args.length; ++i) {
-                startMessageStringBuilder.append(args[i]).append(",");
-            }
-            if (args.length > 0) {
-                startMessageStringBuilder.deleteCharAt(startMessageStringBuilder.length() - 1);
-            }
-
-            startMessageStringBuilder.append(")");
-
-            logger.log(Level.INFO, startMessageStringBuilder.toString());
-
+            logger.info(generateStartMethodMessage(joinPoint.getSignature().getName(), joinPoint.getArgs()));
+            
             returnValue = joinPoint.proceed();
-
-            StringBuilder endMessageStringBuilder = new StringBuilder();
-            endMessageStringBuilder.append("Finish method ");
-            endMessageStringBuilder.append(joinPoint.getSignature().getName());
-
-            logger.log(Level.INFO, endMessageStringBuilder.toString());
-        } catch (Throwable e) {
-            StringBuilder errorMessageStringBuilder = new StringBuilder();
-            logger.log(Level.ERROR, errorMessageStringBuilder.toString(), e);
-
-            throw e;
+            
+            logger.info(generateEndMethodMessage(joinPoint.getSignature().getName()));
+            
+        } catch (Throwable throwable) {
+            logger.error(throwable.getMessage(), throwable);
+            throw throwable;
         }
-
+        
         return returnValue;
+    }
+    
+    private String generateStartMethodMessage(String joinPointSignatureName, Object[] joinPointArguments) {
+        StringBuilder startMethodMessage = new StringBuilder();
+        
+        startMethodMessage
+            .append(joinPointSignatureName)
+            .append("(")
+            .append(generateArgumentsMessage(joinPointArguments))
+            .append(")");
+        
+        return startMethodMessage.toString();
+    }
+    
+    
+    private String generateArgumentsMessage(Object[] joinPointArguments) {
+        StringBuilder argumentsMessage = new StringBuilder();
+    
+        for (Object joinPointArgument : joinPointArguments) {
+            argumentsMessage.append(joinPointArgument).append(",");
+        }
+        
+        return argumentsMessageToString(argumentsMessage);
+    }
+    
+    private String argumentsMessageToString(StringBuilder argumentsMessage) {
+        if (argumentsMessage.length() > 0) {
+            return argumentsMessage.substring(0, argumentsMessage.length() - 1);
+        } else {
+            return argumentsMessage.toString();
+        }
+    }
+    
+    private String generateEndMethodMessage(String joinPointSignatureName) {
+        StringBuilder endMethodMessage = new StringBuilder();
+        endMethodMessage
+            .append("Finish method ")
+            .append(joinPointSignatureName);
+        
+        return endMethodMessage.toString();
     }
 }

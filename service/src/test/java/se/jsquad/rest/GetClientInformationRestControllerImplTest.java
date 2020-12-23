@@ -17,14 +17,18 @@
 package se.jsquad.rest;
 
 import com.google.gson.Gson;
-import javax.validation.ConstraintViolationException;
+import nl.altindag.log.LogCaptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,6 +43,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,12 +59,14 @@ import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
 
+import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,6 +80,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = {"jasypt.encryptor.password = testencryption"})
 @SpringBootTest
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
+@Execution(ExecutionMode.SAME_THREAD)
 public class GetClientInformationRestControllerImplTest {
     static String baseUrl;
 
@@ -89,7 +97,9 @@ public class GetClientInformationRestControllerImplTest {
     }
 
     private static MockWebServer mockBackEnd;
-
+    
+    private LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
+    
     @BeforeAll
     public static void init() throws IOException {
         mockBackEnd = new MockWebServer();
@@ -97,10 +107,21 @@ public class GetClientInformationRestControllerImplTest {
         baseUrl = String.format("http://localhost:%s",
                 mockBackEnd.getPort());
     }
-
+    
     @AfterAll
     static void tearDown() throws IOException {
         mockBackEnd.shutdown();
+    }
+    
+    @BeforeEach
+    void setup() {
+        logCaptor.setLogLevelToInfo();
+    }
+    
+    @AfterEach
+    void clearLogs() {
+        logCaptor.clearLogs();
+        logCaptor.resetLogLevel();
     }
 
     @MockBean
@@ -119,7 +140,7 @@ public class GetClientInformationRestControllerImplTest {
     private WebApplicationContext context;
 
     private Gson gson = new Gson();
-
+    
     @Test
     public void testGetHelloWorldByMockedRemoteRestfulServer() {
         // Given
@@ -174,7 +195,11 @@ public class GetClientInformationRestControllerImplTest {
 
         assertEquals("500$ in deposit", accountTransactionApi.getMessage());
         assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
-
+    
+        assertEquals(2, logCaptor.getInfoLogs().size());
+        assertTrue(logCaptor.getInfoLogs().get(0).contains("se.jsquad.client.info.ClientRequest@"));
+        assertEquals("Finish method getClientInformationByRequestBody", logCaptor.getInfoLogs().get(1));
+        
         // Given
         clientRequest.getClientData().setPersonIdentificationNumber("");
 
@@ -192,12 +217,17 @@ public class GetClientInformationRestControllerImplTest {
 
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-        // When and then
-        mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(gson.toJson(clientRequest))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Person identification number must be twelve digits."));
+        // When
+        MvcResult mvcResult = mockMvc.perform(get("/api/get/client/info/")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(gson.toJson(clientRequest))
+            .accept(MediaType.APPLICATION_JSON))
+            .andReturn();
+    
+        // Then
+        assertEquals(400, mvcResult.getResponse().getStatus());
+        assertEquals("Person identification number must be twelve digits.", mvcResult.getResponse()
+            .getContentAsString());
 
         // Given
         clientRequest.setClientData(null);
@@ -252,6 +282,11 @@ public class GetClientInformationRestControllerImplTest {
 
         assertEquals("500$ in deposit", accountTransactionApi.getMessage());
         assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
+    
+        assertEquals(2, logCaptor.getInfoLogs().size());
+        assertEquals("getClientInformation(191212121212)", logCaptor.getInfoLogs().get(0));
+        assertEquals("Finish method getClientInformation", logCaptor.getInfoLogs().get(1));
+        
     }
 
     @Test
@@ -265,20 +300,6 @@ public class GetClientInformationRestControllerImplTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Person identification number must be twelve digits."));
-    }
-
-    @Test
-    public void testInvalidPersonIdentificationNumberNull() {
-        // Given
-        String personalIdentificationNumber = null;
-
-        // When
-        Throwable throwable = assertThrows(ConstraintViolationException.class, () ->
-                getClientInformationRESTController.getClientInformation(personalIdentificationNumber));
-
-        // Then
-        assertEquals("Person identification number must be twelve digits.",
-                ((ConstraintViolationException) throwable).getConstraintViolations().iterator().next().getMessage());
     }
 
     @Test
