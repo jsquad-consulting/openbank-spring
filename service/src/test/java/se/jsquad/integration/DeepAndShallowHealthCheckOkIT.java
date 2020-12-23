@@ -16,56 +16,27 @@
 
 package se.jsquad.integration;
 
-import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import se.jsquad.health.check.DeepSystemStatusResponse;
 import se.jsquad.health.check.HealthStatus;
 import se.jsquad.health.check.ShallowSystemStatusResponse;
 
-import java.io.File;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers
-@Execution(ExecutionMode.SAME_THREAD)
-public class DeepAndShallowHealthCheckOkIT {
-    private Gson gson = new Gson();
-
-    private static int servicePort = 8081;
-
-    private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("src/test/resources/docker-compose-int.yaml"))
-            .withExposedService("openbank_1", servicePort)
-            .withPull(false)
-            .withTailChildContainers(true)
-            .withLocalCompose(true);
-
-    @BeforeAll
-    static void setupDocker() {
-        dockerComposeContainer.start();
-
-        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
-        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
-        RestAssured.basePath = "/actuator";
+public class DeepAndShallowHealthCheckOkIT extends AbstractTestContainerSetup {
+    @BeforeEach
+    void setupEndpointForRestAssured() {
+        setupEndPointRestAssured(PROTOCOL_HTTP, SERVICE_NAME, MONITORING_PORT, BASE_PATH_ACTUATOR);
     }
-
-    @AfterAll
-    static void destroyDocker() {
-        dockerComposeContainer.stop();
-    }
-
+    
     @Test
-    public void testShallowHealthCheck() {
+    void testShallowHealthCheck() {
         // When
         Response response = RestAssured
                 .given()
@@ -83,7 +54,7 @@ public class DeepAndShallowHealthCheckOkIT {
     }
 
     @Test
-    public void testDeepHealthCheck() {
+    void testDeepHealthCheck() {
         // When
         Response response = RestAssured
                 .given()

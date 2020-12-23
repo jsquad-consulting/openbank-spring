@@ -26,11 +26,6 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
-import javax.jms.Queue;
-import javax.persistence.EntityManagerFactory;
-import javax.validation.Validator;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -81,6 +76,13 @@ import se.jsquad.component.jpa.OpenBankJpaConfiguration;
 import se.jsquad.component.jpa.SecurityJpaConfiguration;
 import se.jsquad.component.webclient.WorldWebClientConfiguration;
 
+import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
+import javax.jms.MessageListener;
+import javax.jms.Queue;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import javax.validation.Validator;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
@@ -104,7 +106,6 @@ public class ApplicationConfiguration {
     private OpenBankJpaConfiguration openBankJpaConfiguration;
     private FlywayDatabaseMigration flywayDatabaseMigration;
     private WorldWebClientConfiguration worldWebClientConfiguration;
-    private boolean migratedOpenBank = false;
 
     public ApplicationConfiguration(Environment environment, OpenBankDatabaseConfiguration
             openBankDatabaseConfiguration, SecurityDatabaseConfiguration securityDatabaseConfiguration,
@@ -131,33 +132,40 @@ public class ApplicationConfiguration {
     Validator validator() {
         return new LocalValidatorFactoryBean();
     }
-
+    
+    
+    @PostConstruct
+    private void initDatabaseMigration() {
+        flywayDatabaseMigration.migrateToDatabase("db/migration/openbank", getOpenBankDataSource());
+    }
+    
+    @Bean("openBankDataSource")
+    public DataSource getOpenBankDataSource() {
+        return DataSourceBuilder.create()
+            .driverClassName(openBankDatabaseConfiguration.getDriverclassname())
+            .url(openBankDatabaseConfiguration.getUrl())
+            .username(openBankDatabaseConfiguration.getUsername())
+            .password(openBankDatabaseConfiguration.getPassword()).build();
+    }
+    
     @Bean
     @Qualifier("openBankJdbcTemplate")
     public JdbcTemplate openBankJdbcTemplate() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName(openBankDatabaseConfiguration.getDriverclassname());
-        dataSourceBuilder.url(openBankDatabaseConfiguration.getUrl());
-        dataSourceBuilder.username(openBankDatabaseConfiguration.getUsername());
-        dataSourceBuilder.password(openBankDatabaseConfiguration.getPassword());
-
-        if (!migratedOpenBank) {
-            flywayDatabaseMigration.migrateToDatabase("db/migration/openbank", dataSourceBuilder.build());
-            migratedOpenBank = true;
-        }
-
-        return new JdbcTemplate(dataSourceBuilder.build(), true);
+        return new JdbcTemplate(getOpenBankDataSource(), true);
+    }
+    
+    @Bean("securityDataSource")
+    public DataSource getSecurityDataSource() {
+        return DataSourceBuilder.create()
+            .driverClassName(securityDatabaseConfiguration.getDriverclassname())
+            .url(securityDatabaseConfiguration.getUrl())
+            .username(securityDatabaseConfiguration.getUsername())
+            .password(securityDatabaseConfiguration.getPassword()).build();
     }
 
     @Bean("securityJdbcTemplate")
     public JdbcTemplate securityJdbcTemplate() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName(securityDatabaseConfiguration.getDriverclassname());
-        dataSourceBuilder.url(securityDatabaseConfiguration.getUrl());
-        dataSourceBuilder.username(securityDatabaseConfiguration.getUsername());
-        dataSourceBuilder.password(securityDatabaseConfiguration.getPassword());
-
-        return new JdbcTemplate(dataSourceBuilder.build(), true);
+        return new JdbcTemplate(getSecurityDataSource(), true);
     }
 
     @Primary

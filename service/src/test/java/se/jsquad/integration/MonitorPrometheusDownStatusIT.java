@@ -19,15 +19,11 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -35,34 +31,23 @@ import java.net.URI;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Testcontainers
-@Execution(ExecutionMode.SAME_THREAD)
-public class MonitorPrometheusDownStatusIT {
-    private static int servicePort = 8081;
-
-    private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("src/test/resources/docker-compose-int.yaml"))
-            .withExposedService("openbank_1", servicePort)
-            .withPull(false)
-            .withTailChildContainers(true)
-            .withLocalCompose(true);
-
-    @BeforeAll
-    static void setupDocker() {
-        dockerComposeContainer.start();
-
-        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
-        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
-        RestAssured.basePath = "/actuator";
+public class MonitorPrometheusDownStatusIT extends AbstractTestContainerSetup {
+    @BeforeEach
+    void setupEndpointForRestAssured() {
+        setupEndPointRestAssured(PROTOCOL_HTTP, SERVICE_NAME, MONITORING_PORT, BASE_PATH_ACTUATOR);
     }
-
-    @AfterAll
-    static void destroyDocker() {
-        dockerComposeContainer.stop();
+    
+    @AfterEach
+    void startUpKilledContainers() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = DockerComposeContainer.class.getDeclaredMethod("runWithCompose", String.class);
+        method.setAccessible(true);
+        method.invoke(dockerComposeContainer, "start openbankdb");
+        method.invoke(dockerComposeContainer, "start securitydb");
+        
     }
-
+    
     @Test
-    public void testDeepHealthMetricsNotOk() throws NoSuchMethodException, InvocationTargetException,
+    void testDeepHealthMetricsNotOk() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException {
         // Given
         Method method = DockerComposeContainer.class.getDeclaredMethod("runWithCompose", String.class);

@@ -30,7 +30,7 @@ cache:
     - $HOME/.m2
 
 before_install:
-  - sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+  - sudo curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
   - wget https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.zip
   - unzip -qq apache-maven-3.6.1-bin.zip
@@ -44,6 +44,5 @@ jobs:
       script: mvn clean install
     - stage: run integration tests
       script:
-        - docker system prune -af --volumes
         - docker-compose -f service/docker-compose.yaml build --force
-        - mvn verify -Pintegrationtests
+        - cd service && mvn test -Dtest=*IT

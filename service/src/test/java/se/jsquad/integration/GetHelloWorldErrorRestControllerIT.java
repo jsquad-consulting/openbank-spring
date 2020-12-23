@@ -16,24 +16,16 @@
 
 package se.jsquad.integration;
 
-import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.jasypt.util.text.BasicTextEncryptor;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Delay;
 import org.mockserver.model.Header;
 import org.springframework.http.MediaType;
-import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.File;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
@@ -41,51 +33,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-@Testcontainers
-@Execution(ExecutionMode.SAME_THREAD)
-public class GetHelloWorldErrorRestControllerIT {
-    private Gson gson = new Gson();
-
-    private static MockServerClient mockServerClient;
-
-    private static int servicePort = 8443;
-
-    private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("src/test/resources/docker-compose-int.yaml"))
-            .withExposedService("openbank_1", servicePort)
-            .withExposedService("worldapi_1", 1080)
-            .withPull(false)
-            .withTailChildContainers(true) // set to true for trace purpose when things fails
-            .withLocalCompose(true);
-
-    @BeforeAll
-    static void setupDocker() {
-        dockerComposeContainer.start();
-
-        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
-        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
-        RestAssured.basePath = "/api";
-
-        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
-
-        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-        textEncryptor.setPassword(System.getenv("MASTER_KEY"));
-
-        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
-                textEncryptor.decrypt(encryptedPassword));
-
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        mockServerClient = new MockServerClient(dockerComposeContainer.getServiceHost("worldapi_1", 1080),
-                dockerComposeContainer.getServicePort("worldapi_1", 1080));
+public class GetHelloWorldErrorRestControllerIT extends AbstractTestContainerSetup {
+    @BeforeEach
+    void setupEndpointForRestAssured() {
+        setupEndPointRestAssured(PROTOCOL_HTTPS, SERVICE_NAME, SERVICE_PORT, BASE_PATH_API);
     }
-
-    @AfterAll
-    static void destroyDocker() {
-        dockerComposeContainer.stop();
+    
+    @AfterEach
+    void resetMockServerClient() {
+        mockServerClient.reset();
     }
-
+    
     @Test
-    public void testGetHelloWorldRestResponseServerError() throws InterruptedException {
+    void testGetHelloWorldRestResponseServerError() {
         // Given
         mockServerClient
                 .when(request()

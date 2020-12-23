@@ -16,19 +16,12 @@
 
 package se.jsquad.integration;
 
-import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.jasypt.util.text.BasicTextEncryptor;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.http.HttpStatus;
-import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.ClientData;
 import se.jsquad.client.info.ClientInformationRequest;
@@ -37,52 +30,18 @@ import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TypeApi;
 
-import java.io.File;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers
-@Execution(ExecutionMode.SAME_THREAD)
-public class GetClientInformationRestControllerIT {
-    private Gson gson = new Gson();
-
-    private static int servicePort = 8443;
-
-    private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("src/test/resources/docker-compose-int.yaml"))
-            .withExposedService("openbank_1", servicePort)
-            .withExposedService("worldapi_1", 1080)
-            .withPull(false)
-            .withTailChildContainers(true) // set to true for trace purpose when things fails
-            .withLocalCompose(true);
-
-    @BeforeAll
-    static void setupDocker() {
-        dockerComposeContainer.start();
-
-        RestAssured.baseURI = "https://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
-        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
-        RestAssured.basePath = "/api";
-
-        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
-
-        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-        textEncryptor.setPassword(System.getenv("MASTER_KEY"));
-
-        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
-                textEncryptor.decrypt(encryptedPassword));
-
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+public class GetClientInformationRestControllerIT extends AbstractTestContainerSetup {
+    @BeforeEach
+    void setupEndpointForRestAssured() {
+        setupEndPointRestAssured(PROTOCOL_HTTPS, SERVICE_NAME, SERVICE_PORT, BASE_PATH_API);
     }
-
-    @AfterAll
-    static void destroyDocker() {
-        dockerComposeContainer.stop();
-    }
-
+    
     @Test
-    public void updateClientInformation() {
+    void updateClientInformation() {
         // Given
         ClientInformationRequest clientInformationRequest = new ClientInformationRequest();
 
@@ -109,7 +68,7 @@ public class GetClientInformationRestControllerIT {
     }
 
     @Test
-    public void updateClientInformationWithBadContent() {
+    void updateClientInformationWithBadContent() {
         // Given
         ClientInformationRequest clientInformationRequest = new ClientInformationRequest();
 
@@ -133,7 +92,7 @@ public class GetClientInformationRestControllerIT {
     }
 
     @Test
-    public void testGetClientInformation() {
+    void testGetClientInformation() {
         // Given
         String personIdentificationNumber = "191212121212";
 
@@ -170,7 +129,7 @@ public class GetClientInformationRestControllerIT {
     }
 
     @Test
-    public void testGetClientInformationWithInvalidPersonIdenticationNumber() {
+    void testGetClientInformationWithInvalidPersonIdenticationNumber() {
         // Given
         String personIdentificationNumber = "123";
 
@@ -190,7 +149,7 @@ public class GetClientInformationRestControllerIT {
     }
 
     @Test
-    public void testGetClientInformationByClientRequestBody() {
+    void testGetClientInformationByClientRequestBody() {
         // Given
         ClientRequest clientRequest = new ClientRequest();
         clientRequest.setClientData(new ClientData());
@@ -233,7 +192,7 @@ public class GetClientInformationRestControllerIT {
     }
 
     @Test
-    public void testGetClientInformationWithRequestBodyConstraints() {
+    void testGetClientInformationWithRequestBodyConstraints() {
         // Given
         ClientRequest clientRequest = null;
 
