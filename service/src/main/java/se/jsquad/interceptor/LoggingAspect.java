@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class LoggingAspect {
-    @Pointcut("within(se.jsquad..*)")
-    private void anyJsquadPackage() {
-    }
-    
-    @Pointcut("!within(se.jsquad.interceptor.*)")
-    private void avoidInterceptorPackage() {
-    }
-    
     @Around("anyJsquadPackage() && avoidInterceptorPackage()")
     public Object logEntranceAndExitToAllMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         final Logger logger = LogManager.getLogger(joinPoint.getTarget().getClass().getName());
@@ -55,6 +47,14 @@ public class LoggingAspect {
         return returnValue;
     }
     
+    @Pointcut("within(se.jsquad..*)")
+    private void anyJsquadPackage() {
+    }
+    
+    @Pointcut("!within(se.jsquad.interceptor.*)")
+    private void avoidInterceptorPackage() {
+    }
+    
     private String generateStartMethodMessage(String joinPointSignatureName, Object[] joinPointArguments) {
         StringBuilder startMethodMessage = new StringBuilder();
         
@@ -66,7 +66,6 @@ public class LoggingAspect {
         
         return startMethodMessage.toString();
     }
-    
     
     private String generateArgumentsMessage(Object[] joinPointArguments) {
         StringBuilder argumentsMessage = new StringBuilder();
