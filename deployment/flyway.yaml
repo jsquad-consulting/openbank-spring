@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flyway-pod
+  labels:
+    name: flyway
+    zone: prod
+    version: v1
+spec:
+  containers:
+    - name: flyway
+      image: flyway/flyway:6.0.6
+      command: [ "/bin/sh", "-c", "/flyway/flyway -url=jdbc:mysql://securitydb -schemas=security -user=root -password=${ROOT_PASSWORD} -connectRetries=60 migrate" ]
+      volumeMounts:
+        - name: ddl
+          mountPath: /flyway/sql
+          readOnly: true
+      env:
+        - name: ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: openbank-spring-secret
+              key: ROOT_PASSWORD
+  restartPolicy: Never
+  volumes:
+    - name: ddl
+      configMap:
+        name: flyway-ddl-volume

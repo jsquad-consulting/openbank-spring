@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openbank-database-deployment
+  labels:
+    name: openbankdb
+    zone: prod
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: openbankdb
+  template:
+    metadata:
+      labels:
+        app: openbankdb
+    spec:
+      containers:
+        - name: openbankdb
+          image: mysql:8.0.17
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: openbank-mysql-data
+              mountPath: "/var/lib/mysql"
+          env:
+            - name: MYSQL_DATABASE
+              value: "openbank"
+            - name: MYSQL_USER
+              value: "openbank_user"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openbank-spring-secret
+                  key: OPENBANK_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openbank-spring-secret
+                  key: ROOT_PASSWORD
+      volumes:
+        - name: openbank-mysql-data
+          persistentVolumeClaim:
+            claimName: openbank-mysql-data-disk
