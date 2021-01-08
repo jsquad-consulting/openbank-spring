@@ -16,56 +16,39 @@ Generate the graphvis dot files to pdf by the command:
 
 `find . -type f -name "*.dot" -exec sh -c 'dot -Tpdf "${0}" -o "${0%.*}.pdf"' {} \;`
 
-## INSTALLATION
----------------
+## Package OpenBank application
 
-### Without Docker
-
-````bash
-mvn clean install -T 1C
-````
-
-### With Docker
-
-````bash
-# With env dependicies
-mvn clean install -T 1C && docker build -t openbank .
-# OR
-docker build -f PipelineDockerfile -t openbank .
-# OR With Compose and no env dependicies
-docker-compose -f docker-compose-pipeline.yaml build
-# OR With Compose and with env dependicies
-mvn clean install -T 1C && docker-compose -f docker-compose.yaml build
-````
+```bash
+mvn clean install -T 1C -DskipTests
+```
 
 ## Start the application
 
-### Without Docker
+### With Docker Compose
 
 ```bash
-mvn spring-boot:run
-# OR
-java -jar target/openbank-spring-0.0.1-SNAPSHOT.jar
+source setup_environment_variables.sh
+docker-compose -f service/docker-compose.yaml up --build --force-recreate
 ```
 
-### With Docker
+### With Kubernetes
 
-````bash
-# With Docker
-docker run --rm -p 8443:8443 -p 9990:9990 -it --name openbank_container openbank
-# With Docker Compose (build included) with env dependicies
-docker-compose -f docker-compose.yaml up --build --force-recreate
-# With Docker Compose (build included) with no env dependicies
-docker-compose -f docker-compose-pipeline.yaml up --build --force-recreate
-````
+```bash
+source setup_environment_variables.sh
+./start_openbank_in_kubernetes_cluster.sh
+```
 
-### Clean up images and containers
+## Run unit/system tests
 
-`docker rm -vf $(docker ps -a -q)`
+```bash
+mvn clean install -T 1C
+```
 
-`docker rmi -f $(docker images -a -q)`
+## Run integration tests
 
-`docker system prune -af`
+```bash
+mvn verify -Pintegrationtests
+```
 
 ## Access on the fly RESTful API code generation
 

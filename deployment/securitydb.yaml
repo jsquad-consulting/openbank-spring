@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-database-deployment
+  labels:
+    name: securitydb
+    zone: prod
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: securitydb
+  template:
+    metadata:
+      labels:
+        app: securitydb
+    spec:
+      containers:
+        - name: securitydb
+          image: mysql:8.0.17
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: security-mysql-data
+              mountPath: "/var/lib/mysql"
+          env:
+            - name: MYSQL_DATABASE
+              value: "security"
+            - name: MYSQL_USER
+              value: "security_user"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openbank-spring-secret
+                  key: SECURITY_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openbank-spring-secret
+                  key: ROOT_PASSWORD
+      volumes:
+        - name: security-mysql-data
+          persistentVolumeClaim:
+            claimName: security-mysql-data-disk

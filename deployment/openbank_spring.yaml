@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openbank-spring-deployment
+  labels:
+    name: openbank-spring
+    zone: prod
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: openbank-spring
+  template:
+    metadata:
+      labels:
+        app: openbank-spring
+    spec:
+      containers:
+        - name: openbank-spring
+          image: jsquadab/openbank-spring:latest
+          ports:
+            - containerPort: 8443
+              name: https
+            - containerPort: 8081
+              name: http
+          env:
+            - name: MASTER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: openbank-spring-secret
+                  key: MASTER_KEY
+            - name: CONFIG_FILE_LOCATIONS
+              value: "classpath:application.properties,classpath:configuration_local.yaml,classpath:activemq.properties,classpath:openbank_jpa.yaml,classpath:security_jpa.yaml"
