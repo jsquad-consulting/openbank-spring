@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DeepAndShallowHealthCheckOkIT extends AbstractTestContainerSetup {
     @BeforeEach
     void setupEndpointForRestAssured() {
-        setupEndPointRestAssured(PROTOCOL_HTTP, SERVICE_NAME, MONITORING_PORT, BASE_PATH_ACTUATOR);
+        setupEndpointForRestAssuredAdapterHttp();
     }
     
     @Test

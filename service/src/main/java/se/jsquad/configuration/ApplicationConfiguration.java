@@ -17,9 +17,7 @@
 package se.jsquad.configuration;
 
 
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import com.zaxxer.hikari.HikariDataSource;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -83,7 +81,6 @@ import javax.jms.Queue;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.validation.Validator;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -106,7 +103,7 @@ public class ApplicationConfiguration {
     private OpenBankJpaConfiguration openBankJpaConfiguration;
     private FlywayDatabaseMigration flywayDatabaseMigration;
     private WorldWebClientConfiguration worldWebClientConfiguration;
-
+    
     public ApplicationConfiguration(Environment environment, OpenBankDatabaseConfiguration
             openBankDatabaseConfiguration, SecurityDatabaseConfiguration securityDatabaseConfiguration,
                                     OpenBankJpaConfiguration openBankJpaConfiguration,
@@ -141,11 +138,16 @@ public class ApplicationConfiguration {
     
     @Bean("openBankDataSource")
     public DataSource getOpenBankDataSource() {
-        return DataSourceBuilder.create()
+        HikariDataSource hikariDataSource = DataSourceBuilder.create()
+            .type(HikariDataSource.class)
             .driverClassName(openBankDatabaseConfiguration.getDriverclassname())
             .url(openBankDatabaseConfiguration.getUrl())
             .username(openBankDatabaseConfiguration.getUsername())
             .password(openBankDatabaseConfiguration.getPassword()).build();
+    
+        setDataSourceTimeoutProperties(hikariDataSource);
+    
+        return hikariDataSource;
     }
     
     @Bean
@@ -156,11 +158,16 @@ public class ApplicationConfiguration {
     
     @Bean("securityDataSource")
     public DataSource getSecurityDataSource() {
-        return DataSourceBuilder.create()
+        HikariDataSource hikariDataSource = DataSourceBuilder.create()
+            .type(HikariDataSource.class)
             .driverClassName(securityDatabaseConfiguration.getDriverclassname())
             .url(securityDatabaseConfiguration.getUrl())
             .username(securityDatabaseConfiguration.getUsername())
             .password(securityDatabaseConfiguration.getPassword()).build();
+    
+        setDataSourceTimeoutProperties(hikariDataSource);
+    
+        return hikariDataSource;
     }
 
     @Bean("securityJdbcTemplate")
@@ -171,17 +178,17 @@ public class ApplicationConfiguration {
     @Primary
     @Bean("entityManagerFactoryOpenBank")
     LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBeanOpenBank(
-            JpaVendorAdapter jpaVendorAdapter, @Qualifier("openBankJdbcTemplate") JdbcTemplate jdbcTemplate,
+            JpaVendorAdapter jpaVendorAdapter,
             @Value("#{dbProds.openbank_pu}") String persistenceUnitName) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
         factoryBean.setPersistenceUnitName(persistenceUnitName);
-        factoryBean.setDataSource(jdbcTemplate.getDataSource());
+        factoryBean.setDataSource(getOpenBankDataSource());
 
         Properties properties = new Properties();
 
         properties.setProperty("hibernate.dialect", openBankJpaConfiguration.getDatabasePlatform());
-        properties.setProperty("hibernate.hbm2ddl.auto", openBankJpaConfiguration.getEntityValidation());
+        properties.setProperty("hibernate.hbm2ddl.auto", openBankJpaConfiguration.getEntityAction());
 
         if (openBankJpaConfiguration.getSecondaryLevelCache() != null
                 && !openBankJpaConfiguration.getSecondaryLevelCache().isEmpty()) {
@@ -205,20 +212,20 @@ public class ApplicationConfiguration {
 
         return factoryBean;
     }
-
+    
     @Bean("entityManagerFactorySecurity")
     LocalContainerEntityManagerFactoryBean getLocalContainerEntityManagerFactoryBeanSecurity(
-            JpaVendorAdapter jpaVendorAdapter, @Qualifier("securityJdbcTemplate") JdbcTemplate jdbcTemplate,
+            JpaVendorAdapter jpaVendorAdapter,
             @Value("#{dbProds.security_pu}") String persistenceUnitName) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
         factoryBean.setPersistenceUnitName(persistenceUnitName);
-        factoryBean.setDataSource(jdbcTemplate.getDataSource());
+        factoryBean.setDataSource(getSecurityDataSource());
 
         Properties properties = new Properties();
 
         properties.setProperty("hibernate.dialect", securityJpaConfiguration.getDatabasePlatform());
-        properties.setProperty("hibernate.hbm2ddl.auto", securityJpaConfiguration.getEntityValidation());
+        properties.setProperty("hibernate.hbm2ddl.auto", securityJpaConfiguration.getEntityAction());
 
         if (securityJpaConfiguration.getSecondaryLevelCache() != null
                 && !securityJpaConfiguration.getSecondaryLevelCache().isEmpty()) {
@@ -338,19 +345,17 @@ public class ApplicationConfiguration {
     }
 
     @Bean("WorldApiWebClient")
-    WebClient getWorldApiWebClient() throws IOException {
-        SslContext sslContext = SslContextBuilder
-                .forClient()
-                .trustManager(InsecureTrustManagerFactory.INSTANCE)
-                .build();
+    WebClient getWorldApiWebClient() {
         TcpClient tcpClient =
-                TcpClient.create().secure(sslProviderBuilder -> sslProviderBuilder.sslContext(sslContext));
+                TcpClient.create().noSSL();
         HttpClient httpClient = HttpClient.from(tcpClient);
 
         return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient))
-                .baseUrl(worldWebClientConfiguration.getBaseUrl())
+                .baseUrl(worldWebClientConfiguration.getBaseUrl()
+                    + System.getenv("WORLD_API_HOST_AND_PORT"))
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", worldWebClientConfiguration.getBaseUrl()))
+                .defaultUriVariables(Collections.singletonMap("url", worldWebClientConfiguration.getBaseUrl()
+                    + System.getenv("WORLD_API_HOST_AND_PORT")))
                 .build();
     }
 
@@ -370,21 +375,22 @@ public class ApplicationConfiguration {
 
     @Bean("openbankDatabaseHealthIndicator")
     public HealthIndicator openbankDatabaseHealthIndicator() {
-        DataSourceHealthIndicator dataSourceHealthIndicator =
-                new DataSourceHealthIndicator(openBankJdbcTemplate().getDataSource());
-
-        dataSourceHealthIndicator.setQuery("SELECT 1");
-
-        return dataSourceHealthIndicator;
+        return new DataSourceHealthIndicator(getOpenBankDataSource(), "SELECT 1");
     }
 
     @Bean("securityDatabaseHealthIndicator")
     public HealthIndicator securityDatabaseHealthIndicator() {
-        DataSourceHealthIndicator dataSourceHealthIndicator =
-                new DataSourceHealthIndicator(securityJdbcTemplate().getDataSource());
-
-        dataSourceHealthIndicator.setQuery("SELECT 1");
-
-        return dataSourceHealthIndicator;
+        return new DataSourceHealthIndicator(getSecurityDataSource(), "SELECT 1");
+    }
+    
+    private void setDataSourceTimeoutProperties(HikariDataSource hikariDataSource) {
+        hikariDataSource.setMaxLifetime(10000);
+        hikariDataSource.setConnectionTimeout(10000);
+        hikariDataSource.setAllowPoolSuspension(true);
+        hikariDataSource.setInitializationFailTimeout(10000);
+        hikariDataSource.setConnectionTestQuery("SELECT 1");
+        hikariDataSource.setLeakDetectionThreshold(10000);
+        hikariDataSource.setIdleTimeout(10000);
+        hikariDataSource.setValidationTimeout(10000);
     }
 }

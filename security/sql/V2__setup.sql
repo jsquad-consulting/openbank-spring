@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-create table security.SECURITY
+create table security
 (
-  ID bigint not null
-    primary key,
-      SECURITY_CODE varchar(255) null
+    id            bigint not null
+        constraint security_pkey
+            primary key,
+    security_code varchar(255)
 );
 
-create table security.hibernate_sequence
-(
-  next_val bigint null
-);
-
-INSERT INTO security.hibernate_sequence (next_val) VALUES (1);
+create sequence hibernate_sequence;

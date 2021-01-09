@@ -1,0 +1,41 @@
+#
+# Copyright 2021 JSquad AB
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: "2.4"
+services:
+  kubernetes-starter:
+    network_mode: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    build:
+      context: ../../../../kubernetes
+      dockerfile: Dockerfile
+    environment:
+      MASTER_KEY: ${MASTER_KEY}
+      ROOT_PASSWORD: ${ROOT_PASSWORD}
+      OPENBANK_PASSWORD: ${OPENBANK_PASSWORD}
+      SECURITY_PASSWORD: ${SECURITY_PASSWORD}
+    volumes:
+    - ../../../../deployment:/deployment
+    - ../../../../verify_deployed_service.sh:/verify_deployed_service.sh
+    - ../../../../security:/security
+    - ../../../../service:/service
+    - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c '/app/health_check.sh || exit 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 120

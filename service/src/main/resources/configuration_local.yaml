@@ -1,14 +1,14 @@
 openbank.datasource:
-  url: jdbc:mysql://openbankdb:3306/openbank
+  url: jdbc:postgresql://openbankdb:5432/openbank
   username: openbank_user
   password: ENC(DSQpSyewyvrR8AurZvZC0DUax5oSZSqRvGmcAVFwKGcTZTnshKQiTw==)
-  driverclassname: com.mysql.cj.jdbc.Driver
+  driverclassname: org.postgresql.Driver
 
 security.datasource:
-  url: jdbc:mysql://securitydb:3306/security
+  url: jdbc:postgresql://securitydb:5432/security
   username: security_user
   password: ENC(vNq9+oOFXPNeXnQwwcPWWjMCgjNMOS5z2tt1TkE7WVxXK4bib+K8/w==)
-  driverclassname: com.mysql.cj.jdbc.Driver
+  driverclassname: org.postgresql.Driver
 
 server.port: 8443
 server.ssl.key-store-type: PKCS12
@@ -16,7 +16,7 @@ server.ssl.key-store: classpath:ssl/keystore/jsquad.pfx
 server.ssl.key-store-password: ENC(M5JhYsUTMq6n1OKArpvF+TvuBjQTDO+/)
 server.ssl.enabled: true
 
-world.webclient.baseUrl: https://worldapi:1080
+world.webclient.baseUrl: http://
 
 management.endpoint:
   prometheus:

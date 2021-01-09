@@ -1,40 +1,48 @@
+#
+# Copyright 2021 JSquad AB
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 version: "2.4"
 services:
   worldapi:
-    image: jamesdbloom/mockserver:mockserver-5.7.0
+    image: jamesdbloom/mockserver:mockserver-5.11.1
     expose:
       - "1080"
-    volumes:
-      - ./test/ssl/truststore:/ssl
-    entrypoint: /opt/mockserver/run_mockserver.sh -serverPort 1080 -logLevel INFO -jvmOptions "-Dmockserver.javaKeyStoreFilePath='/ssl/jsquad.jks' -Dmockserver.javaKeyStorePassword='test1234' -Dmockserver.javaKeyStoreType='jks'"
-    healthcheck:
-      test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
+    ports:
+      - 1080:1080
   openbankdb:
-    image: mysql:8.0.17
+    image: postgres:9.6.20
     environment:
-      MYSQL_DATABASE: 'openbank'
-      MYSQL_USER: openbank_user
-      MYSQL_PASSWORD: ${OPENBANK_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      POSTGRES_DB: 'openbank'
+      POSTGRES_USER: openbank_user
+      POSTGRES_PASSWORD: ${OPENBANK_PASSWORD}
     expose:
-      - "3306"
+      - "5432"
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
       interval: 10s
       timeout: 10s
       retries: 5
   securitydb:
-    image: mysql:8.0.17
+    image: postgres:9.6.20
     environment:
-      MYSQL_DATABASE: 'security'
-      MYSQL_USER: security_user
-      MYSQL_PASSWORD: ${SECURITY_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      POSTGRES_DB: 'security'
+      POSTGRES_USER: security_user
+      POSTGRES_PASSWORD: ${SECURITY_PASSWORD}
     expose:
-      - "3306"
+      - "5432"
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
       interval: 10s
@@ -42,7 +50,7 @@ services:
       retries: 5
   flyway:
     image: flyway/flyway:6.0.6
-    command: -url=jdbc:mysql://securitydb -schemas=security -user=root -password=${ROOT_PASSWORD} -connectRetries=60 migrate
+    command: -url=jdbc:postgresql://securitydb:5432/security -schemas=public -user=security_user -password=${SECURITY_PASSWORD} -connectRetries=60 migrate
     volumes:
       - ../../../../security/sql:/flyway/sql
     depends_on:
@@ -53,6 +61,7 @@ services:
       context: ../../../.
       dockerfile: Dockerfile
     environment:
+      WORLD_API_HOST_AND_PORT: "worldapi:1080"
       MASTER_SECRET: "${MASTER_KEY}"
       CONFIG_FILE_LOCATIONS: "classpath:application.properties,classpath:configuration_local.yaml,classpath:activemq.properties,classpath:openbank_jpa.yaml,classpath:security_jpa.yaml"
     expose:
@@ -67,6 +76,4 @@ services:
       openbankdb:
         condition: service_healthy
       securitydb:
-        condition: service_healthy
-      worldapi:
         condition: service_healthy

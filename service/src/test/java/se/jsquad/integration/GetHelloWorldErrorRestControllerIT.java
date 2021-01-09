@@ -36,7 +36,7 @@ import static org.mockserver.model.HttpResponse.response;
 public class GetHelloWorldErrorRestControllerIT extends AbstractTestContainerSetup {
     @BeforeEach
     void setupEndpointForRestAssured() {
-        setupEndPointRestAssured(PROTOCOL_HTTPS, SERVICE_NAME, SERVICE_PORT, BASE_PATH_API);
+        setupEndpointForRestAssuredAdapterHttps();
     }
     
     @AfterEach

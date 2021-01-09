@@ -20,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 @Validated
 public class JpaConfiguration {
@@ -29,8 +28,7 @@ public class JpaConfiguration {
     private String databasePlatform;
 
     @NotNull
-    @Pattern(regexp = "^validate$")
-    private String entityValidation;
+    private String entityAction;
 
     private String databaseAction;
 
@@ -46,12 +44,12 @@ public class JpaConfiguration {
         this.databasePlatform = databasePlatform;
     }
 
-    public String getEntityValidation() {
-        return entityValidation;
+    public String getEntityAction() {
+        return entityAction;
     }
 
-    public void setEntityValidation(String entityValidation) {
-        this.entityValidation = entityValidation;
+    public void setEntityAction(String entityAction) {
+        this.entityAction = entityAction;
     }
 
     public String getDatabaseAction() {
