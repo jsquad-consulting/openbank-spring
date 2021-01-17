@@ -1,2 +1,2 @@
-security.jpa.databasePlatform: org.hibernate.dialect.MySQL8Dialect
-security.jpa.entityValidation: validate
+security.jpa.databasePlatform: org.hibernate.dialect.PostgreSQL94Dialect
+security.jpa.entityAction: validate

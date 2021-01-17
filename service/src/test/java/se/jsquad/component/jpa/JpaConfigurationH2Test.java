@@ -64,7 +64,7 @@ public class JpaConfigurationH2Test {
     public void testOpenBankJpaConfiguration() {
         // Then
         assertEquals("org.hibernate.dialect.H2Dialect", openBankJpaConfiguration.getDatabasePlatform());
-        assertEquals("validate", openBankJpaConfiguration.getEntityValidation());
+        assertEquals("validate", openBankJpaConfiguration.getEntityAction());
         assertEquals("drop-and-create", openBankJpaConfiguration.getDatabaseAction());
         assertEquals("true", openBankJpaConfiguration.getSecondaryLevelCache());
         assertEquals("org.hibernate.cache.ehcache.EhCacheRegionFactory",
@@ -75,7 +75,7 @@ public class JpaConfigurationH2Test {
     public void testsecurityJpaConfiguration() {
         // Then
         assertEquals("org.hibernate.dialect.H2Dialect", securityJpaConfiguration.getDatabasePlatform());
-        assertEquals("validate", securityJpaConfiguration.getEntityValidation());
+        assertEquals("validate", securityJpaConfiguration.getEntityAction());
         assertEquals("drop-and-create", securityJpaConfiguration.getDatabaseAction());
         assertEquals("true", securityJpaConfiguration.getSecondaryLevelCache());
         assertEquals("org.hibernate.cache.ehcache.EhCacheRegionFactory",

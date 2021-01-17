@@ -1,2 +1,2 @@
-openbank.jpa.databasePlatform: org.hibernate.dialect.MySQL8Dialect
-openbank.jpa.entityValidation: validate
+openbank.jpa.databasePlatform: org.hibernate.dialect.PostgreSQL94Dialect
+openbank.jpa.entityAction: validate

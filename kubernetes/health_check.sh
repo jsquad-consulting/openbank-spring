@@ -38,10 +38,8 @@ done
 statusCodeHttpEndPoint=$(curl -o /dev/null -I -w "%{http_code}"  -X GET "http://localhost/actuator/shallowhealth")
 statusCodeHttpsEndpoint=$(curl -o /dev/null -I -w "%{http_code}" -kX GET "https://localhost/api/client/info/191212121212")
 
-k3d cluster delete jsquad
-docker rm -vf $(docker ps -a -q) || true
-docker system prune -af --volumes
-
 if [ "$statusCodeHttpEndPoint" -ne 200 ] || [ "$statusCodeHttpsEndpoint" -ne 200 ]; then
 	exit 1
 fi
+
+exit 0

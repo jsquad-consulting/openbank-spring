@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GetClientInformationRestControllerIT extends AbstractTestContainerSetup {
     @BeforeEach
     void setupEndpointForRestAssured() {
-        setupEndPointRestAssured(PROTOCOL_HTTPS, SERVICE_NAME, SERVICE_PORT, BASE_PATH_API);
+        setupEndpointForRestAssuredAdapterHttps();
     }
     
     @Test

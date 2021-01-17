@@ -14,11 +14,14 @@
 # limitations under the License.
 #
 
-FROM openjdk:11-jre-slim
-
-COPY target/openbank-service-0.0.1-SNAPSHOT.jar /app/openbank-spring.jar
-
-EXPOSE 8443 8081 8000
-
-CMD ["sh", "-c", "java -jar /app/openbank-spring.jar --jasypt.encryptor.password=${MASTER_SECRET} \
---spring.config.location=${CONFIG_FILE_LOCATIONS}"]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: security-postgres-data-disk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

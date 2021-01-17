@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: OpenBank API
-  description: This is an local HTTPS OpenBank server. You can find out more about
-    OpenBank at [http://jsquad.se](http://jsquad.se).
+  description: "This is an local HTTPS OpenBank server. You can find out more about\
+    \ OpenBank at [http://jsquad.se](http://jsquad.se)."
   termsOfService: http://jsquad.se/terms/
   license:
     name: Apache 2.0
@@ -12,6 +12,79 @@ servers:
 - url: https://localhost:8443
   description: Local OpenBank API server.
 paths:
+  /api/update/client/information:
+    put:
+      summary: "Update client information, mock implementation"
+      description: Update the client information based with common constraint vaidation
+        for ClientApi xsd model.
+      operationId: updateClientInformation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInformationRequest'
+      responses:
+        "200":
+          description: Get ClientApi model as base response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientInformationResponse'
+        "400":
+          description: Bad content
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ClientApi payload contains bad content.
+        "500":
+          description: Severe system failure has occured!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Severe system failure has occured!
+  /api/get/client/info/:
+    get:
+      summary: Get client by client request body
+      description: Get the ClientAPI response object with uniqueue personal identification
+        number as part of the request body.
+      operationId: getClientInformationByRequestBody
+      requestBody:
+        description: ClientRequest body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+        required: true
+      responses:
+        "200":
+          description: The client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientApi'
+        "400":
+          description: Invalid personal identification number
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid personal identification number.
+        "404":
+          description: Client not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Client not found.
+        "500":
+          description: Severe system failure has occured!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Severe system failure has occured!
   /api/date/time/{dateTime}:
     get:
       summary: Get date time
@@ -39,38 +112,6 @@ paths:
               schema:
                 type: string
                 example: Invalid date time format.
-        "500":
-          description: Severe system failure has occured!
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Severe system failure has occured!
-  /api/update/client/information:
-    put:
-      summary: Update client information, mock implementation
-      description: Update the client information based with common constraint vaidation
-        for ClientApi xsd model.
-      operationId: updateClientInformation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClientInformationRequest'
-      responses:
-        "200":
-          description: Get ClientApi model as base response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientInformationResponse'
-        "400":
-          description: Bad content
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: ClientApi payload contains bad content.
         "500":
           description: Severe system failure has occured!
           content:
@@ -139,47 +180,6 @@ paths:
               schema:
                 type: string
                 example: Severe system failure has occured!
-  /api/get/client/info/:
-    get:
-      summary: Get client by client request body
-      description: Get the ClientAPI response object with uniqueue personal identification
-        number as part of the request body.
-      operationId: getClientInformationByRequestBody
-      requestBody:
-        description: ClientRequest body.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClientRequest'
-        required: true
-      responses:
-        "200":
-          description: The client
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientApi'
-        "400":
-          description: Invalid personal identification number
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Invalid personal identification number.
-        "404":
-          description: Client not found.
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Client not found.
-        "500":
-          description: Severe system failure has occured!
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Severe system failure has occured!
   /api/openbank/start/slow/batch/mock:
     get:
       operationId: getOpenBankBatchStatus
@@ -192,15 +192,6 @@ paths:
                 type: string
 components:
   schemas:
-    DateTime:
-      required:
-      - dateTime
-      type: object
-      properties:
-        dateTime:
-          type: string
-          description: Date time
-          example: 2019-11-05T11:33:11ZZ
     AccountApi:
       type: object
       properties:
@@ -285,8 +276,8 @@ components:
           type: string
           description: Email address
           example: john.doe@mail.com
-      description: PersonAPI contains person's firstname, lastname and email address
-        information.
+      description: "PersonAPI contains person's firstname, lastname and email address\
+        \ information."
     ClientInformationRequest:
       type: object
       properties:
@@ -298,27 +289,6 @@ components:
             $ref: '#/components/schemas/AccountApi'
         clientType:
           $ref: '#/components/schemas/ClientTypeApi'
-    ClientApi:
-      required:
-      - clientType
-      - person
-      type: object
-      properties:
-        person:
-          $ref: '#/components/schemas/PersonApi'
-        accountList:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountApi'
-        clientType:
-          $ref: '#/components/schemas/ClientTypeApi'
-    WorldApiResponse:
-      required:
-      - message
-      type: object
-      properties:
-        message:
-          type: string
     ClientData:
       required:
       - personIdentificationNumber
@@ -336,6 +306,36 @@ components:
         clientData:
           $ref: '#/components/schemas/ClientData'
       description: The client request body.
+    ClientApi:
+      required:
+      - clientType
+      - person
+      type: object
+      properties:
+        person:
+          $ref: '#/components/schemas/PersonApi'
+        accountList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountApi'
+        clientType:
+          $ref: '#/components/schemas/ClientTypeApi'
+    DateTime:
+      required:
+      - dateTime
+      type: object
+      properties:
+        dateTime:
+          type: string
+          description: Date time
+          example: 2019-11-05T11:33:11ZZ
+    WorldApiResponse:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
   securitySchemes:
     basicScheme:
       type: http

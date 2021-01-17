@@ -36,7 +36,7 @@ import static org.mockserver.model.HttpResponse.response;
 public class GetHelloWorldOkRestControllerIT extends AbstractTestContainerSetup {
     @BeforeEach
     void setupEndpointForRestAssured() {
-        setupEndPointRestAssured(PROTOCOL_HTTPS, SERVICE_NAME, SERVICE_PORT, BASE_PATH_API);
+        setupEndpointForRestAssuredAdapterHttps();
     }
     
     @AfterEach
@@ -67,12 +67,13 @@ public class GetHelloWorldOkRestControllerIT extends AbstractTestContainerSetup 
                 .accept(ContentType.JSON)
                 .when()
                 .get(URI.create("/get/hello/world")).andReturn();
-
+        
         // Then
+        assertEquals(200, response.getStatusCode());
+    
         WorldApiResponse worldApiResponseResult = gson.fromJson(response.getBody().print(),
                 WorldApiResponse.class);
 
-        assertEquals(200, response.getStatusCode());
 
         assertEquals("Hello world", worldApiResponseResult.getMessage());
     }
