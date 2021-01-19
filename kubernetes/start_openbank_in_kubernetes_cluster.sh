@@ -29,15 +29,14 @@ mockserver http://www.mock-server.com/mockserver-5.11.1.tgz
 
 ./verify_deployed_service.sh mockserver
 
-export NODE_PORT=$(kubectl get -n default -o jsonpath="{.spec.ports[0].nodePort}" services mockserver)
-export NODE_IP=$(kubectl get nodes -n default -o jsonpath="{.items[0].status.addresses[0].address}")
+NODE_PORT=$(kubectl get -n default -o jsonpath="{.spec.ports[0].nodePort}" services mockserver)
+NODE_IP=$(kubectl get nodes -n default -o jsonpath="{.items[0].status.addresses[0].address}")
+
 export MOCKSERVER_HOST=$NODE_IP:$NODE_PORT
 
-export MOCKSERVER_HOST
-
-kubectl create secret generic openbank-spring-secret --from-literal=MASTER_KEY=$MASTER_KEY \
---from-literal=ROOT_PASSWORD=$ROOT_PASSWORD --from-literal=OPENBANK_PASSWORD=$OPENBANK_PASSWORD \
---from-literal=SECURITY_PASSWORD=$SECURITY_PASSWORD --from-literal=WORLD_API_HOST_AND_PORT=$MOCKSERVER_HOST
+kubectl create secret generic openbank-spring-secret --from-literal=MASTER_KEY="$MASTER_KEY" \
+--from-literal=ROOT_PASSWORD="$ROOT_PASSWORD" --from-literal=OPENBANK_PASSWORD="$OPENBANK_PASSWORD" \
+--from-literal=SECURITY_PASSWORD="$SECURITY_PASSWORD" --from-literal=WORLD_API_HOST_AND_PORT="$MOCKSERVER_HOST"
 
 kubectl create configmap ssl-volume --from-file=service/src/test/resources/test/ssl/truststore
 kubectl create configmap flyway-ddl-volume --from-file=security/sql
