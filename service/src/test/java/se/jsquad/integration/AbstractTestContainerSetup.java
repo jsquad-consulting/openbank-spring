@@ -57,7 +57,7 @@ public class AbstractTestContainerSetup {
     private static final int HTTP_K8_PORT = 80;
     private static final int HTTPS_K8_PORT = 443;
     private static final int POSTGRES_PORT = 5432;
-    private static final int WORLD_API_PORT = 1080;
+    private static final int MOCK_SERVER_PORT = 1080;
     private static final Logger logger = LogManager.getLogger(AbstractTestContainerSetup.class);
     private static final String DEFAULT_NAME_SPACE = "default";
     private static final String LOCALHOST = "localhost";
@@ -76,7 +76,6 @@ public class AbstractTestContainerSetup {
     protected static final String PROTOCOL_HTTP = "http://";
     protected static final String PROTOCOL_HTTPS = "https://";
     protected static final String SERVICE_NAME = "openbank";
-    protected static final String WORLD_API_NAME = "worldapi";
     protected static MockServerClient mockServerClient;
     
     public static DockerComposeContainer dockerComposeContainer;
@@ -132,7 +131,7 @@ public class AbstractTestContainerSetup {
     }
     
     protected static void setupMockServerClient() {
-            mockServerClient = new MockServerClient(LOCALHOST, WORLD_API_PORT);
+            mockServerClient = new MockServerClient(LOCALHOST, MOCK_SERVER_PORT);
     }
     
     protected void setupEndpointForRestAssuredAdapterHttps() {

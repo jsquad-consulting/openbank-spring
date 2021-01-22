@@ -16,7 +16,7 @@ server.ssl.key-store: classpath:ssl/keystore/jsquad.pfx
 server.ssl.key-store-password: ENC(M5JhYsUTMq6n1OKArpvF+TvuBjQTDO+/)
 server.ssl.enabled: true
 
-world.webclient.baseUrl: http://
+world.webclient.baseUrl: http://mockserver:1080
 
 management.endpoint:
   prometheus:

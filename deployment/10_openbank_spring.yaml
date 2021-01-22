@@ -41,11 +41,6 @@ spec:
             - containerPort: 8081
               name: http
           env:
-            - name: WORLD_API_HOST_AND_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: openbank-spring-secret
-                  key: WORLD_API_HOST_AND_PORT
             - name: MASTER_SECRET
               valueFrom:
                 secretKeyRef:

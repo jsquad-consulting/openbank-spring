@@ -351,11 +351,9 @@ public class ApplicationConfiguration {
         HttpClient httpClient = HttpClient.from(tcpClient);
 
         return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient))
-                .baseUrl(worldWebClientConfiguration.getBaseUrl()
-                    + System.getenv("WORLD_API_HOST_AND_PORT"))
+                .baseUrl(worldWebClientConfiguration.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", worldWebClientConfiguration.getBaseUrl()
-                    + System.getenv("WORLD_API_HOST_AND_PORT")))
+                .defaultUriVariables(Collections.singletonMap("url", worldWebClientConfiguration.getBaseUrl()))
                 .build();
     }
 
