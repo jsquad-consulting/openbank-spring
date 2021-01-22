@@ -16,8 +16,8 @@
 
 version: "2.4"
 services:
-  worldapi:
-    image: jamesdbloom/mockserver:mockserver-5.11.1
+  mockserver:
+    image: jamesdbloom/mockserver:mockserver-5.11.2
     expose:
       - "1080"
     ports:
@@ -61,7 +61,6 @@ services:
       context: ../../../.
       dockerfile: Dockerfile
     environment:
-      WORLD_API_HOST_AND_PORT: "worldapi:1080"
       MASTER_SECRET: "${MASTER_KEY}"
       CONFIG_FILE_LOCATIONS: "classpath:application.properties,classpath:configuration_local.yaml,classpath:activemq.properties,classpath:openbank_jpa.yaml,classpath:security_jpa.yaml"
     expose:
