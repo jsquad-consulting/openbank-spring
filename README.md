@@ -46,6 +46,26 @@ mvn clean install -T 1C
 
 ## Run integration tests
 
+Prepare the environment with 'secret' environment variables.
+
+```bash
+source setup_environment_variables.sh
+```
+
+### Prepare for Docker environment
+
+```bash
+source setup_docker_environment.sh
+```
+
+### Prepare for Kubernetes environment
+
+```bash
+source setup_kubernetes_environment.sh
+```
+
+### Execute the integration tests for specific environment
+
 ```bash
 mvn verify -Pintegrationtests
 ```

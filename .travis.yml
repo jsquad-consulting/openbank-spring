@@ -75,7 +75,6 @@ jobs:
         - source setup_kubernetes_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-k8-integration.yaml build --force
         - travis_wait 60 cd service && mvn test -Dtest=*IT && cd ..
-        - docker rm -vf $(docker ps -a -q)
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
