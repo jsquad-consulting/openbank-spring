@@ -30,6 +30,7 @@
     </modules>
 
     <properties>
+        <activemq.kahadb.store.version>5.16.1</activemq.kahadb.store.version>
         <awaitility.version>4.0.3</awaitility.version>
         <build.helper.maven.version>3.2.0</build.helper.maven.version>
         <exec.maven.plugin.version>3.0.0</exec.maven.plugin.version>
@@ -50,7 +51,6 @@
         <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
         <jaxws.ri.version>2.3.0</jaxws.ri.version>
         <jdk.version>11</jdk.version>
-        <junit5.version>5.7.0</junit5.version>
         <kubernetes.client.version>11.0.0</kubernetes.client.version>
         <logcaptor.version>2.2.0</logcaptor.version>
         <lombok.version>1.18.16</lombok.version>
@@ -82,6 +82,12 @@
                 <scope>import</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-kahadb-store</artifactId>
+                <version>${activemq.kahadb.store.version}</version>
+                <scope>runtime</scope>
+            </dependency>
             <dependency>
                 <groupId>org.jvnet.jaxb2_commons</groupId>
                 <artifactId>jaxb2-basics-runtime</artifactId>
@@ -209,17 +215,21 @@
                 <version>${awaitility.version}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${junit5.version}</version>
-                <scope>test</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <plugins>
+            <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
+                <configuration>
+                    <argLine>
+                        --illegal-access=permit
+                    </argLine>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
@@ -284,6 +294,12 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <classpathDependencyExcludes>
+                                <classpathDependencyExcludes>${groupId}:${artifactId}</classpathDependencyExcludes>
+                            </classpathDependencyExcludes>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
+                            </additionalClasspathElements>
                             <argLine>
                                 --illegal-access=permit
                             </argLine>
@@ -292,6 +308,7 @@
                     </plugin>
                     <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven.surefire.version}</version>
                         <configuration>
