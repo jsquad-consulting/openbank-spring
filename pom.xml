@@ -50,11 +50,14 @@
         <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
         <jaxws.ri.version>2.3.0</jaxws.ri.version>
         <jdk.version>11</jdk.version>
+        <junit5.version>5.7.0</junit5.version>
         <kubernetes.client.version>11.0.0</kubernetes.client.version>
         <logcaptor.version>2.2.0</logcaptor.version>
         <lombok.version>1.18.16</lombok.version>
         <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.surefire.version>2.22.2</maven.surefire.version>
         <micrometer.version>1.6.2</micrometer.version>
         <mockserver.version>5.11.1</mockserver.version>
@@ -204,6 +207,12 @@
                 <groupId>org.awaitility</groupId>
                 <artifactId>awaitility</artifactId>
                 <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit5.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

@@ -20,22 +20,26 @@ services:
     network_mode: host
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    build:
-      context: ../../../../kubernetes
-      dockerfile: Dockerfile
+    image: jsquadab/k3dcontainer:latest
     environment:
-      MASTER_KEY: ${MASTER_KEY}
-      ROOT_PASSWORD: ${ROOT_PASSWORD}
-      OPENBANK_PASSWORD: ${OPENBANK_PASSWORD}
-      SECURITY_PASSWORD: ${SECURITY_PASSWORD}
+      CLUSTER_NAME: "jsquad"
+      CLUSTER_API_PORT: "6443"
+      LOAD_BALANCER_PORTS: "1080 80 443"
+      SECRET_ENVIRONMENT: "openbank-spring-secret"
+      SECRETS_ENVIRONMENT_VARIABLES: "MASTER_KEY=${MASTER_KEY} ROOT_PASSWORD=${ROOT_PASSWORD} \
+      OPENBANK_PASSWORD=${OPENBANK_PASSWORD} SECURITY_PASSWORD=${SECURITY_PASSWORD}"
+      CREATE_CONFIG_MAPS_VOLUMES_FROM_FILES_COMMAND: "kubectl create configmap ssl-volume \
+      --from-file=/service/src/test/resources/test/ssl/truststore && \
+      kubectl create configmap flyway-ddl-volume --from-file=/security/sql"
+      DEPLOY_YAML_FILES_PATH: "/deployment"
     volumes:
+    - ../../../../kubernetes:/kubernetes
     - ../../../../deployment:/deployment
-    - ../../../../verify_deployed_service.sh:/verify_deployed_service.sh
     - ../../../../security:/security
     - ../../../../service:/service
     - /var/run/docker.sock:/var/run/docker.sock
     healthcheck:
-      test: ["CMD-SHELL", "sh -c '/app/health_check.sh || exit 1'"]
+      test: ["CMD-SHELL", "sh -c '/kubernetes/health_check.sh || exit 1'"]
       interval: 10s
       timeout: 10s
       retries: 120
