@@ -69,12 +69,12 @@ jobs:
         - mvn clean install -DskipTests
         - source setup_docker_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-int.yaml build --force
-        - travis_wait 30 cd service && mvn test -Dtest=*IT && cd ..
+        - travis_wait 30 mvn verify -Pintegrationtests
     - stage: run integration tests in Kubernetes
       script:
         - source setup_kubernetes_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-k8-integration.yaml build --force
-        - travis_wait 60 cd service && mvn test -Dtest=*IT && cd ..
+        - travis_wait 60 mvn verify -Pintegrationtests
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:

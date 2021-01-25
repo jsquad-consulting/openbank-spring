@@ -9,8 +9,8 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: "1"
 servers:
-- url: https://localhost:8443
-  description: Local OpenBank API server.
+  - url: https://localhost:8443
+    description: Local OpenBank API server.
 paths:
   /api/update/client/information:
     put:
@@ -91,13 +91,13 @@ paths:
       description: Get the date time RFC3339 string
       operationId: getDateTime
       parameters:
-      - name: dateTime
-        in: path
-        description: The get date time.
-        required: true
-        schema:
-          type: string
-        example: 2019-11-01T00:00:00ZZ
+        - name: dateTime
+          in: path
+          description: The get date time.
+          required: true
+          schema:
+            type: string
+          example: 2019-11-01T00:00:00ZZ
       responses:
         "200":
           description: The date time
@@ -126,13 +126,13 @@ paths:
         number as parameter argument.
       operationId: getClientInformation
       parameters:
-      - name: personIdentification
-        in: path
-        description: The person identification number
-        required: true
-        schema:
-          type: string
-        example: 191212121212
+        - name: personIdentification
+          in: path
+          description: The person identification number
+          required: true
+          schema:
+            type: string
+          example: 191212121212
       responses:
         "200":
           description: The client
@@ -204,21 +204,21 @@ components:
             $ref: '#/components/schemas/AccountTransactionApi'
     AccountTransactionApi:
       required:
-      - message
-      - transactionType
+        - message
+        - transactionType
       type: object
       properties:
         transactionType:
           type: string
           enum:
-          - DEPOSIT
-          - WITHDRAWAL
+            - DEPOSIT
+            - WITHDRAWAL
         message:
           type: string
     ClientInformationResponse:
       required:
-      - clientType
-      - person
+        - clientType
+        - person
       type: object
       properties:
         person:
@@ -231,17 +231,17 @@ components:
           $ref: '#/components/schemas/ClientTypeApi'
     ClientTypeApi:
       required:
-      - country
-      - specialOffers
-      - type
+        - country
+        - specialOffers
+        - type
       type: object
       properties:
         type:
           type: string
           enum:
-          - REGULAR
-          - PREMIUM
-          - FOREIGN
+            - REGULAR
+            - PREMIUM
+            - FOREIGN
         specialOffers:
           type: string
         rating:
@@ -254,10 +254,10 @@ components:
           type: string
     PersonApi:
       required:
-      - firstName
-      - lastName
-      - mail
-      - personIdentification
+        - firstName
+        - lastName
+        - mail
+        - personIdentification
       type: object
       properties:
         personIdentification:
@@ -291,7 +291,7 @@ components:
           $ref: '#/components/schemas/ClientTypeApi'
     ClientData:
       required:
-      - personIdentificationNumber
+        - personIdentificationNumber
       type: object
       properties:
         personIdentificationNumber:
@@ -300,7 +300,7 @@ components:
           example: "191212121212"
     ClientRequest:
       required:
-      - clientData
+        - clientData
       type: object
       properties:
         clientData:
@@ -308,8 +308,8 @@ components:
       description: The client request body.
     ClientApi:
       required:
-      - clientType
-      - person
+        - clientType
+        - person
       type: object
       properties:
         person:
@@ -322,7 +322,7 @@ components:
           $ref: '#/components/schemas/ClientTypeApi'
     DateTime:
       required:
-      - dateTime
+        - dateTime
       type: object
       properties:
         dateTime:
@@ -331,7 +331,7 @@ components:
           example: 2019-11-05T11:33:11ZZ
     WorldApiResponse:
       required:
-      - message
+        - message
       type: object
       properties:
         message:
