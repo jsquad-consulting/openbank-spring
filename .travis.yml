@@ -33,7 +33,7 @@ before_install:
   - which java
   - java -version
   - $JAVA_HOME/bin/java -version
-  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - sudo curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
   - sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
@@ -63,13 +63,13 @@ jobs:
   include:
     - stage: build and run unit/system tests
       script:
-        - travis_wait 30 mvn clean install
+        - travis_wait 60 mvn clean install
     - stage: run integration tests in Docker
       script:
         - mvn clean install -DskipTests
         - source setup_docker_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-int.yaml build --force
-        - travis_wait 30 mvn verify -Pintegrationtests
+        - travis_wait 60 mvn verify -Pintegrationtests
     - stage: run integration tests in Kubernetes
       script:
         - source setup_kubernetes_integration_environment.sh
@@ -85,4 +85,4 @@ jobs:
 env:
   global:
     - SH=bash
-    - secure: FzaylBC/qmTKgDzoQDyvHcvM6/Vw+QMfLUZ2EUuQnAFyyHJI+4X2NzrA5+lQRf5mGfA+85fLwXT6ZtWEi8glBHgGLlTsyUOZJL+XbaDUH3kfSN5vQoNTw8Ewj0CIq0TeiETg6Qr3PrXw2qzXPhogXctOtNnZuU8aBAbEybB5LkhUqrcF0aIdzZeGIqZB+CbvqAjqIQyxGM+FWUCeW7PDjD6SaW8lgXBga+Cif1TMjShtrsyCXqhVW9PLf3g+aruZJKx6FpZFObUO4bd6GOPvjHscPJsUBAuBk/3mk/ZJleo/YQl6yEklI9HV8WeALmbqGGq9JRsltfSDCdbO+HfYZO9UrFSM6f+FdArodDZXMKHMKyiwcu3c/s7R1USk6zWNoiS9QRdjjzq3zr6Z8N2G1uRefPax9LpCgR9gXXpQYT/z4DRwhjOYhfMSUpFCL3bkwPouGS68db4lxmfKDQkMfhVBONFvcHnsHvZaaJ8LoP3t6j5Wl2fsuWGjfrnjWE6HhGYG0bxywIGeqKxRonI2y9M6kQ9I534Is6xNvOxPNxDEcC3CthRywj2IGJx+L9D1qcFIBsdMuuLw9ZwrnOxLVkq2BXceVZxUQUL9XHWAE8laaZKGdxOdD92/z5M/2mWjp7PnDDsmss2S/sQ5tw7RMMEsXUI34Fod2nq2Q/+akM0=
+    - secure: kT+kPtRx05Epih2BDyUPdb190gJYhABBa0gOAvnn1nvpBCgCm3Uq2PM1aTMNOpyPtVBPh5r9amJOo99Cm8vUC3/12UiUHstACfCNoWTBUhu/rNOYx6w8oPzEmo5lGwXS3/8s1GnTDlwbzmYvOHV2vflyxx3UTlrdH79gsCKIUME3vMaoJ6DnMFeLrBuyzWqwHvXtS8xCxOGHxS3WmTMtxnIqRJ7iNhmvphVbB+ocXvihxoYiDKw5Feo+Fda51UFNyvByHAsdaoJCgGTEA6n+sY6Kfmeohet3qYs/1samQqPj4sutGtiYHSRkp6SpcdM4oTHCuLZQ37ixmdRZdziHcPPWngXRXG/m3gQib6StvJ/fno63I5jzuq//Hk9noal/g7gNcoAYuNAxhmwczyEgrdbUpvt1E21t++1V8KJASuriyfEnr/UKnyfQTxodP1AZbVut7IwUPR14KR1y8VFd8BuAM+mJfux3N04HUc/MkwinaunjthvdVffCcV8KCVMbK5MR/RL/Zg1i7e1xhTckpJIoYEZBgQf7fXUKwdKX+jKAFBXGEgegm3DqzqIEGLMp3zpt6VNNt+SUUfOo89jljxc2vSoTvOx06RtLRrD+iHT74uBslnf9BEBWlHL4Ms8wOKoPrQCsbPJuotGX2zw8L3ONEwetwWuX64aH5MBN1nM=
