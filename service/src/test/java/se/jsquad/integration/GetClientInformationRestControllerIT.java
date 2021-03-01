@@ -19,7 +19,6 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import se.jsquad.client.info.ClientApi;
@@ -30,18 +29,17 @@ import se.jsquad.client.info.ClientRequest;
 import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TypeApi;
 
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static se.jsquad.integration.RyukIntegration.BASE_PATH_API;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_SERVICE;
+import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTPS;
 
 public class GetClientInformationRestControllerIT extends AbstractTestContainerSetup {
-    @BeforeEach
-    void setupEndpointForRestAssured() {
-        setupEndpointForRestAssuredAdapterHttps();
-    }
-    
     @Test
-    void updateClientInformation() {
+    void updateClientInformation() throws MalformedURLException, URISyntaxException {
         // Given
         ClientInformationRequest clientInformationRequest = new ClientInformationRequest();
 
@@ -57,7 +55,8 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
                 .accept(ContentType.JSON)
                 .body(clientInformationRequest)
                 .when()
-                .put(URI.create("/update/client/information/")).andReturn();
+                .put(toURI(BASE_PATH_API + "/update/client/information/", PROTOCOL_HTTPS, OPENBANK_SERVICE))
+            .andReturn();
 
         ClientInformationResponse clientApiResponse = gson.fromJson(response.getBody().asString(),
                 ClientInformationResponse.class);
@@ -68,7 +67,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
     }
 
     @Test
-    void updateClientInformationWithBadContent() {
+    void updateClientInformationWithBadContent() throws MalformedURLException, URISyntaxException {
         // Given
         ClientInformationRequest clientInformationRequest = new ClientInformationRequest();
 
@@ -84,7 +83,8 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
                 .accept(ContentType.JSON)
                 .body(clientInformationRequest)
                 .when()
-                .put(URI.create("/update/client/information/")).andReturn();
+                .put(toURI(BASE_PATH_API + "/update/client/information/", PROTOCOL_HTTPS, OPENBANK_SERVICE))
+            .andReturn();
 
         // Then
         assertEquals(400, response.getStatusCode());
@@ -92,7 +92,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
     }
 
     @Test
-    void testGetClientInformation() {
+    void testGetClientInformation() throws MalformedURLException, URISyntaxException {
         // Given
         String personIdentificationNumber = "191212121212";
 
@@ -102,7 +102,8 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/client/info/" + personIdentificationNumber)).andReturn();
+                .get(toURI(BASE_PATH_API + "/client/info/" + personIdentificationNumber, PROTOCOL_HTTPS,
+                    OPENBANK_SERVICE)).andReturn();
 
         ClientApi clientApi = gson.fromJson(response.getBody().print(), ClientApi.class);
 
@@ -129,7 +130,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
     }
 
     @Test
-    void testGetClientInformationWithInvalidPersonIdenticationNumber() {
+    void testGetClientInformationWithInvalidPersonIdenticationNumber() throws MalformedURLException, URISyntaxException {
         // Given
         String personIdentificationNumber = "123";
 
@@ -139,7 +140,8 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/client/info/" + personIdentificationNumber)).andReturn();
+                .get(toURI(BASE_PATH_API + "/client/info/" + personIdentificationNumber, PROTOCOL_HTTPS,
+                    OPENBANK_SERVICE)).andReturn();
 
 
         // Then
@@ -149,7 +151,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
     }
 
     @Test
-    void testGetClientInformationByClientRequestBody() {
+    void testGetClientInformationByClientRequestBody() throws MalformedURLException, URISyntaxException {
         // Given
         ClientRequest clientRequest = new ClientRequest();
         clientRequest.setClientData(new ClientData());
@@ -163,7 +165,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
                 .accept(ContentType.JSON)
                 .when()
                 .body(gson.toJson(clientRequest))
-                .get(URI.create("/get/client/info/")).andReturn();
+                .get(toURI(BASE_PATH_API + "/get/client/info/", PROTOCOL_HTTPS, OPENBANK_SERVICE)).andReturn();
 
         ClientApi clientApi = gson.fromJson(response.getBody().print(), ClientApi.class);
 
@@ -192,7 +194,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
     }
 
     @Test
-    void testGetClientInformationWithRequestBodyConstraints() {
+    void testGetClientInformationWithRequestBodyConstraints() throws MalformedURLException, URISyntaxException {
         // Given
         ClientRequest clientRequest = null;
 
@@ -203,7 +205,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
                 .accept(ContentType.JSON)
                 .when()
                 .body(gson.toJson(clientRequest))
-                .get(URI.create("/get/client/info/")).andReturn();
+                .get(toURI(BASE_PATH_API + "/get/client/info/", PROTOCOL_HTTPS, OPENBANK_SERVICE)).andReturn();
 
 
         // Then

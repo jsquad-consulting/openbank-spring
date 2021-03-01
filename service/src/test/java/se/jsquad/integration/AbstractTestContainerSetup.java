@@ -28,10 +28,6 @@ import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1DeploymentSpec;
 import io.kubernetes.client.util.Config;
-import io.restassured.RestAssured;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,6 +48,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -60,33 +59,30 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import static se.jsquad.integration.RyukIntegration.CONTAINER_ENVIRONMENT;
+import static se.jsquad.integration.RyukIntegration.DEFAULT_NAME_SPACE;
+import static se.jsquad.integration.RyukIntegration.DOCKER_COMPOSE_SERVICE_NAME_ENDING;
+import static se.jsquad.integration.RyukIntegration.KUBERNETES_STARTER_SERVICE_NAME;
+import static se.jsquad.integration.RyukIntegration.LOCALHOST;
+import static se.jsquad.integration.RyukIntegration.MOCK_SERVER_PORT;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_DATABASE;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_SERVICE;
+import static se.jsquad.integration.RyukIntegration.SECURITY_DATABASE;
+import static se.jsquad.integration.RyukIntegration.setupRestAssured;
+
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
 public class AbstractTestContainerSetup {
     private static DockerComposeContainer dockerComposeContainerStarter;
     private static final Duration TWENTY_MINUTES = Duration.ofMinutes(20);
-    private static final int HTTP_K8_PORT = 80;
-    private static final int HTTPS_K8_PORT = 443;
-    private static final int POSTGRES_PORT = 5432;
-    private static final int MOCK_SERVER_PORT = 1080;
-    private static final Logger logger = LogManager.getLogger(AbstractTestContainerSetup.class);
-    private static final String DEFAULT_NAME_SPACE = "default";
-    private static final String LOCALHOST = "localhost";
-    private static final String OPENBANK_DATABASE = "openbankdb";
-    private static final String SECURITY_DATABASE = "securitydb";
+
     private static List<V1Deployment> scaledDeployments = new ArrayList();
     
     protected Gson gson = new Gson();
     protected static AppsV1Api appsV1Api;
     protected static CoreV1Api coreV1Api;
-    protected static final int MONITORING_PORT = 8081;
-    protected static final int SERVICE_PORT = 8443;
-    protected static final String BASE_PATH_ACTUATOR = "/actuator";
-    protected static final String BASE_PATH_API = "/api";
-    protected static final String CONTAINER_ENVIRONMENT = System.getenv("CONTAINER_ENVIRONMENT");
-    protected static final String PROTOCOL_HTTP = "http://";
-    protected static final String PROTOCOL_HTTPS = "https://";
-    protected static final String SERVICE_NAME = "openbank";
+    
     protected static MockServerClient mockServerClient;
     protected static int NUMBER_OF_INTEGRATION_TESTS;
     protected static int NUMBER_OF_EXECUTED_TESTS = 0;
@@ -104,15 +100,16 @@ public class AbstractTestContainerSetup {
                     .withLocalCompose(true)
                     .withPull(false)
                     .withTailChildContainers(false)
-                    .withExposedService(OPENBANK_DATABASE, POSTGRES_PORT, waitFor20Minutes())
-                    .withExposedService(SECURITY_DATABASE, POSTGRES_PORT, waitFor20Minutes())
-                    .withExposedService(SERVICE_NAME, SERVICE_PORT, waitFor20Minutes())
-                    .withExposedService(SERVICE_NAME, MONITORING_PORT, waitFor20Minutes());
+                    .withExposedService(OPENBANK_DATABASE.getServiceName(), OPENBANK_DATABASE.getPort(),
+                        waitFor20Minutes())
+                    .withExposedService(SECURITY_DATABASE.getServiceName(), SECURITY_DATABASE.getPort(),
+                        waitFor20Minutes())
+                    .withExposedService(OPENBANK_SERVICE.getServiceName(), OPENBANK_SERVICE.getPort(),
+                        waitFor20Minutes())
+                    .withExposedService(OPENBANK_MONITORING.getServiceName(), OPENBANK_MONITORING.getPort(),
+                        waitFor20Minutes());
                 dockerComposeContainerStarter.start();
                 dockerComposeContainer = dockerComposeContainerStarter;
-                
-                setupRestAssured();
-                setupMockServerClient();
             } else if (CONTAINER_ENVIRONMENT.equals("KUBERNETES")) {
                 dockerComposeContainerStarter = new
                     DockerComposeContainer(new File("src/test/resources/" +
@@ -120,16 +117,14 @@ public class AbstractTestContainerSetup {
                     .withLocalCompose(true)
                     .withPull(false)
                     .withTailChildContainers(false)
-                    .waitingFor("kubernetes-starter_1", Wait.forHealthcheck()
-                        .withStartupTimeout(TWENTY_MINUTES));
+                    .waitingFor(KUBERNETES_STARTER_SERVICE_NAME,
+                        Wait.forHealthcheck().withStartupTimeout(TWENTY_MINUTES));
                 dockerComposeContainerStarter.start();
                 dockerComposeContainer = dockerComposeContainerStarter;
                 
-                setupRestAssured();
-                setupMockServerClient();
-                
                 ContainerState containerState = (ContainerState) dockerComposeContainer
-                    .getContainerByServiceName("kubernetes-starter_1").get();
+                    .getContainerByServiceName(KUBERNETES_STARTER_SERVICE_NAME
+                        + DOCKER_COMPOSE_SERVICE_NAME_ENDING).get();
                 
                 containerState.copyFileFromContainer("/root/.kube/config", inputStream -> {
                     ApiClient apiClient = Config.fromConfig(inputStream);
@@ -142,6 +137,9 @@ public class AbstractTestContainerSetup {
                     return null;
                 });
             }
+            
+            setupRestAssured();
+            setupMockServerClient();
         }
     }
     
@@ -173,22 +171,6 @@ public class AbstractTestContainerSetup {
     
     protected static void setupMockServerClient() {
         mockServerClient = new MockServerClient(LOCALHOST, MOCK_SERVER_PORT);
-    }
-    
-    protected void setupEndpointForRestAssuredAdapterHttps() {
-        if (CONTAINER_ENVIRONMENT.equals("DOCKER")) {
-            setupEndPointRestAssured(PROTOCOL_HTTPS, SERVICE_NAME, SERVICE_PORT, BASE_PATH_API);
-        } else if (CONTAINER_ENVIRONMENT.equals("KUBERNETES")) {
-            setupEndPointRestAssured(PROTOCOL_HTTPS, LOCALHOST, HTTPS_K8_PORT, BASE_PATH_API);
-        }
-    }
-    
-    protected void setupEndpointForRestAssuredAdapterHttp() {
-        if (CONTAINER_ENVIRONMENT.equals("DOCKER")) {
-            setupEndPointRestAssured(PROTOCOL_HTTP, SERVICE_NAME, MONITORING_PORT, BASE_PATH_ACTUATOR);
-        } else if (CONTAINER_ENVIRONMENT.equals("KUBERNETES")) {
-            setupEndPointRestAssured(PROTOCOL_HTTP, LOCALHOST, HTTP_K8_PORT, BASE_PATH_ACTUATOR);
-        }
     }
     
     protected void executeContainerPodCLI(String service, String command) throws NoSuchMethodException,
@@ -256,32 +238,23 @@ public class AbstractTestContainerSetup {
             .withStartupTimeout(TWENTY_MINUTES);
     }
     
-    
-    private static void setupRestAssured() {
-        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
-        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-        textEncryptor.setPassword(System.getenv("MASTER_KEY"));
-        RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
-            textEncryptor.decrypt(encryptedPassword));
+    protected URI toURI(final String path, final String protocol, final RyukIntegration.RyukService ryukService)
+        throws MalformedURLException, URISyntaxException {
         
-        if (CONTAINER_ENVIRONMENT.equals("KUBERNETES")) {
-            RestAssured.useRelaxedHTTPSValidation();
-        }
-        
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
+        ContainerState containerState = (ContainerState) dockerComposeContainer
+            .getContainerByServiceName(ryukService.getServiceName() + DOCKER_COMPOSE_SERVICE_NAME_ENDING).get();
     
-    private void setupEndPointRestAssured(final String protocol, final String serviceName, final int servicePort,
-                                          final String basePath) {
+        final String mappedUri = containerState.getHost();
+        final int mappedPort;
+    
         if (CONTAINER_ENVIRONMENT.equals("DOCKER")) {
-            RestAssured.baseURI = protocol + dockerComposeContainer.getServiceHost(serviceName, servicePort);
-            RestAssured.port = dockerComposeContainer.getServicePort(serviceName, servicePort);
-        } else if (CONTAINER_ENVIRONMENT.equals("KUBERNETES")) {
-            RestAssured.baseURI = protocol + serviceName;
-            RestAssured.port = servicePort;
+            mappedPort = dockerComposeContainer.getServicePort(ryukService.getServiceName(),
+                ryukService.getPort());
+        } else {
+            mappedPort = ryukService.getPort();
         }
         
-        RestAssured.basePath = basePath;
+        return new URL(protocol, mappedUri, mappedPort, path).toURI();
     }
     
     private static int countNumberOfTests() throws IOException, ClassNotFoundException {
@@ -312,14 +285,14 @@ public class AbstractTestContainerSetup {
         assert classLoader != null;
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = classLoader.getResources(path);
-        List<File> dirs = new ArrayList<File>();
+        List<File> directories = new ArrayList<File>();
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
-            dirs.add(new File(resource.getFile()));
+            directories.add(new File(resource.getFile()));
         }
         
         ArrayList<Class> classes = new ArrayList<Class>();
-        for (File directory : dirs) {
+        for (File directory : directories) {
             classes.addAll(findClasses(directory, packageName));
         }
         return classes;

@@ -19,29 +19,27 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
+import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
 
 public class MonitorPrometheusUpStatusIT extends AbstractTestContainerSetup {
-    @BeforeEach
-    void setupEndpointForRestAssured() {
-        setupEndpointForRestAssuredAdapterHttp();
-    }
-    
     @Test
-    void testDeepHealthMetricsOk() {
+    void testDeepHealthMetricsOk() throws MalformedURLException, URISyntaxException {
         // When
         Response response = RestAssured
                 .given()
                 .contentType(ContentType.ANY)
                 .accept(ContentType.ANY)
                 .when()
-                .get(URI.create("/prometheus")).andReturn();
+                .get(toURI(BASE_PATH_ACTUATOR + "/prometheus", PROTOCOL_HTTP, OPENBANK_MONITORING)).andReturn();
 
         // Then
         assertEquals(200, response.getStatusCode());

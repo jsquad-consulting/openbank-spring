@@ -19,31 +19,29 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.jsquad.health.check.DeepSystemStatusResponse;
 import se.jsquad.health.check.HealthStatus;
 import se.jsquad.health.check.ShallowSystemStatusResponse;
 
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
+import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
 
 public class DeepAndShallowHealthCheckOkIT extends AbstractTestContainerSetup {
-    @BeforeEach
-    void setupEndpointForRestAssured() {
-        setupEndpointForRestAssuredAdapterHttp();
-    }
-    
     @Test
-    void testShallowHealthCheck() {
+    void testShallowHealthCheck() throws MalformedURLException, URISyntaxException {
         // When
         Response response = RestAssured
                 .given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/shallowhealth")).andReturn();
+                .get(toURI(BASE_PATH_ACTUATOR + "/shallowhealth", PROTOCOL_HTTP, OPENBANK_MONITORING)).andReturn();
 
         // Then
         ShallowSystemStatusResponse shallowSystemStatusResponse = gson.fromJson(response.getBody().asString(),
@@ -54,14 +52,14 @@ public class DeepAndShallowHealthCheckOkIT extends AbstractTestContainerSetup {
     }
 
     @Test
-    void testDeepHealthCheck() {
+    void testDeepHealthCheck() throws MalformedURLException, URISyntaxException {
         // When
         Response response = RestAssured
                 .given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/deephealth")).andReturn();
+                .get(toURI(BASE_PATH_ACTUATOR + "/deephealth", PROTOCOL_HTTP, OPENBANK_MONITORING)).andReturn();
 
         // Then
         DeepSystemStatusResponse deepSystemStatusResponse = gson.fromJson(response.getBody().asString(),

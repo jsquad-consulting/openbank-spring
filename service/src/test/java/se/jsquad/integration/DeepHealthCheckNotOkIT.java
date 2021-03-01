@@ -21,26 +21,24 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.jsquad.health.check.DeepSystemStatusResponse;
 import se.jsquad.health.check.HealthStatus;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
+import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
 
 public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
-    @BeforeEach
-    void setupEndpointForRestAssured() {
-        setupEndpointForRestAssuredAdapterHttp();
-    }
-    
     @Test
     void testDeepHealthCheckNotOk() throws NoSuchMethodException, InvocationTargetException,
-        IllegalAccessException, ApiException {
+        IllegalAccessException, ApiException, MalformedURLException, URISyntaxException {
         // Given
         executeContainerPodCLI("openbankdb", "KILL");
         executeContainerPodCLI("securitydb", "KILL");
@@ -51,7 +49,7 @@ public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/deephealth")).andReturn();
+                .get(toURI(BASE_PATH_ACTUATOR + "/deephealth", PROTOCOL_HTTP, OPENBANK_MONITORING)).andReturn();
             
             DeepSystemStatusResponse deepSystemStatusResponse = gson.fromJson(response.getBody().asString(),
                 DeepSystemStatusResponse.class);
@@ -67,7 +65,7 @@ public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/deephealth")).andReturn();
+                .get(toURI(BASE_PATH_ACTUATOR + "/deephealth", PROTOCOL_HTTP, OPENBANK_MONITORING)).andReturn();
 
         // Then
         DeepSystemStatusResponse deepSystemStatusResponse = gson.fromJson(response.getBody().asString(),
@@ -86,13 +84,12 @@ public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
     
         Awaitility.await().pollDelay(Duration.ofSeconds(5)).atMost(Duration.ofMinutes(10)).until(() -> {
             try {
-                setupEndpointForRestAssuredAdapterHttp();
                 Response response1 = RestAssured
                     .given()
                     .contentType(ContentType.JSON)
                     .accept(ContentType.JSON)
                     .when()
-                    .get(URI.create("/deephealth")).andReturn();
+                    .get(toURI(BASE_PATH_ACTUATOR + "/deephealth", PROTOCOL_HTTP, OPENBANK_MONITORING)).andReturn();
     
                 DeepSystemStatusResponse deepSystemStatusResponse1 = gson.fromJson(response1.getBody().asString(),
                     DeepSystemStatusResponse.class);
