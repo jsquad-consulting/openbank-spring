@@ -20,32 +20,30 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.Delay;
 import org.mockserver.model.Header;
 import se.jsquad.client.info.WorldApiResponse;
 
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static se.jsquad.integration.RyukIntegration.BASE_PATH_API;
+import static se.jsquad.integration.RyukIntegration.OPENBANK_SERVICE;
+import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTPS;
 
 public class GetHelloWorldOkRestControllerIT extends AbstractTestContainerSetup {
-    @BeforeEach
-    void setupEndpointForRestAssured() {
-        setupEndpointForRestAssuredAdapterHttps();
-    }
-    
     @AfterEach
     void resetMockServerClient() {
         mockServerClient.reset();
     }
     
     @Test
-    void testGetHelloWorldRestResponse() {
+    void testGetHelloWorldRestResponse() throws MalformedURLException, URISyntaxException {
         // Given
         WorldApiResponse worldApiResponse = new WorldApiResponse();
         worldApiResponse.setMessage("Hello world");
@@ -66,7 +64,7 @@ public class GetHelloWorldOkRestControllerIT extends AbstractTestContainerSetup 
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get(URI.create("/get/hello/world")).andReturn();
+                .get(toURI(BASE_PATH_API + "/get/hello/world", PROTOCOL_HTTPS, OPENBANK_SERVICE)).andReturn();
         
         // Then
         assertEquals(200, response.getStatusCode());
