@@ -16,8 +16,7 @@
 
 package se.jsquad.business;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -93,7 +92,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
      */
     public void refreshJpaCache() {
         lock.lock();
-        logger.log(Level.INFO, "Locked the batch thread.");
+        logger.info("Locked the batch thread.");
         NumberOfLocks.increaseNumberOfLocks();
 
         try {
@@ -101,7 +100,7 @@ public class StartupOpenBankServiceImpl implements StartupOpenBankService {
         } finally {
             NumberOfLocks.decreaseNumberOfLocks();
             lock.unlock();
-            logger.log(Level.INFO, "Unlocked the batch thread.");
+            logger.info("Unlocked the batch thread.");
         }
     }
 }

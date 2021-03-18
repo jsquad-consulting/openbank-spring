@@ -16,8 +16,7 @@
 
 package se.jsquad.soap;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -76,7 +75,7 @@ public class GetClientInformationSoapController {
 
             return getClientResponse;
         } catch (Exception e) {
-            logger.log(Level.ERROR, e.getMessage(), e);
+            logger.error(e.getMessage(), e);
 
             getClientResponse.setMessage("A system failure has occured.");
             getClientResponse.setClient(null);

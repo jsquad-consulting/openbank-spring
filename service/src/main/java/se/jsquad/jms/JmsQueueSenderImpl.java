@@ -16,7 +16,7 @@
 
 package se.jsquad.jms;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 

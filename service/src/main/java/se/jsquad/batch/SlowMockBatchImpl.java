@@ -16,7 +16,7 @@
 
 package se.jsquad.batch;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.batch.status.Status;

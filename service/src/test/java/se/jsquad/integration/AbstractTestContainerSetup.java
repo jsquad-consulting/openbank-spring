@@ -36,8 +36,10 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockserver.client.MockServerClient;
 import org.rnorth.ducttape.ratelimits.RateLimiter;
 import org.rnorth.ducttape.ratelimits.RateLimiterBuilder;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -100,6 +102,12 @@ public class AbstractTestContainerSetup {
                     .withLocalCompose(true)
                     .withPull(false)
                     .withTailChildContainers(false)
+                    .withLogConsumer(OPENBANK_DATABASE.getServiceName(),
+                        new Slf4jLogConsumer(LoggerFactory.getLogger(OPENBANK_DATABASE.getServiceName())))
+                    .withLogConsumer(SECURITY_DATABASE.getServiceName(),
+                        new Slf4jLogConsumer(LoggerFactory.getLogger(SECURITY_DATABASE.getServiceName())))
+                    .withLogConsumer(OPENBANK_SERVICE.getServiceName(),
+                        new Slf4jLogConsumer(LoggerFactory.getLogger(OPENBANK_SERVICE.getServiceName())))
                     .withExposedService(OPENBANK_DATABASE.getServiceName(), OPENBANK_DATABASE.getPort(),
                         waitFor20Minutes())
                     .withExposedService(SECURITY_DATABASE.getServiceName(), SECURITY_DATABASE.getPort(),
