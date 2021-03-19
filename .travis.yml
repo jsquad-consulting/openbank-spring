@@ -25,6 +25,7 @@ cache:
     - $HOME/.m2
 
 before_install:
+  - gem install travis-artifacts
   - echo $JAVA_HOME
   - which java
   - sudo rm -rf /usr/local/lib/jvm/
@@ -70,6 +71,7 @@ jobs:
         - source setup_docker_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-int.yaml build --force
         - travis_wait 60 mvn verify -Pintegrationtests
+        - find **/target/** -name "*.log" -exec travis-artifacts upload --path {} \;
     - stage: run integration tests in Kubernetes
       script:
         - source setup_kubernetes_integration_environment.sh

@@ -16,14 +16,15 @@
 
 package se.jsquad.client;
 
-import javax.inject.Named;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import se.jsquad.client.info.WorldApiResponse;
 import se.jsquad.exception.WebClientException;
+
+import javax.inject.Named;
 
 @Named
 public class WorldApiClient {

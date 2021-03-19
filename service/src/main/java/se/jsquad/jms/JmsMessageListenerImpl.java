@@ -16,8 +16,7 @@
 
 package se.jsquad.jms;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.jms.Message;
@@ -33,6 +32,6 @@ public class JmsMessageListenerImpl implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        logger.log(Level.INFO, "onMessage(message: {})", message);
+        logger.info("onMessage(message: {})", message);
     }
 }

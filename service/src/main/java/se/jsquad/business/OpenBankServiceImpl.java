@@ -16,7 +16,7 @@
 
 package se.jsquad.business;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;

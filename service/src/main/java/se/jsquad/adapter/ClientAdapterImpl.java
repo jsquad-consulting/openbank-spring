@@ -16,7 +16,7 @@
 
 package se.jsquad.adapter;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;

@@ -16,7 +16,7 @@
 
 package se.jsquad.generator;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.Client;

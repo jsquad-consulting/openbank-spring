@@ -16,12 +16,12 @@
 
 package se.jsquad.interceptor;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
     @Around("anyJsquadPackage() && avoidInterceptorPackage()")
     public Object logEntranceAndExitToAllMethods(ProceedingJoinPoint joinPoint) throws Throwable {
-        final Logger logger = LogManager.getLogger(joinPoint.getTarget().getClass().getName());
+        final Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass().getName());
         Object returnValue;
         
         try {
