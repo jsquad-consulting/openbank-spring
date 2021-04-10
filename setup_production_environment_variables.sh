@@ -16,20 +16,20 @@
 # limitations under the License.
 #
 
-MASTER_KEY=SECRET_JSQUAD_AB_KEY # For demo purpose only, normally only stored at the CI/hidden environment
+MASTER_KEY=$PROD_MASTER_KEY
 
-SSL_ENCRYPTED_PASSWORD="RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN"
+SSL_ENCRYPTED_PASSWORD="zDleNj2j6+QvzxWxAAKT9u65SFOzu2PF"
 
 ROOT_PASSWORD=$(java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar \
 org.jasypt.intf.cli.JasyptPBEStringDecryptionCLI \
-input="kns7TCKMYQNS7XewfgrcvSD6Ml0IxaNb9+rI4IJDm1JODeX39WDbvA==" password=$MASTER_KEY algorithm=PBEWithMD5AndDES | tail -n3 | awk 'NF')
+input="VmVV6iO8PUjIG+opClX4tMdH6bt5YgpFnkyMQr0nmBWhZmn7ZnCmHg==" password=$MASTER_KEY algorithm=PBEWithMD5AndDES | tail -n3 | awk 'NF')
 
 OPENBANK_PASSWORD=$(java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar \
 org.jasypt.intf.cli.JasyptPBEStringDecryptionCLI \
-input="DSQpSyewyvrR8AurZvZC0DUax5oSZSqRvGmcAVFwKGcTZTnshKQiTw==" password=$MASTER_KEY algorithm=PBEWithMD5AndDES | tail -n3 | awk 'NF')
+input="EOKoo1X2rkgJ3TWqZdmEnvf26B7Pox31DyCxmIGR0g7AHxuBF0b8tw==" password=$MASTER_KEY algorithm=PBEWithMD5AndDES | tail -n3 | awk 'NF')
 
 SECURITY_PASSWORD=$(java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar \
 org.jasypt.intf.cli.JasyptPBEStringDecryptionCLI \
-input="vNq9+oOFXPNeXnQwwcPWWjMCgjNMOS5z2tt1TkE7WVxXK4bib+K8/w==" password=$MASTER_KEY algorithm=PBEWithMD5AndDES | tail -n3 | awk 'NF')
+input="+TO9xz4lgbNususDouCXaAsfJsUxh8+pqPa/lphrUyH1TBt/rfxBdnqYn+p9pTPk" password=$MASTER_KEY algorithm=PBEWithMD5AndDES | tail -n3 | awk 'NF')
 
 export MASTER_KEY ROOT_PASSWORD OPENBANK_PASSWORD SECURITY_PASSWORD SSL_ENCRYPTED_PASSWORD

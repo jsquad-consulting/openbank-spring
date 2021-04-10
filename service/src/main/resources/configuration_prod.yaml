@@ -1,0 +1,37 @@
+openbank.datasource:
+  url: jdbc:postgresql://openbankdb:5432/openbank
+  username: openbank_user
+  password: ENC(EOKoo1X2rkgJ3TWqZdmEnvf26B7Pox31DyCxmIGR0g7AHxuBF0b8tw==)
+  driverclassname: org.postgresql.Driver
+
+security.datasource:
+  url: jdbc:postgresql://securitydb:5432/security
+  username: security_user
+  password: ENC(+TO9xz4lgbNususDouCXaAsfJsUxh8+pqPa/lphrUyH1TBt/rfxBdnqYn+p9pTPk)
+  driverclassname: org.postgresql.Driver
+
+server.port: 8443
+server.ssl.key-store-type: PKCS12
+server.ssl.key-store: classpath:ssl/keystore/jsquad.pfx
+server.ssl.key-store-password: ENC(eOu0ofoinzH39JgEaEDa5REDKyIgIg9x)
+server.ssl.enabled: true
+
+world.webclient.baseUrl: http://mockserver:1080
+
+management.endpoint:
+  prometheus:
+    enabled: true
+  metrics.enabled: true
+
+management:
+  server:
+    port: 8081
+    ssl:
+      enabled: false
+
+management.endpoints:
+  web:
+    base-path: /actuator
+    exposure.include: 'shallowhealth,deephealth,metrics,prometheus'
+
+management.metrics.export.prometheus.enabled: true

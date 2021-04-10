@@ -15,7 +15,6 @@
 #
 
 dist: focal
-
 services:
   - docker
 
@@ -74,6 +73,7 @@ jobs:
         - find **/target/** -name "*.log" -exec travis-artifacts upload --path {} \;
     - stage: run integration tests in Kubernetes
       script:
+        - source setup_production_environment_variables.sh
         - source setup_kubernetes_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-k8-integration.yaml build --force
         - travis_wait 60 mvn verify -Pintegrationtests
@@ -86,5 +86,5 @@ jobs:
         - docker push jsquadab/openbank-spring:latest
 env:
   global:
-    - SH=bash
-    - secure: kT+kPtRx05Epih2BDyUPdb190gJYhABBa0gOAvnn1nvpBCgCm3Uq2PM1aTMNOpyPtVBPh5r9amJOo99Cm8vUC3/12UiUHstACfCNoWTBUhu/rNOYx6w8oPzEmo5lGwXS3/8s1GnTDlwbzmYvOHV2vflyxx3UTlrdH79gsCKIUME3vMaoJ6DnMFeLrBuyzWqwHvXtS8xCxOGHxS3WmTMtxnIqRJ7iNhmvphVbB+ocXvihxoYiDKw5Feo+Fda51UFNyvByHAsdaoJCgGTEA6n+sY6Kfmeohet3qYs/1samQqPj4sutGtiYHSRkp6SpcdM4oTHCuLZQ37ixmdRZdziHcPPWngXRXG/m3gQib6StvJ/fno63I5jzuq//Hk9noal/g7gNcoAYuNAxhmwczyEgrdbUpvt1E21t++1V8KJASuriyfEnr/UKnyfQTxodP1AZbVut7IwUPR14KR1y8VFd8BuAM+mJfux3N04HUc/MkwinaunjthvdVffCcV8KCVMbK5MR/RL/Zg1i7e1xhTckpJIoYEZBgQf7fXUKwdKX+jKAFBXGEgegm3DqzqIEGLMp3zpt6VNNt+SUUfOo89jljxc2vSoTvOx06RtLRrD+iHT74uBslnf9BEBWlHL4Ms8wOKoPrQCsbPJuotGX2zw8L3ONEwetwWuX64aH5MBN1nM=
+  - SH=bash
+  - secure: reHv+UYQsFrg6nVzmjya/yuvFl0otKaBq4cGAXhVaEMiFWIfwnETR/BghQCSo07htAzN0/tMaYUcmsf2+5gw3mxsC7gMZX+JQVRjHsVIl6VbNdHgJCYAG00nHZa9TsJXvI3o0rV0Pzv6dKqlrn5NKrIL/ZEpUCcoZKYyMTZJpE9q1BKN/YsBEZp2vyn7rAcqzKcwqSmcysSsfAIHrYnHBb/6ZFVtiwDY0FA9O6GvAxUO1P9sKp+nxISH4hEtIHB8ZgXdhDfM7KEBnCCmjCyQlaIPgo6xAK/E07C8NHsdMiwGGyQ3N8YhsOa3Hvc9XnST3isflUbQ1xKKK4ay14k7wg+ijtwmBfT5Xi5RCxaMe8UvCz5FCORYIQn77JTTJICVqPFXEJwAa3JPiVGejtFHWzYVEylCqSZ+8efWwnUjqnQddirwGrnzsS+FKXrSQytVfSp7QgJkz1PiUXG2Jvl/Hubq0lQiBsGxQs/57dDJr451MDROR78OFQA0ltcLuUreCHWc1XEHDNQJUnKMxWiSmfzoPTwUKbtNuHSRdi9UIsxN9apKWnewLffRCy3M+DyN7FFS1Sl5ieRaHcd+cAAutlnjgwiKz7GJ8H6Is/hs63nk9oa7+E1FMK3FdqaSt5GvFLPdZPExTGuaJBcwA1UitJuz1RKpxHegRUN3LaTsYm4=
