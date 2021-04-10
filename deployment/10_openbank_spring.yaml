@@ -47,4 +47,4 @@ spec:
                   name: openbank-spring-secret
                   key: MASTER_KEY
             - name: CONFIG_FILE_LOCATIONS
-              value: "classpath:application.properties,classpath:configuration_local.yaml,classpath:activemq.properties,classpath:openbank_jpa.yaml,classpath:security_jpa.yaml"
+              value: "classpath:application.properties,classpath:configuration_prod.yaml,classpath:activemq.properties,classpath:openbank_jpa.yaml,classpath:security_jpa.yaml"

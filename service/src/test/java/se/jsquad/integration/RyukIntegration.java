@@ -46,7 +46,7 @@ public abstract class RyukIntegration {
     }
     
     protected static void setupRestAssured() {
-        String encryptedPassword = "RMiukf/2Ir2Dr1aTGd0J4CXk6Y/TyPMN";
+        String encryptedPassword = System.getenv("SSL_ENCRYPTED_PASSWORD");
         BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
         textEncryptor.setPassword(System.getenv("MASTER_KEY"));
         RestAssured.trustStore("src/test/resources/test/ssl/truststore/jsquad.jks",
