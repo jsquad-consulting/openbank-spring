@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+main() {
+    if [[ "$#" -ne 1 ]];
+     then :
+       echo "Illegal number of arguments, branch name must be provided."
+       exit 1
+    fi
+
+    isFeatureBranchAfterWithSqlAndPipelineFileChanges "$1"
+}
+
+isFeatureBranchAfterWithSqlAndPipelineFileChanges() {
+    branch="$1"
+    git fetch --all
+
+    numberOfFileChanges=$(git rev-list --left-right --count \
+    origin/master...origin/"${branch}" -- security service/src/main/resources/db/migration .travis.yml)
+
+    if [[ $? -ne 0 ]];
+     then :
+       echo "Failed to get the revision list from origin remote branches."
+       exit 1
+    fi
+
+    numberOfFileChangesBehindMaster=$(echo "${numberOfFileChanges}" | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')
+
+    if [[ ${numberOfFileChangesBehindMaster} -gt 0 ]];
+    then :
+      echo "Feature branch ${branch} is behind master branch with SQL file changes or pipeline changes. Please rebase your branch and try again."
+      exit 1
+    else
+       echo "Feature branch ${branch} is OK and not behind master with SQL file changes or pipeline changes, no rebase needed."
+       exit 0
+    fi
+}
+
+main "$*"
