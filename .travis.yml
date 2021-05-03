@@ -65,7 +65,7 @@ jobs:
         - travis_wait 60 mvn clean install
     - stage: verify feature branch is not behind master branch with SQL file changes or pipeline changes
       script:
-        - ./verify_sql_pipeline_changes_against_master_branch "${TRAVIS_BRANCH}"
+        - ./verify_sql_and_pipeline_changes.sh "${TRAVIS_BRANCH}"
     - stage: run database migration validation against SQL files
       script:
         - ./flyway_sql_validation.sh
