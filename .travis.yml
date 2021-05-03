@@ -18,6 +18,9 @@ dist: focal
 services:
   - docker
 
+git:
+  depth: false
+
 cache:
   directories:
     - .autoconf
@@ -52,10 +55,6 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install helm -y
   - sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common wget -y
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get install docker-ce docker-ce-cli containerd.io -y
   - docker --version
   - docker run hello-world
 
@@ -64,6 +63,12 @@ jobs:
     - stage: build and run unit/system tests
       script:
         - travis_wait 60 mvn clean install
+    - stage: verify feature branch is not behind master branch with SQL file changes or pipeline changes
+      script:
+        - ./verify_sql_pipeline_changes_against_master_branch "${TRAVIS_BRANCH}"
+    - stage: run database migration validation against SQL files
+      script:
+        - ./flyway_sql_validation.sh
     - stage: run integration tests in Docker
       script:
         - mvn clean install -DskipTests
