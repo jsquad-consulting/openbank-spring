@@ -190,6 +190,12 @@
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.jsquad</groupId>
+            <artifactId>api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -215,79 +221,6 @@
                         --illegal-access=permit
                     </argLine>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>${mojo.jaxb2.version}</version>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <arguments>
-                        <argument>-Xfluent-api</argument>
-                        <argument>-XtoString</argument>
-                        <argument>-Xequals</argument>
-                        <argument>-XhashCode</argument>
-                        <argument>-Xannotate</argument>
-                    </arguments>
-                    <extension>true</extension>
-                    <sources>
-                        <source>${project.basedir}/src/main/resources/schema/xsd/system-status.xsd</source>
-                        <source>${project.basedir}/src/main/resources/schema/xsd/dummy.xsd</source>
-                        <source>${project.basedir}/src/main/resources/schema/xsd/batch-status.xsd</source>
-                        <source>${project.basedir}/src/main/resources/schema/xsd/date-time.xsd</source>
-                        <source>${project.basedir}/src/main/resources/schema/xsd/client-information.xsd</source>
-                    </sources>
-                    <clearOutputDir>false</clearOutputDir>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springdoc</groupId>
-                        <artifactId>springdoc-openapi-core</artifactId>
-                        <version>${springdoc.openapi.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-annotate-plugin-test-annox-annotations</artifactId>
-                        <version>${jaxb2.annotate.plugin.test.annox.annotations.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-basics-annotate</artifactId>
-                        <version>${jaxb2.basics.annotate.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-basics</artifactId>
-                        <version>${jaxb2.basics.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-basics-runtime</artifactId>
-                        <version>${jaxb2.basics.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-fluent-api</artifactId>
-                        <version>${jaxb2.fluent.api.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.glassfish.jaxb</groupId>
-                        <artifactId>jaxb-xjc</artifactId>
-                        <version>${jaxb.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-impl</artifactId>
-                        <version>${jaxb.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

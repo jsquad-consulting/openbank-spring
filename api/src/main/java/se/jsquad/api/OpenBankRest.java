@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package se.jsquad.rest;
+package se.jsquad.api;
 
+import io.swagger.annotations.Api;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import se.jsquad.api.JunkRest;
-import se.jsquad.api.client.JunkApi;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import se.jsquad.constant.ApiConstants;
 
-@RestController
-public class JunkRestController implements JunkRest {
-    @Override
-    public ResponseEntity<JunkApi> getJunkInformation(String junkInformation) {
-        return ResponseEntity.ok(new JunkApi());
-    }
+@Api(value = ApiConstants.OPENBANK_BASE_PATH, authorizations = {})
+@RequestMapping(path = ApiConstants.OPENBANK_BASE_PATH)
+@Validated
+public interface OpenBankRest {
+    @GetMapping(value = "/openbank/start/slow/batch/mock", produces = {MediaType.APPLICATION_JSON_VALUE})
+    ResponseEntity getOpenBankBatchStatus();
 }

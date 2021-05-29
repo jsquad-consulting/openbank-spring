@@ -20,9 +20,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import se.jsquad.health.check.DeepSystemStatusResponse;
-import se.jsquad.health.check.HealthStatus;
-import se.jsquad.health.check.ShallowSystemStatusResponse;
+import se.jsquad.api.health.DeepSystemStatusResponse;
+import se.jsquad.api.health.HealthStatus;
+import se.jsquad.api.health.ShallowSystemStatusResponse;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;

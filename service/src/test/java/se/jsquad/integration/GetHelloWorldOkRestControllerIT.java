@@ -23,7 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.Delay;
 import org.mockserver.model.Header;
-import se.jsquad.client.info.WorldApiResponse;
+import se.jsquad.api.client.WorldApiResponse;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;

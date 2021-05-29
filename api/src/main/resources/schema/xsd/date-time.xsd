@@ -23,6 +23,14 @@
 		   xmlns:annox="http://annox.dev.java.net"
 		   jaxb:extensionBindingPrefixes="annox">
 
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:schemaBindings>
+                <jaxb:package name="se.jsquad.api.time"/>
+            </jaxb:schemaBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
     <xs:complexType name="DateTime">
         <xs:sequence>
             <xs:element name="dateTime" type="xs:string">

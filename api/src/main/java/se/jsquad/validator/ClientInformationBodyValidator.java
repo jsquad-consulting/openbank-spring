@@ -16,24 +16,26 @@
 
 package se.jsquad.validator;
 
+import se.jsquad.api.client.ClientApi;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import se.jsquad.client.info.ClientRequest;
 
-public class ClientRequestBodyValidator implements ConstraintValidator<ClientRequestBodyConstraint, ClientRequest> {
+public class ClientInformationBodyValidator implements ConstraintValidator<ClientInformationBodyConstraint,
+    ClientApi> {
     @Override
-    public void initialize(ClientRequestBodyConstraint constraintAnnotation) {}
+    public void initialize(ClientInformationBodyConstraint clientInformationBodyConstraint) {}
 
     @Override
-    public boolean isValid(ClientRequest clientRequest, ConstraintValidatorContext constraintValidatorContext) {
-        if (clientRequest == null) {
+    public boolean isValid(ClientApi clientApi, ConstraintValidatorContext constraintValidatorContext) {
+        if (clientApi == null) {
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate("Client request can't be null.")
                     .addConstraintViolation();
             return false;
-        } else if (clientRequest.getClientData() == null ||
-                clientRequest.getClientData().getPersonIdentificationNumber() == null || !clientRequest
-                .getClientData().getPersonIdentificationNumber().matches("[0-9]{12}")) {
+        } else if (clientApi.getPerson() == null ||
+                clientApi.getPerson().getPersonIdentification() == null || !clientApi
+                .getPerson().getPersonIdentification().matches("[0-9]{12}")) {
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate("Person identification number must" +
                     " be twelve digits.").addConstraintViolation();

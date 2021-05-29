@@ -23,6 +23,14 @@
 		   targetNamespace="http://jsquad.se/health/check" version="1.0"
 		   jaxb:extensionBindingPrefixes="annox">
 
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:schemaBindings>
+                <jaxb:package name="se.jsquad.api.health"/>
+            </jaxb:schemaBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
 	<xs:complexType name="DeepSystemStatusResponse">
 		<xs:sequence>
 			<xs:element name="status" type="tns:HealthStatus"/>

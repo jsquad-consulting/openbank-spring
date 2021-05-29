@@ -16,7 +16,6 @@
 
 package se.jsquad.business;
 
-import javax.persistence.EntityManager;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +34,7 @@ import se.jsquad.property.AppPropertyConfiguration;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
 
+import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         "classpath:test/configuration/security_jpa.properties"},
         properties = {"jasypt.encryptor.password = testencryption"})
 @Execution(ExecutionMode.SAME_THREAD)
-public class StartupOpenBankServiceImplTest {
+public class StartupOpenBankServiceTest {
     @MockBean
     private BrokerService brokerService;
 

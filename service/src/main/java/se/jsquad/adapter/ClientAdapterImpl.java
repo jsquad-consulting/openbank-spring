@@ -17,13 +17,13 @@
 package se.jsquad.adapter;
 
 import org.slf4j.Logger;
-import se.jsquad.client.info.AccountApi;
-import se.jsquad.client.info.AccountTransactionApi;
-import se.jsquad.client.info.ClientApi;
-import se.jsquad.client.info.ClientTypeApi;
-import se.jsquad.client.info.PersonApi;
-import se.jsquad.client.info.TransactionTypeApi;
-import se.jsquad.client.info.TypeApi;
+import se.jsquad.api.client.AccountApi;
+import se.jsquad.api.client.AccountTransactionApi;
+import se.jsquad.api.client.ClientApi;
+import se.jsquad.api.client.ClientTypeApi;
+import se.jsquad.api.client.PersonApi;
+import se.jsquad.api.client.TransactionTypeApi;
+import se.jsquad.api.client.TypeApi;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.Client;

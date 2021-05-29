@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import se.jsquad.client.info.WorldApiResponse;
+import se.jsquad.api.client.WorldApiResponse;
 import se.jsquad.exception.WebClientException;
 
 import javax.inject.Named;

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
   ~ Copyright 2021 JSquad AB
   ~
@@ -14,12 +15,8 @@
   ~ limitations under the License.
   -->
 
-<xs:schema id="Dummy" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="Dummy">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="test"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>
+<jaxb:bindings
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	jaxb:version="2.1">
+</jaxb:bindings>

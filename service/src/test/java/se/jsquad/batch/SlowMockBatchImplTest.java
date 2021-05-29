@@ -24,8 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import se.jsquad.batch.status.BatchStatus;
-import se.jsquad.batch.status.Status;
+import se.jsquad.api.batch.BatchStatus;
+import se.jsquad.api.batch.Status;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 
 import java.lang.reflect.Field;

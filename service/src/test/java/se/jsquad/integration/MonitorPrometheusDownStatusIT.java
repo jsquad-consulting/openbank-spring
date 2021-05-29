@@ -22,8 +22,8 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import se.jsquad.health.check.DeepSystemStatusResponse;
-import se.jsquad.health.check.HealthStatus;
+import se.jsquad.api.health.DeepSystemStatusResponse;
+import se.jsquad.api.health.HealthStatus;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;

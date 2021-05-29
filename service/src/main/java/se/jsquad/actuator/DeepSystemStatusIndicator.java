@@ -26,10 +26,10 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import se.jsquad.health.check.DeepSystemStatusResponse;
-import se.jsquad.health.check.Dependencies;
-import se.jsquad.health.check.HealthStatus;
-import se.jsquad.health.check.ShallowSystemStatusResponse;
+import se.jsquad.api.health.DeepSystemStatusResponse;
+import se.jsquad.api.health.Dependencies;
+import se.jsquad.api.health.HealthStatus;
+import se.jsquad.api.health.ShallowSystemStatusResponse;
 
 @Component
 @Endpoint(id = "deephealth")

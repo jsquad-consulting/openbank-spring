@@ -22,9 +22,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -49,13 +47,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
-import se.jsquad.client.info.AccountApi;
-import se.jsquad.client.info.AccountTransactionApi;
-import se.jsquad.client.info.ClientApi;
-import se.jsquad.client.info.ClientData;
-import se.jsquad.client.info.ClientRequest;
-import se.jsquad.client.info.TransactionTypeApi;
-import se.jsquad.client.info.WorldApiResponse;
+import se.jsquad.api.client.AccountApi;
+import se.jsquad.api.client.AccountTransactionApi;
+import se.jsquad.api.client.ClientApi;
+import se.jsquad.api.client.ClientData;
+import se.jsquad.api.client.ClientRequest;
+import se.jsquad.api.client.TransactionTypeApi;
+import se.jsquad.api.client.WorldApiResponse;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
 
@@ -98,8 +96,6 @@ public class GetClientInformationRestControllerImplTest {
 
     private static MockWebServer mockBackEnd;
     
-    private LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
-    
     @BeforeAll
     public static void init() throws IOException {
         mockBackEnd = new MockWebServer();
@@ -111,17 +107,6 @@ public class GetClientInformationRestControllerImplTest {
     @AfterAll
     static void tearDown() throws IOException {
         mockBackEnd.shutdown();
-    }
-    
-    @BeforeEach
-    void setup() {
-        logCaptor.setLogLevelToInfo();
-    }
-    
-    @AfterEach
-    void clearLogs() {
-        logCaptor.clearLogs();
-        logCaptor.resetLogLevel();
     }
 
     @MockBean
@@ -166,6 +151,9 @@ public class GetClientInformationRestControllerImplTest {
     @Test
     public void testGetClientInformationByRequestBody() throws Exception {
         // Given
+        LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
+        logCaptor.setLogLevelToInfo();
+        
         ClientRequest clientRequest = new ClientRequest();
 
         clientRequest.setClientData(new ClientData());
@@ -197,7 +185,7 @@ public class GetClientInformationRestControllerImplTest {
         assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
     
         assertEquals(2, logCaptor.getInfoLogs().size());
-        assertTrue(logCaptor.getInfoLogs().get(0).contains("se.jsquad.client.info.ClientRequest@"));
+        assertTrue(logCaptor.getInfoLogs().get(0).contains("se.jsquad.api.client.ClientRequest@"));
         assertEquals("Finish method getClientInformationByRequestBody", logCaptor.getInfoLogs().get(1));
         
         // Given
@@ -252,11 +240,16 @@ public class GetClientInformationRestControllerImplTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(""));
+    
+        logCaptor.clearLogs();
     }
 
     @Test
     public void testGetClientInformation() {
         // Given
+        LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
+        logCaptor.setLogLevelToInfo();
+        
         String personIdentification = "191212121212";
 
         // When
@@ -286,6 +279,8 @@ public class GetClientInformationRestControllerImplTest {
         assertEquals(2, logCaptor.getInfoLogs().size());
         assertEquals("getClientInformation(191212121212)", logCaptor.getInfoLogs().get(0));
         assertEquals("Finish method getClientInformation", logCaptor.getInfoLogs().get(1));
+        
+        logCaptor.clearLogs();
         
     }
 

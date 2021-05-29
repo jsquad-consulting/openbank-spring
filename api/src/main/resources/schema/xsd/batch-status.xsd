@@ -17,7 +17,19 @@
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:tns="http://jsquad.se/batch/status"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           xmlns:annox="http://annox.dev.java.net"
+           jaxb:extensionBindingPrefixes="annox"
+           jaxb:version="2.1"
            targetNamespace="http://jsquad.se/batch/status" version="1.0">
+
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:schemaBindings>
+                <jaxb:package name="se.jsquad.api.batch"/>
+            </jaxb:schemaBindings>
+        </xs:appinfo>
+    </xs:annotation>
 
     <xs:complexType name="BatchStatus">
         <xs:sequence>
