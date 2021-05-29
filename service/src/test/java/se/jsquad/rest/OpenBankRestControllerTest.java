@@ -26,10 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import se.jsquad.api.batch.BatchStatus;
+import se.jsquad.api.batch.Status;
 import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.batch.SlowMockBatchImpl;
-import se.jsquad.batch.status.BatchStatus;
-import se.jsquad.batch.status.Status;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 
 import java.lang.reflect.Field;

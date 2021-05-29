@@ -18,8 +18,8 @@ package se.jsquad.batch;
 
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
-import se.jsquad.batch.status.BatchStatus;
-import se.jsquad.batch.status.Status;
+import se.jsquad.api.batch.BatchStatus;
+import se.jsquad.api.batch.Status;
 import se.jsquad.property.AppPropertyConfiguration;
 
 import java.util.concurrent.TimeUnit;

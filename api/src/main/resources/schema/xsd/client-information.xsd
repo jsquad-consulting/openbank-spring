@@ -24,6 +24,14 @@
            xmlns:annox="http://annox.dev.java.net"
            jaxb:extensionBindingPrefixes="annox">
 
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:schemaBindings>
+                <jaxb:package name="se.jsquad.api.client"/>
+            </jaxb:schemaBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
     <xs:complexType name="ClientRequest">
         <xsd:annotation>
             <xsd:appinfo>

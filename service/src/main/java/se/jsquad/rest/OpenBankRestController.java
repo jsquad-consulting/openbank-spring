@@ -16,31 +16,25 @@
 
 package se.jsquad.rest;
 
-import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import se.jsquad.batch.status.BatchStatus;
+import org.springframework.web.bind.annotation.RestController;
+import se.jsquad.api.OpenBankRest;
+import se.jsquad.api.batch.BatchStatus;
 import se.jsquad.business.OpenBankService;
 
 import java.util.concurrent.Future;
 
-@Controller("openBankRestController")
-@RequestMapping(path = "/api")
-public class OpenBankRestController {
-    private Logger logger;
+@RestController
+public class OpenBankRestController implements OpenBankRest {
     private OpenBankService openBankService;
 
-    public OpenBankRestController(Logger logger,
-                                  OpenBankService openBankService) {
-        this.logger = logger;
+    public OpenBankRestController(OpenBankService openBankService) {
         this.openBankService = openBankService;
     }
 
-    @GetMapping(value = "/openbank/start/slow/batch/mock", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Override
     public ResponseEntity getOpenBankBatchStatus() {
         try {
             Future<BatchStatus> batchStatusFuture = openBankService.startSlowBatch();

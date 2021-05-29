@@ -16,13 +16,54 @@
 
 package se.jsquad.business;
 
-import se.jsquad.batch.status.BatchStatus;
-import se.jsquad.client.info.ClientApi;
+import org.slf4j.Logger;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import se.jsquad.adapter.ClientAdapter;
+import se.jsquad.api.batch.BatchStatus;
+import se.jsquad.api.client.ClientApi;
+import se.jsquad.batch.SlowMockBatch;
+import se.jsquad.entity.Client;
+import se.jsquad.repository.ClientRepository;
 
+import javax.inject.Inject;
 import java.util.concurrent.Future;
 
-public interface OpenBankService {
-    ClientApi getClientInformationByPersonIdentification(String personIdentification);
+@Service
+@Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
+public class OpenBankService {
+    private Logger logger;
 
-    Future<BatchStatus> startSlowBatch() throws InterruptedException;
+    private ClientRepository clientRepository;
+    private ClientAdapter clientAdapter;
+    private SlowMockBatch slowMockBatch;
+
+    public OpenBankService(Logger logger, ClientRepository clientRepository, SlowMockBatch slowMockBatch) {
+        this.clientRepository = clientRepository;
+        this.slowMockBatch = slowMockBatch;
+        this.logger = logger;
+    }
+
+    @Inject
+    private void setClientAdapter(ClientAdapter clientAdapter) {
+        this.clientAdapter = clientAdapter;
+    }
+
+    public ClientApi getClientInformationByPersonIdentification(String personIdentification) {
+        Client client = clientRepository.getClientByPersonIdentification(personIdentification);
+
+        if (client == null) {
+            return null;
+        } else {
+            return clientAdapter.translateClientToClientApi(client);
+        }
+    }
+
+    @Async
+    public Future<BatchStatus> startSlowBatch() throws InterruptedException {
+        return new AsyncResult<>(slowMockBatch.startBatch());
+    }
 }

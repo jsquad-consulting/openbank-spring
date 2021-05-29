@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package se.jsquad.batch;
+package se.jsquad.constant;
 
-import se.jsquad.api.batch.BatchStatus;
-
-public interface SlowMockBatch {
-    BatchStatus startBatch() throws InterruptedException;
+public class ApiConstants {
+    private ApiConstants() {
+        // NO SONAR
+    }
+    
+    public static final String OPENBANK_BASE_PATH = "/api";
 }

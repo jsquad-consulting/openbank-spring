@@ -24,10 +24,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import se.jsquad.client.info.AccountApi;
-import se.jsquad.client.info.AccountTransactionApi;
-import se.jsquad.client.info.ClientApi;
-import se.jsquad.client.info.TransactionTypeApi;
+import se.jsquad.api.client.AccountApi;
+import se.jsquad.api.client.AccountTransactionApi;
+import se.jsquad.api.client.ClientApi;
+import se.jsquad.api.client.TransactionTypeApi;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         "classpath:test/configuration/openbank_jpa.properties",
         "classpath:test/configuration/security_jpa.properties"},
         properties = {"jasypt.encryptor.password = testencryption"})
-public class OpenBankServiceImplTest {
+public class OpenBankServiceTest {
     @MockBean
     private BrokerService brokerService;
 

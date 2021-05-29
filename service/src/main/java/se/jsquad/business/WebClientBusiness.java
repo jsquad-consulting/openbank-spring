@@ -19,8 +19,8 @@ package se.jsquad.business;
 
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
+import se.jsquad.api.client.WorldApiResponse;
 import se.jsquad.client.WorldApiClient;
-import se.jsquad.client.info.WorldApiResponse;
 
 @Service
 public class WebClientBusiness {

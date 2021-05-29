@@ -16,10 +16,88 @@
 
 package se.jsquad.business;
 
-public interface StartupOpenBankService {
-    void initiateDatabase();
+import org.slf4j.Logger;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.SystemProperty;
+import se.jsquad.generator.EntityGenerator;
+import se.jsquad.property.AppPropertyConfiguration;
+import se.jsquad.repository.ClientRepository;
+import se.jsquad.repository.SystemPropertyRepository;
+import se.jsquad.thread.NumberOfLocks;
 
-    void closeDatabase();
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-    void refreshJpaCache();
+@Service
+public class StartupOpenBankService {
+    private Logger logger;
+
+    private AppPropertyConfiguration appPropertyConfiguration;
+    private ClientRepository clientRepository;
+    private EntityGenerator entityGenerator;
+    private SystemPropertyRepository systemPropertyRepository;
+    private static final Lock lock = new ReentrantLock();
+
+    public StartupOpenBankService(Logger logger, AppPropertyConfiguration appPropertyConfiguration,
+                                  ClientRepository clientRepository,
+                                  SystemPropertyRepository systemPropertyRepository) {
+        this.clientRepository = clientRepository;
+        this.systemPropertyRepository = systemPropertyRepository;
+        this.appPropertyConfiguration = appPropertyConfiguration;
+        this.logger = logger;
+    }
+
+    @Inject
+    private void setEntityGenerator(EntityGenerator entityGenerator) {
+        this.entityGenerator = entityGenerator;
+    }
+
+    @PostConstruct
+    @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
+    public void initiateDatabase() {
+        if (clientRepository.getClientByPersonIdentification("191212121212") == null) {
+            for (Client client : entityGenerator.generateClientSet()) {
+                clientRepository.persistClient(client);
+            }
+
+            SystemProperty systemProperty = new SystemProperty();
+            systemProperty.setName(appPropertyConfiguration.getName());
+            systemProperty.setValue(appPropertyConfiguration.getVersion());
+
+            systemPropertyRepository.persistSystemProperty(systemProperty);
+        }
+    }
+
+    @PreDestroy
+    public void closeDatabase() {
+        // NO SONAR
+    }
+
+
+    @Scheduled(cron = "0 0/5 * * * *")
+    /**
+     * Batch job that runs every five minutes to refresh the secondary cache level
+     *
+     * @return
+     */
+    public void refreshJpaCache() {
+        lock.lock();
+        logger.info("Locked the batch thread.");
+        NumberOfLocks.increaseNumberOfLocks();
+
+        try {
+            systemPropertyRepository.refreshSecondaryLevelCache();
+        } finally {
+            NumberOfLocks.decreaseNumberOfLocks();
+            lock.unlock();
+            logger.info("Unlocked the batch thread.");
+        }
+    }
 }
