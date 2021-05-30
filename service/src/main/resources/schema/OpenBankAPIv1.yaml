@@ -9,9 +9,43 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: "1"
 servers:
-  - url: https://localhost:8443
-    description: Local OpenBank API server.
+- url: https://localhost:8443
+  description: Local OpenBank API server.
 paths:
+  /api/date/time/{dateTime}:
+    get:
+      summary: Get date time
+      description: Get the date time RFC3339 string
+      operationId: getDateTime
+      parameters:
+      - name: dateTime
+        in: path
+        description: The get date time.
+        required: true
+        schema:
+          type: string
+        example: 2019-11-01T00:00:00ZZ
+      responses:
+        "200":
+          description: The date time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DateTime'
+        "400":
+          description: Date time
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid date time format.
+        "500":
+          description: Severe system failure has occured!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Severe system failure has occured!
   /api/update/client/information:
     put:
       summary: "Update client information, mock implementation"
@@ -37,6 +71,25 @@ paths:
               schema:
                 type: string
                 example: ClientApi payload contains bad content.
+        "500":
+          description: Severe system failure has occured!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Severe system failure has occured!
+  /api/get/hello/world:
+    get:
+      summary: Get hello world by the remote http server
+      description: Get The hello world by the remote HTTP REST server
+      operationId: getHelloWorld
+      responses:
+        "200":
+          description: Hello world
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorldApiResponse'
         "500":
           description: Severe system failure has occured!
           content:
@@ -85,40 +138,6 @@ paths:
               schema:
                 type: string
                 example: Severe system failure has occured!
-  /api/date/time/{dateTime}:
-    get:
-      summary: Get date time
-      description: Get the date time RFC3339 string
-      operationId: getDateTime
-      parameters:
-        - name: dateTime
-          in: path
-          description: The get date time.
-          required: true
-          schema:
-            type: string
-          example: 2019-11-01T00:00:00ZZ
-      responses:
-        "200":
-          description: The date time
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DateTime'
-        "400":
-          description: Date time
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Invalid date time format.
-        "500":
-          description: Severe system failure has occured!
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Severe system failure has occured!
   /api/client/info/{personIdentification}:
     get:
       summary: Get client by person identification number
@@ -126,13 +145,13 @@ paths:
         number as parameter argument.
       operationId: getClientInformation
       parameters:
-        - name: personIdentification
-          in: path
-          description: The person identification number
-          required: true
-          schema:
-            type: string
-          example: 191212121212
+      - name: personIdentification
+        in: path
+        description: The person identification number
+        required: true
+        schema:
+          type: string
+        example: 191212121212
       responses:
         "200":
           description: The client
@@ -161,25 +180,6 @@ paths:
               schema:
                 type: string
                 example: Severe system failure has occured!
-  /api/get/hello/world:
-    get:
-      summary: Get hello world by the remote http server
-      description: Get The hello world by the remote HTTP REST server
-      operationId: getHelloWorld
-      responses:
-        "200":
-          description: Hello world
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorldApiResponse'
-        "500":
-          description: Severe system failure has occured!
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Severe system failure has occured!
   /api/openbank/start/slow/batch/mock:
     get:
       operationId: getOpenBankBatchStatus
@@ -192,6 +192,15 @@ paths:
                 type: string
 components:
   schemas:
+    DateTime:
+      required:
+      - dateTime
+      type: object
+      properties:
+        dateTime:
+          type: string
+          description: Date time
+          example: 2019-11-05T11:33:11ZZ
     AccountApi:
       type: object
       properties:
@@ -204,21 +213,21 @@ components:
             $ref: '#/components/schemas/AccountTransactionApi'
     AccountTransactionApi:
       required:
-        - message
-        - transactionType
+      - message
+      - transactionType
       type: object
       properties:
         transactionType:
           type: string
           enum:
-            - DEPOSIT
-            - WITHDRAWAL
+          - DEPOSIT
+          - WITHDRAWAL
         message:
           type: string
     ClientInformationResponse:
       required:
-        - clientType
-        - person
+      - clientType
+      - person
       type: object
       properties:
         person:
@@ -231,17 +240,17 @@ components:
           $ref: '#/components/schemas/ClientTypeApi'
     ClientTypeApi:
       required:
-        - country
-        - specialOffers
-        - type
+      - country
+      - specialOffers
+      - type
       type: object
       properties:
         type:
           type: string
           enum:
-            - REGULAR
-            - PREMIUM
-            - FOREIGN
+          - REGULAR
+          - PREMIUM
+          - FOREIGN
         specialOffers:
           type: string
         rating:
@@ -254,10 +263,10 @@ components:
           type: string
     PersonApi:
       required:
-        - firstName
-        - lastName
-        - mail
-        - personIdentification
+      - firstName
+      - lastName
+      - mail
+      - personIdentification
       type: object
       properties:
         personIdentification:
@@ -289,9 +298,16 @@ components:
             $ref: '#/components/schemas/AccountApi'
         clientType:
           $ref: '#/components/schemas/ClientTypeApi'
+    WorldApiResponse:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
     ClientData:
       required:
-        - personIdentificationNumber
+      - personIdentificationNumber
       type: object
       properties:
         personIdentificationNumber:
@@ -300,7 +316,7 @@ components:
           example: "191212121212"
     ClientRequest:
       required:
-        - clientData
+      - clientData
       type: object
       properties:
         clientData:
@@ -308,8 +324,8 @@ components:
       description: The client request body.
     ClientApi:
       required:
-        - clientType
-        - person
+      - clientType
+      - person
       type: object
       properties:
         person:
@@ -320,22 +336,6 @@ components:
             $ref: '#/components/schemas/AccountApi'
         clientType:
           $ref: '#/components/schemas/ClientTypeApi'
-    DateTime:
-      required:
-        - dateTime
-      type: object
-      properties:
-        dateTime:
-          type: string
-          description: Date time
-          example: 2019-11-05T11:33:11ZZ
-    WorldApiResponse:
-      required:
-        - message
-      type: object
-      properties:
-        message:
-          type: string
   securitySchemes:
     basicScheme:
       type: http

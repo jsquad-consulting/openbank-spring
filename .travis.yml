@@ -60,9 +60,12 @@ before_install:
 
 jobs:
   include:
-    - stage: build and run unit/system tests
+    - stage: build and run unit/system tests with code coverage
       script:
-        - travis_wait 60 mvn clean install
+        - travis_wait 60 mvn clean install -T 1C -Pgenerate-coverage,build-with-jacoco
+    - stage: verify at least 70 % of the code is tested
+      script:
+        - travis_wait 60 mvn verify -T 1C -Pcoverage-check
     - stage: verify feature branch is not behind master branch with SQL file changes or pipeline changes
       script:
         - ./verify_sql_and_pipeline_changes.sh "${TRAVIS_BRANCH}"
@@ -71,7 +74,7 @@ jobs:
         - ./flyway_sql_validation.sh
     - stage: run integration tests in Docker
       script:
-        - mvn clean install -DskipTests
+        - mvn clean install -T 1C -DskipTests
         - source setup_docker_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-int.yaml build --force
         - travis_wait 60 mvn verify -Pintegrationtests
@@ -85,7 +88,7 @@ jobs:
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
-        - mvn clean install -DskipTests
+        - mvn clean install -T 1C -DskipTests
         - cd service && docker build -f Dockerfile --no-cache -t openbank-spring .
         - docker tag openbank-spring:latest jsquadab/openbank-spring:latest
         - docker push jsquadab/openbank-spring:latest
