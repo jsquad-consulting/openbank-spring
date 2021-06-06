@@ -31,7 +31,7 @@ before_install:
   - echo $JAVA_HOME
   - which java
   - sudo rm -rf /usr/local/lib/jvm/
-  - sudo apt-get install -y openjdk-11-jdk-headless
+  - sudo apt-get install -y openjdk-11-jdk-headless libxml2-utils
   - export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
   - which java
   - java -version
@@ -60,12 +60,10 @@ before_install:
 
 jobs:
   include:
-    - stage: build and run unit/system tests with code coverage
+    - stage: build and run unit/system tests with code coverage verification
       script:
-        - travis_wait 60 mvn clean install -T 1C -Pgenerate-coverage,build-with-jacoco
-    - stage: verify at least 70 % of the code is tested
-      script:
-        - travis_wait 60 mvn verify -T 1C -Pcoverage-check
+        - travis_wait 60 mvn clean verify -T 1C -Pgenerate-unit-coverage,generate-report
+        - travis_wait 60 ./verify_code_coverage.sh 70
     - stage: verify feature branch is not behind master branch with SQL file changes or pipeline changes
       script:
         - ./verify_sql_and_pipeline_changes.sh "${TRAVIS_BRANCH}"
@@ -77,14 +75,14 @@ jobs:
         - mvn clean install -T 1C -DskipTests
         - source setup_docker_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-int.yaml build --force
-        - travis_wait 60 mvn verify -Pintegrationtests
+        - travis_wait 60 mvn verify -Pintegration-tests
         - find **/target/** -name "*.log" -exec travis-artifacts upload --path {} \;
     - stage: run integration tests in Kubernetes
       script:
         - source setup_production_environment_variables.sh
         - source setup_kubernetes_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-k8-integration.yaml build --force
-        - travis_wait 60 mvn verify -Pintegrationtests
+        - travis_wait 60 mvn verify -Pintegration-tests
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
