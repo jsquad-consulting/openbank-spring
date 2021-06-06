@@ -28,6 +28,7 @@
     <modules>
         <module>service</module>
         <module>api</module>
+        <module>coverage</module>
     </modules>
 
     <properties>
@@ -40,7 +41,7 @@
         <h2.version>1.4.199</h2.version>
         <hibernate.ehcache.version>5.4.2.Final</hibernate.ehcache.version>
         <hibernate.validator.version>6.0.17.Final</hibernate.validator.version>
-        <jacoco.report.agent.file>${project.build.directory}/jacoco.exec</jacoco.report.agent.file>
+        <jacoco.report>${project.basedir}/../target/site</jacoco.report>
         <jacoco.version>0.8.7</jacoco.version>
         <jakarta.activation.version>1.2.1</jakarta.activation.version>
         <jasypt.spring.boot.starter.version>2.1.2</jasypt.spring.boot.starter.version>
@@ -67,6 +68,8 @@
         <mojo.jaxb2.version>2.5.0</mojo.jaxb2.version>
         <okhttp3.version>4.2.2</okhttp3.version>
         <postgresql.version>42.2.18</postgresql.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <rest.assured.version>4.0.0</rest.assured.version>
         <spring.boot.version>2.3.7.RELEASE</spring.boot.version>
         <springdoc.openapi.version>1.1.49</springdoc.openapi.version>
@@ -232,13 +235,9 @@
         <plugins>
             <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
-                <configuration>
-                    <argLine>
-                     --illegal-access=permit
-                    </argLine>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -278,27 +277,28 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude generated API/repository models from JAXB -->
+                        <exclude>se/jsquad/api/**/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>generate-coverage</id>
+            <id>generate-unit-coverage</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <plugins>
-                    <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven.surefire.version}</version>
-                        <configuration>
-                            <argLine>
-                                jaCoCoArgLine -Xmx4024m --illegal-access=permit
-                            </argLine>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
@@ -310,82 +310,16 @@
                                     <goal>prepare-agent</goal>
                                 </goals>
                                 <configuration>
-                                    <propertyName>jaCoCoArgLine</propertyName>
-                                    <destFile>${jacoco.report.agent.file}</destFile>
                                     <append>true</append>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>post-unit-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                                <configuration>
-                                    <dataFile>${jacoco.report.agent.file}</dataFile>
-                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
-            <id>coverage-check</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven.surefire.version}</version>
-                        <configuration>
-                            <argLine>
-                                jaCoCoArgLine -Xmx4024m --illegal-access=permit
-                            </argLine>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco.version}</version>
-                        <executions>
-                            <execution>
-                                <id>jacoco-check</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                                <configuration>
-                                    <dataFile>${jacoco.report.agent.file}</dataFile>
-                                    <rules>
-                                        <rule>
-                                            <element>BUNDLE</element>
-                                            <excludes>
-                                                <exclude>*Test</exclude>
-                                                <exclude>*IT</exclude>
-                                            </excludes>
-                                            <limits>
-                                                <limit>
-                                                    <counter>INSTRUCTION</counter>
-                                                    <value>COVEREDRATIO</value>
-                                                    <minimum>70%</minimum>
-                                                </limit>
-                                            </limits>
-                                        </rule>
-                                    </rules>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>integrationtests</id>
+            <id>integration-tests</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -405,30 +339,41 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <classpathDependencyExcludes>
-                                <classpathDependencyExcludes>${groupId}:${artifactId}</classpathDependencyExcludes>
-                            </classpathDependencyExcludes>
-                            <additionalClasspathElements>
-                                <additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
-                            </additionalClasspathElements>
-                            <argLine>
-                             --illegal-access=permit
-                            </argLine>
-                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                        </configuration>
                     </plugin>
-                    <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven.surefire.version}</version>
                         <configuration>
-                            <argLine>
-                              --illegal-access=permit
-                            </argLine>
                             <skipTests>true</skipTests>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>generate-integration-coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                        <executions>
+                            <execution>
+                                <id>pre-integration-test</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <append>true</append>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
