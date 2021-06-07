@@ -26,13 +26,16 @@ main() {
 		exit 1
 	fi
 
-	regex='<counter type="INSTRUCTION" missed="([0-9]+)" covered="([0-9]+)"\/>'
+	regexPattern='<counter type="INSTRUCTION" missed="([0-9]+)" covered="([0-9]+)"\/>'
 
 	content=$(cat ./target/site/jacoco.xml | xmllint --format - | grep -i '<counter type="INSTRUCTION" missed="' | tail -1)
 
-	if [[ $content =~ $regex ]]; then
+	if [[ $content =~ $regexPattern ]]; then
 		missed_instructions="${BASH_REMATCH[1]}"
 		covered_instructions="${BASH_REMATCH[2]}"
+	else
+		echo "Failed to match regular expression pattern of ${regexPattern}."
+		exit 1
 	fi
 
 	total_instructions=$(echo "$missed_instructions+$covered_instructions" | bc)

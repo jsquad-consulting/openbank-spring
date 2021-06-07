@@ -31,7 +31,7 @@ isThereFileChangesBetweenFeatureBranchAndMasterBranch() {
        exit 1
     fi
 
-    regexPattern="([0-9]+)\s+([0-9]+)"
+    regexPattern='([0-9]+)[[:space:]]+([0-9]+)'
 
     if [[ "${numberOfFileChangesBetweenBranches}" =~ $regexPattern ]];
     then :
