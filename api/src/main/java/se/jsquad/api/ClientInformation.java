@@ -47,7 +47,7 @@ import se.jsquad.validator.PersonIdentificationNumberConstraint;
 public interface ClientInformation {
     @PutMapping(value = "/update/client/information", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces =
         {MediaType.APPLICATION_JSON_VALUE})
-    @Operation(summary = "Update client information, mock implementation",
+    @Operation(summary = "Update client information.",
         description = "Update the client information based with common constraint vaidation for ClientApi xsd " +
             "model.",
         responses = {
