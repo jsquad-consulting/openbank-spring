@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package se.jsquad.business;
+package se.jsquad.component.header;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
-import org.springframework.stereotype.Service;
-import se.jsquad.api.client.WorldApiResponse;
-import se.jsquad.client.WorldApiClient;
-
-@Service
-public class WebClientBusiness {
-    private WorldApiClient worldApiClient;
-
-    public WebClientBusiness(WorldApiClient worldApiClient) {
-        this.worldApiClient = worldApiClient;
-    }
-
-    public WorldApiResponse getWorldApiResponse() {
-         return worldApiClient.getWorldApiResponse();
-    }
+@Component
+@RequestScope
+@Setter
+@Getter
+public class RequestHeader {
+    private String basicAuthenticationName;
+    private String correlationId;
 }

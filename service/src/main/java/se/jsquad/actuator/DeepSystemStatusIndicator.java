@@ -19,7 +19,6 @@ package se.jsquad.actuator;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -34,8 +33,6 @@ import se.jsquad.api.health.ShallowSystemStatusResponse;
 @Component
 @Endpoint(id = "deephealth")
 public class DeepSystemStatusIndicator {
-    private Logger logger;
-
     private ShallowSystemStatusIndicator shallowSystemStatusIndicator;
     private HealthIndicator openbankDatabaseHealthIndicator;
     private HealthIndicator securityDatabaseHealthIndicator;
@@ -44,14 +41,12 @@ public class DeepSystemStatusIndicator {
     private Gauge gaugeOpenBankDatabase;
     private Gauge gaugeSecurityDatabase;
 
-    public DeepSystemStatusIndicator(Logger logger,
-                                     ShallowSystemStatusIndicator shallowSystemStatusIndicator,
+    public DeepSystemStatusIndicator(ShallowSystemStatusIndicator shallowSystemStatusIndicator,
                                      @Qualifier("openbankDatabaseHealthIndicator")
                                              HealthIndicator openbankDatabaseHealthIndicator,
                                      @Qualifier("securityDatabaseHealthIndicator")
                                              HealthIndicator securityDatabaseHealthIndicator,
                                      MeterRegistry meterRegistry) {
-        this.logger = logger;
         this.shallowSystemStatusIndicator = shallowSystemStatusIndicator;
         this.openbankDatabaseHealthIndicator = openbankDatabaseHealthIndicator;
         this.securityDatabaseHealthIndicator = securityDatabaseHealthIndicator;

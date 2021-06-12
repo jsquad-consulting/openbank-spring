@@ -23,18 +23,15 @@ import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
+import se.jsquad.AbstractSpringBootConfiguration;
 import se.jsquad.api.client.WorldApiResponse;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
@@ -44,15 +41,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
-@TestPropertySource(locations = {"classpath:test/application.properties",
-        "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.properties",
-        "classpath:test/configuration/openbank_jpa.properties",
-        "classpath:test/configuration/security_jpa.properties"},
-        properties = {"jasypt.encryptor.password = testencryption"})
-@SpringBootTest
-public class WebClientBusinessTest {
+public class WebClientBusinessTest extends AbstractSpringBootConfiguration {
     private Gson gson = new Gson();
     static String baseUrl;
 

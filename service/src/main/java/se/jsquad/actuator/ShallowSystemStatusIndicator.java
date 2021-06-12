@@ -16,7 +16,6 @@
 
 package se.jsquad.actuator;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -29,14 +28,10 @@ import se.jsquad.api.health.ShallowSystemStatusResponse;
 @Component
 @Endpoint(id = "shallowhealth")
 public class ShallowSystemStatusIndicator {
-    private Logger logger;
-
     private HealthIndicator diskSpaceHealthIndicator;
 
-    public ShallowSystemStatusIndicator(Logger logger,
-                                        @Qualifier("diskSpaceHealthIndicator")
+    public ShallowSystemStatusIndicator(@Qualifier("diskSpaceHealthIndicator")
                                        HealthIndicator diskSpaceHealthIndicator) {
-        this.logger = logger;
         this.diskSpaceHealthIndicator = diskSpaceHealthIndicator;
     }
 

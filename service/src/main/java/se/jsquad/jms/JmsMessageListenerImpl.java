@@ -32,6 +32,6 @@ public class JmsMessageListenerImpl implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        logger.info("onMessage(message: {})", message);
+        logger.debug("onMessage(message: {})", message);
     }
 }

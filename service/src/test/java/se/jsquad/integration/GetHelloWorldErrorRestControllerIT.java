@@ -19,6 +19,7 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.jose4j.base64url.Base64;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.Delay;
@@ -35,6 +36,9 @@ import static org.mockserver.model.HttpResponse.response;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_API;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_SERVICE;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTPS;
+import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEADER_NAME;
+import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
+import static se.jsquad.util.ClientTestCredentials.CLIENT_PASSWORD;
 
 public class GetHelloWorldErrorRestControllerIT extends AbstractTestContainerSetup {
     @AfterEach
@@ -58,6 +62,7 @@ public class GetHelloWorldErrorRestControllerIT extends AbstractTestContainerSet
         // When
         Response response = RestAssured
                 .given()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()

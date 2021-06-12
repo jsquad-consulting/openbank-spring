@@ -16,7 +16,6 @@
 
 package se.jsquad.adapter;
 
-import org.slf4j.Logger;
 import se.jsquad.api.client.AccountApi;
 import se.jsquad.api.client.AccountTransactionApi;
 import se.jsquad.api.client.ClientApi;
@@ -39,12 +38,6 @@ import java.util.Set;
 
 @Named
 public class ClientAdapterImpl implements ClientAdapter {
-    private Logger logger;
-
-    public ClientAdapterImpl(Logger logger) {
-        this.logger = logger;
-    }
-
     @Override
     public ClientApi translateClientToClientApi(Client client) {
         ClientApi clientApi = new ClientApi();

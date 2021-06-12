@@ -19,6 +19,7 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.jose4j.base64url.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import se.jsquad.api.client.ClientApi;
@@ -36,6 +37,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_API;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_SERVICE;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTPS;
+import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEADER_NAME;
+import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
+import static se.jsquad.util.ClientTestCredentials.CLIENT_PASSWORD;
 
 public class GetClientInformationRestControllerIT extends AbstractTestContainerSetup {
     @Test
@@ -51,6 +55,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(clientInformationRequest)
@@ -79,6 +84,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(clientInformationRequest)
@@ -99,6 +105,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -137,6 +144,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -161,6 +169,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -201,6 +210,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()

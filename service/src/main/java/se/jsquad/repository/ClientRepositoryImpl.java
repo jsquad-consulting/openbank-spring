@@ -16,7 +16,6 @@
 
 package se.jsquad.repository;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +28,6 @@ import java.util.List;
 
 @Repository
 public class ClientRepositoryImpl extends OpenBankPersistenceUnitProducer implements ClientRepository {
-    private Logger logger;
-
-    public ClientRepositoryImpl(Logger logger) {
-        this.logger = logger;
-    }
-
     @Override
     public Client getClientByPersonIdentification(String personIdentification) {
         TypedQuery<Client> query = getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION, Client.class);

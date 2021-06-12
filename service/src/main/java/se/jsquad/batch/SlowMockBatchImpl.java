@@ -16,7 +16,6 @@
 
 package se.jsquad.batch;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import se.jsquad.api.batch.BatchStatus;
 import se.jsquad.api.batch.Status;
@@ -28,11 +27,9 @@ import java.util.concurrent.TimeUnit;
 public class SlowMockBatchImpl implements SlowMockBatch {
     private int sleepTime;
 
-    private Logger logger;
     private AppPropertyConfiguration appPropertyConfiguration;
 
-    public SlowMockBatchImpl(Logger logger, AppPropertyConfiguration appPropertyConfiguration) {
-        this.logger = logger;
+    public SlowMockBatchImpl(AppPropertyConfiguration appPropertyConfiguration) {
         this.appPropertyConfiguration = appPropertyConfiguration;
         sleepTime = this.appPropertyConfiguration.getBatchSleepTime();
     }

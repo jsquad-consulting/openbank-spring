@@ -16,7 +16,6 @@
 
 package se.jsquad.business;
 
-import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -35,16 +34,13 @@ import java.util.concurrent.Future;
 @Service
 @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
 public class OpenBankService {
-    private Logger logger;
-
     private ClientRepository clientRepository;
     private ClientAdapter clientAdapter;
     private SlowMockBatch slowMockBatch;
 
-    public OpenBankService(Logger logger, ClientRepository clientRepository, SlowMockBatch slowMockBatch) {
+    public OpenBankService(ClientRepository clientRepository, SlowMockBatch slowMockBatch) {
         this.clientRepository = clientRepository;
         this.slowMockBatch = slowMockBatch;
-        this.logger = logger;
     }
 
     @Inject

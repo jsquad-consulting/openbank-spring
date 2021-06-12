@@ -21,14 +21,11 @@ import nl.altindag.log.LogCaptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.activemq.broker.BrokerService;
+import org.jose4j.base64url.Base64;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -38,15 +35,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
+import se.jsquad.AbstractSpringBootConfiguration;
 import se.jsquad.api.client.AccountApi;
 import se.jsquad.api.client.AccountTransactionApi;
 import se.jsquad.api.client.ClientApi;
@@ -68,18 +62,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
+import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEADER_NAME;
+import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
+import static se.jsquad.util.ClientTestCredentials.CLIENT_PASSWORD;
 
-@ExtendWith(SpringExtension.class)
-@TestPropertySource(locations = {"classpath:test/application.properties",
-        "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.properties",
-        "classpath:test/configuration/openbank_jpa.properties",
-        "classpath:test/configuration/security_jpa.properties"},
-        properties = {"jasypt.encryptor.password = testencryption"})
-@SpringBootTest
-@Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
-@Execution(ExecutionMode.SAME_THREAD)
-public class GetClientInformationRestControllerImplTest {
+public class GetClientInformationRestControllerImplTest extends AbstractSpringBootConfiguration {
     static String baseUrl;
 
     @Configuration
@@ -186,7 +174,7 @@ public class GetClientInformationRestControllerImplTest {
     
         assertEquals(2, logCaptor.getInfoLogs().size());
         assertTrue(logCaptor.getInfoLogs().get(0).contains("se.jsquad.api.client.ClientRequest@"));
-        assertEquals("Finish method getClientInformationByRequestBody", logCaptor.getInfoLogs().get(1));
+        assertEquals("Finish method getClientInformationByRequestBody()", logCaptor.getInfoLogs().get(1));
         
         // Given
         clientRequest.getClientData().setPersonIdentificationNumber("");
@@ -194,7 +182,9 @@ public class GetClientInformationRestControllerImplTest {
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
         // When and then
-        mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(get("/api/get/client/info/")
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(clientRequest))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -207,6 +197,7 @@ public class GetClientInformationRestControllerImplTest {
 
         // When
         MvcResult mvcResult = mockMvc.perform(get("/api/get/client/info/")
+            .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(gson.toJson(clientRequest))
             .accept(MediaType.APPLICATION_JSON))
@@ -224,6 +215,7 @@ public class GetClientInformationRestControllerImplTest {
 
         // When and then
         mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .content(gson.toJson(clientRequest))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -236,6 +228,7 @@ public class GetClientInformationRestControllerImplTest {
 
         // When and then
         mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .content(gson.toJson(clientRequest))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -245,20 +238,28 @@ public class GetClientInformationRestControllerImplTest {
     }
 
     @Test
-    public void testGetClientInformation() {
+    public void testGetClientInformation() throws Exception {
         // Given
+        final String CORRELATION_ID = "980fda45-2f14-44ab-939d-46020d028ef3";
         LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
         logCaptor.setLogLevelToInfo();
         
         String personIdentification = "191212121212";
-
+    
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        
         // When
-        ResponseEntity<ClientApi> responseEntity =
-                getClientInformationRESTController.getClientInformation(personIdentification);
-
+        MvcResult mvcResult = mockMvc.perform(get("/api/client/info/" + personIdentification)
+            .header(CORRELATION_ID_HEADER_NAME, CORRELATION_ID)
+            .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+            .accept(MediaType.APPLICATION_JSON)).andReturn();
+    
         // Then
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        ClientApi clientApi = responseEntity.getBody();
+        assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus(), "Failed to assert status " +
+            "code 200 " + mvcResult.getResponse().getContentAsString());
+        
+        ClientApi clientApi = objectMapper.reader().forType(ClientApi.class).readValue(mvcResult.getResponse()
+            .getContentAsString());
 
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
         assertEquals("John", clientApi.getPerson().getFirstName());
@@ -277,8 +278,10 @@ public class GetClientInformationRestControllerImplTest {
         assertEquals(TransactionTypeApi.DEPOSIT, accountTransactionApi.getTransactionType());
     
         assertEquals(2, logCaptor.getInfoLogs().size());
-        assertEquals("getClientInformation(191212121212)", logCaptor.getInfoLogs().get(0));
-        assertEquals("Finish method getClientInformation", logCaptor.getInfoLogs().get(1));
+        assertEquals("getClientInformation(CLIENT_NAME: client1,CORRELATION_ID: " +
+            "980fda45-2f14-44ab-939d-46020d028ef3,191212121212)", logCaptor.getInfoLogs().get(0));
+        assertEquals("Finish method getClientInformation(CLIENT_NAME: client1,CORRELATION_ID: " +
+            "980fda45-2f14-44ab-939d-46020d028ef3)", logCaptor.getInfoLogs().get(1));
         
         logCaptor.clearLogs();
         
@@ -292,6 +295,7 @@ public class GetClientInformationRestControllerImplTest {
 
         // When and then
         mockMvc.perform(get("/api/client/info/" + personIdentificationNumber)
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Person identification number must be twelve digits."));

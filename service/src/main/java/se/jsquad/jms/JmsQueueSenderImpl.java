@@ -16,7 +16,6 @@
 
 package se.jsquad.jms;
 
-import org.slf4j.Logger;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +23,10 @@ import javax.jms.Queue;
 
 @Component
 public class JmsQueueSenderImpl implements JmsQueueSender {
-    private Logger logger;
     private JmsTemplate jmsTemplate;
     private Queue queue;
 
-    JmsQueueSenderImpl(Logger logger, JmsTemplate jmsTemplate, Queue queue) {
-        this.logger = logger;
+    JmsQueueSenderImpl(JmsTemplate jmsTemplate, Queue queue) {
         this.jmsTemplate = jmsTemplate;
         this.queue = queue;
     }
