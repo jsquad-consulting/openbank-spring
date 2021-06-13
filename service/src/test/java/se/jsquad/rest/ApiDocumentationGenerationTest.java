@@ -19,19 +19,16 @@ package se.jsquad.rest;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.yaml.snakeyaml.Yaml;
+import se.jsquad.AbstractSpringBootConfiguration;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 
 import java.io.ByteArrayInputStream;
@@ -43,15 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(SpringExtension.class)
-@TestPropertySource(locations = {"classpath:test/application.properties",
-        "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.properties",
-        "classpath:test/configuration/openbank_jpa.properties",
-        "classpath:test/configuration/security_jpa.properties"},
-        properties = {"jasypt.encryptor.password = testencryption"})
-@SpringBootTest
-public class ApiDocumentationGenerationTest {
+public class ApiDocumentationGenerationTest extends AbstractSpringBootConfiguration {
     @MockBean
     private BrokerService brokerService;
 

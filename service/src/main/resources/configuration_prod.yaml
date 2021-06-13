@@ -35,3 +35,10 @@ management.endpoints:
     exposure.include: 'shallowhealth,deephealth,metrics,prometheus'
 
 management.metrics.export.prometheus.enabled: true
+
+service:
+  basic:
+    auth:
+      map:
+        client1:
+          token: 'password1,password2'

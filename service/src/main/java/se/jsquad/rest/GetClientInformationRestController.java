@@ -27,11 +27,13 @@ import se.jsquad.api.client.WorldApiResponse;
 import se.jsquad.api.time.DateTime;
 import se.jsquad.business.OpenBankService;
 import se.jsquad.business.WebClientBusiness;
+import se.jsquad.component.header.RequestHeaderController;
 import se.jsquad.exception.ClientNotFoundException;
 
 import java.time.Instant;
 
 @RestController
+@RequestHeaderController
 public class GetClientInformationRestController implements ClientInformation {
     private OpenBankService openBankService;
     private WebClientBusiness webClientBusiness;

@@ -89,7 +89,7 @@ public class StartupOpenBankService {
      */
     public void refreshJpaCache() {
         lock.lock();
-        logger.info("Locked the batch thread.");
+        logger.debug("Locked the batch thread.");
         NumberOfLocks.increaseNumberOfLocks();
 
         try {
@@ -97,7 +97,7 @@ public class StartupOpenBankService {
         } finally {
             NumberOfLocks.decreaseNumberOfLocks();
             lock.unlock();
-            logger.info("Unlocked the batch thread.");
+            logger.debug("Unlocked the batch thread.");
         }
     }
 }

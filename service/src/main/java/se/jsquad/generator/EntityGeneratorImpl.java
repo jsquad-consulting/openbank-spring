@@ -16,7 +16,6 @@
 
 package se.jsquad.generator;
 
-import org.slf4j.Logger;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.Client;
@@ -32,14 +31,9 @@ import java.util.Set;
 
 @Named
 public class EntityGeneratorImpl implements EntityGenerator {
-    private Logger logger;
-
     public static final String SPECIAL_OFFER_YOU_CAN_NOT_REFUSE = "Special offer you can not refuse.";
     public static final String IN_WITHDRAWAL = "500$ in withdrawal";
 
-    public EntityGeneratorImpl(Logger logger) {
-        this.logger = logger;
-    }
 
     @Override
     public Set<Client> generateClientSet() {

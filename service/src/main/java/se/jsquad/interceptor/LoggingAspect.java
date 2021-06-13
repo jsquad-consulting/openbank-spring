@@ -16,81 +16,113 @@
 
 package se.jsquad.interceptor;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import se.jsquad.component.header.ContextHeader;
+
+import static java.util.stream.Stream.of;
 
 @Component
 @Aspect
 public class LoggingAspect {
-    @Around("anyJsquadPackage() && avoidInterceptorPackage()")
+    private final ContextHeader contextHeader;
+    
+    public LoggingAspect(final ContextHeader contextHeader) {
+        this.contextHeader = contextHeader;
+    }
+    
+    @Pointcut("within(se.jsquad..*)")
+    private void anyPackage() {
+        // NO SONAR
+    }
+    
+    @Pointcut("!within(se.jsquad.component.header.*) " +
+        "&& !within(se.jsquad.interceptor.*)")
+    private void avoidInterceptors() {
+        // NO SONAR
+    }
+    
+    @Around("anyPackage() && avoidInterceptors()")
     public Object logEntranceAndExitToAllMethods(ProceedingJoinPoint joinPoint) throws Throwable {
-        final Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass().getName());
+        final var logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass().getName());
         Object returnValue;
         
-        try {
-            logger.info(generateStartMethodMessage(joinPoint.getSignature().getName(), joinPoint.getArgs()));
-            
-            returnValue = joinPoint.proceed();
-            
-            logger.info(generateEndMethodMessage(joinPoint.getSignature().getName()));
-            
-        } catch (Throwable throwable) {
-            logger.error(throwable.getMessage(), throwable);
-            throw throwable;
+        final String startMethodMessage = generateStartMethodMessage(joinPoint.getSignature().getName(),
+            joinPoint.getArgs());
+        logger.info(startMethodMessage);
+        
+        returnValue = joinPoint.proceed();
+        
+        if (logger.isDebugEnabled()) {
+            final String returnValueMessage = generateReturnValueMessage(joinPoint.getSignature().getName(),
+                this.getObjectValueAsString(returnValue));
+            logger.info(returnValueMessage);
         }
+        
+        final String endMethodMessage = generateEndMethodMessage(joinPoint.getSignature().getName());
+        
+        logger.info(endMethodMessage);
         
         return returnValue;
     }
     
-    @Pointcut("within(se.jsquad..*)")
-    private void anyJsquadPackage() {
-    }
-    
-    @Pointcut("!within(se.jsquad.interceptor.*)")
-    private void avoidInterceptorPackage() {
-    }
-    
     private String generateStartMethodMessage(String joinPointSignatureName, Object[] joinPointArguments) {
-        StringBuilder startMethodMessage = new StringBuilder();
-        
-        startMethodMessage
+        return new StringBuilder()
             .append(joinPointSignatureName)
             .append("(")
+            .append(contextHeader.getBasicAuthenticationNameWithLogFormat())
+            .append(contextHeader.getCorrelationIdWithLogFormat())
             .append(generateArgumentsMessage(joinPointArguments))
-            .append(")");
-        
-        return startMethodMessage.toString();
+            .append(")").toString();
     }
     
     private String generateArgumentsMessage(Object[] joinPointArguments) {
-        StringBuilder argumentsMessage = new StringBuilder();
-    
-        for (Object joinPointArgument : joinPointArguments) {
-            argumentsMessage.append(joinPointArgument).append(",");
-        }
+        var argumentsMessage = new StringBuilder();
         
-        return argumentsMessageToString(argumentsMessage);
-    }
-    
-    private String argumentsMessageToString(StringBuilder argumentsMessage) {
-        if (argumentsMessage.length() > 0) {
-            return argumentsMessage.substring(0, argumentsMessage.length() - 1);
-        } else {
-            return argumentsMessage.toString();
-        }
+        of(joinPointArguments)
+            .forEach(argument -> argumentsMessage.append(",").append(argument));
+        
+        return argumentsMessage.toString();
     }
     
     private String generateEndMethodMessage(String joinPointSignatureName) {
-        StringBuilder endMethodMessage = new StringBuilder();
-        endMethodMessage
+        return new StringBuilder()
             .append("Finish method ")
-            .append(joinPointSignatureName);
-        
-        return endMethodMessage.toString();
+            .append(joinPointSignatureName)
+            .append("(")
+            .append(contextHeader.getBasicAuthenticationNameWithLogFormat())
+            .append(contextHeader.getCorrelationIdWithLogFormat())
+            .append(")").toString();
+    }
+    
+    
+    private String generateReturnValueMessage(String joinPointSignatureName, String responseMessage) {
+        return new StringBuilder()
+            .append("Method ")
+            .append(joinPointSignatureName)
+            .append(" response")
+            .append("(")
+            .append(contextHeader.getBasicAuthenticationNameWithLogFormat())
+            .append(contextHeader.getCorrelationIdWithLogFormat())
+            .append(",")
+            .append(responseMessage)
+            .append(")").toString();
+    }
+    
+    private String getObjectValueAsString(Object result) {
+        String returnValue = null;
+        if (null != result) {
+            if (result.toString().endsWith("@" + Integer.toHexString(result.hashCode()))) {
+                returnValue = ReflectionToStringBuilder.toString(result);
+            } else {
+                returnValue = result.toString();
+            }
+        }
+        return returnValue;
     }
 }

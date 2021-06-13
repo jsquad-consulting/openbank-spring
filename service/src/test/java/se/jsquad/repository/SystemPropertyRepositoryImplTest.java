@@ -16,7 +16,6 @@
 
 package se.jsquad.repository;
 
-import javax.persistence.EntityManager;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,7 @@ import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.producer.OpenBankPersistenceUnitProducer;
 
+import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 

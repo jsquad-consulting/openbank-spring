@@ -16,7 +16,6 @@
 
 package se.jsquad.repository;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +27,6 @@ import java.util.List;
 
 @Repository
 public class SystemPropertyRepositoryImpl extends OpenBankPersistenceUnitProducer implements SystemPropertyRepository {
-    private Logger logger;
-
-    public SystemPropertyRepositoryImpl(Logger logger) {
-        this.logger = logger;
-    }
-
     @Override
     @Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
     public void persistSystemProperty(SystemProperty systemProperty) {

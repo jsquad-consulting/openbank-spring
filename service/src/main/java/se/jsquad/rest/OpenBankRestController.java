@@ -23,10 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.api.OpenBankRest;
 import se.jsquad.api.batch.BatchStatus;
 import se.jsquad.business.OpenBankService;
+import se.jsquad.component.header.RequestHeaderController;
 
 import java.util.concurrent.Future;
 
 @RestController
+@RequestHeaderController
 public class OpenBankRestController implements OpenBankRest {
     private OpenBankService openBankService;
 

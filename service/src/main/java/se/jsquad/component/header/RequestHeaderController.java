@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package se.jsquad.business;
+package se.jsquad.component.header;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.springframework.stereotype.Service;
-import se.jsquad.api.client.WorldApiResponse;
-import se.jsquad.client.WorldApiClient;
-
-@Service
-public class WebClientBusiness {
-    private WorldApiClient worldApiClient;
-
-    public WebClientBusiness(WorldApiClient worldApiClient) {
-        this.worldApiClient = worldApiClient;
-    }
-
-    public WorldApiResponse getWorldApiResponse() {
-         return worldApiClient.getWorldApiResponse();
-    }
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RequestHeaderController {
 }

@@ -20,8 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.api.JunkRest;
 import se.jsquad.api.client.JunkApi;
+import se.jsquad.component.header.RequestHeaderController;
 
 @RestController
+@RequestHeaderController
 public class JunkRestController implements JunkRest {
     @Override
     public ResponseEntity<JunkApi> getJunkInformation(String junkInformation) {

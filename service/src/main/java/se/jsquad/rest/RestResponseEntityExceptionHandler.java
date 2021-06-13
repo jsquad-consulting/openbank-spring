@@ -23,61 +23,103 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import se.jsquad.component.header.ContextHeader;
+import se.jsquad.exception.BadRequestRuntimeException;
+import se.jsquad.exception.Base64RuntimeException;
+import se.jsquad.exception.BasicAuthMapRuntimeException;
 import se.jsquad.exception.ClientNotFoundException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.Iterator;
 
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-    public RestResponseEntityExceptionHandler() {
+    private final ContextHeader contextHeader;
+    
+    public RestResponseEntityExceptionHandler(final ContextHeader contextHeader) {
         super();
+        this.contextHeader = contextHeader;
     }
-
-    @ExceptionHandler({ConstraintViolationException.class})
+    
+    @ExceptionHandler({ConstraintViolationException.class, BadRequestRuntimeException.class, Base64RuntimeException.class})
     public ResponseEntity<Object> handleBadRequest(final RuntimeException runtimeException,
                                                    final WebRequest webRequest) {
-        String message;
-
+        
+        String badRequestMessage = generateExceptionRequestMessage("Bad request",
+            runtimeException.getMessage());
+        logger.info(badRequestMessage, runtimeException);
+        
+        final String message;
+        
         if (runtimeException instanceof ConstraintViolationException) {
-            StringBuilder stringBuilder = new StringBuilder();
-            Iterator<ConstraintViolation<?>> iterator =
-                    ((ConstraintViolationException) runtimeException).getConstraintViolations().iterator();
-
-            while (iterator.hasNext()) {
-                stringBuilder.append(iterator.next().getMessage()).append(" ");
+            var stringBuilder = new StringBuilder();
+            
+            for (ConstraintViolation<?> constraintViolation :
+                ((ConstraintViolationException) runtimeException).getConstraintViolations()) {
+                String tempMessage = constraintViolation.getMessage();
+                
+                if (!stringBuilder.toString().contains(tempMessage)) {
+                    stringBuilder.append(tempMessage).append(" ");
+                }
             }
-
+            
             message = stringBuilder.toString().trim();
         } else {
             message = runtimeException.getMessage();
         }
-
+        
         return handleExceptionInternal(runtimeException, message, new HttpHeaders(),
-                HttpStatus.BAD_REQUEST, webRequest);
+            HttpStatus.BAD_REQUEST, webRequest);
     }
-
+    
     @ExceptionHandler({ClientNotFoundException.class})
     public ResponseEntity<Object> handleNotFound(final RuntimeException runtimeException, final WebRequest webRequest) {
+        String notFoundMessage = generateExceptionRequestMessage("Not found",
+            runtimeException.getMessage());
+        logger.info(notFoundMessage, runtimeException);
+        
         return handleExceptionInternal(runtimeException, runtimeException.getMessage(), new HttpHeaders(),
-                HttpStatus.NOT_FOUND, webRequest);
+            HttpStatus.NOT_FOUND, webRequest);
     }
-
+    
+    @ExceptionHandler({BasicAuthMapRuntimeException.class})
+    public ResponseEntity<Object> handleForbiddenRequest(final RuntimeException runtimeException,
+                                                         final WebRequest webRequest) {
+        String exceptionMessage = generateExceptionRequestMessage("Forbidden request",
+            runtimeException.getMessage());
+        logger.info(exceptionMessage, runtimeException);
+        
+        return handleExceptionInternal(runtimeException, runtimeException.getMessage(), new HttpHeaders(),
+            HttpStatus.FORBIDDEN, webRequest);
+    }
+    
     @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<Object> handleInternal(final RuntimeException runtimeException, final WebRequest webRequest) {
         return getObjectResponseEntity(runtimeException, webRequest);
     }
-
+    
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<Object> handleGlobalException(final RuntimeException runtimeException,
                                                         final WebRequest webRequest) {
         return getObjectResponseEntity(runtimeException, webRequest);
     }
-
+    
     private ResponseEntity<Object> getObjectResponseEntity(RuntimeException runtimeException, WebRequest webRequest) {
-        logger.error(runtimeException.getMessage(), runtimeException);
+        String errorMessage = generateExceptionRequestMessage("Exception", runtimeException.getMessage());
+        logger.error(errorMessage, runtimeException);
+        
         return handleExceptionInternal(runtimeException, runtimeException.getMessage(), new HttpHeaders(),
-                HttpStatus.INTERNAL_SERVER_ERROR, webRequest);
+            HttpStatus.INTERNAL_SERVER_ERROR, webRequest);
+    }
+    
+    private String generateExceptionRequestMessage(String contextMessage, String errorMessage) {
+        return new StringBuilder()
+            .append(contextMessage)
+            .append(" with ")
+            .append(contextHeader.getCorrelationIdWithLogFormat())
+            .append(" with error message ")
+            .append("(")
+            .append(errorMessage)
+            .append(")").toString();
     }
 }

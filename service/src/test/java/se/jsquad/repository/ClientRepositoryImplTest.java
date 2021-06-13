@@ -18,14 +18,9 @@ package se.jsquad.repository;
 
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import se.jsquad.AbstractSpringBootConfiguration;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
@@ -35,16 +30,7 @@ import se.jsquad.entity.TransactionType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource(locations = {"classpath:test/application.properties",
-        "classpath:activemq.properties",
-        "classpath:test/configuration/configuration_test.properties",
-        "classpath:test/configuration/openbank_jpa.properties",
-        "classpath:test/configuration/security_jpa.properties"},
-        properties = {"jasypt.encryptor.password = testencryption"})
-@Transactional(transactionManager = "transactionManagerOpenBank", propagation = Propagation.REQUIRED)
-public class ClientRepositoryImplTest {
+public class ClientRepositoryImplTest extends AbstractSpringBootConfiguration {
     @MockBean
     private BrokerService brokerService;
 

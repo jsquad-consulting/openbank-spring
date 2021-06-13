@@ -16,7 +16,6 @@
 
 package se.jsquad.property;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -24,12 +23,6 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:/META-INF/property/app.properties")
 public class AppPropertyConfigurationImpl implements AppPropertyConfiguration {
-    private Logger logger;
-
-    public AppPropertyConfigurationImpl(Logger logger) {
-        this.logger = logger;
-    }
-
     @Value("${app.version}")
     private String version;
 

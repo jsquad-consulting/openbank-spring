@@ -34,7 +34,9 @@ public class FlywayDatabaseMigration {
 
     public void migrateToDatabase(String location, DataSource dataSource) {
         if (dataSource == null) {
-            logger.error("No data source found to execute the database migrations.");
+            String message = "No data source found to execute the database migrations.";
+            logger.error(message);
+            
             throw new ApplicationContextException("No data source found to execute the database migrations.");
         }
 
