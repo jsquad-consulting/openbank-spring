@@ -65,7 +65,7 @@ public class RequestHeaderInterceptor extends HandlerInterceptorAdapter {
     }
     
     private void setBasicAuthNameFromAuthorizationHeader(HttpServletRequest request) {
-        var pattern = Pattern.compile("(.*):(.*)", Pattern.CASE_INSENSITIVE);
+        var pattern = Pattern.compile("(\\S+):(\\S+)", Pattern.CASE_INSENSITIVE);
         var matcher = pattern.matcher(ofNullable(base64Util.decodeEncodedToken(request
             .getHeader(X_AUTHORIZATION_HEADER_NAME))).orElse(""));
         
@@ -80,8 +80,7 @@ public class RequestHeaderInterceptor extends HandlerInterceptorAdapter {
             throw new BasicAuthMapRuntimeException(message);
         }
         
-        requestHeader.setBasicAuthenticationName(base64Util.getBasicAuthenticationName(request
-            .getHeader(X_AUTHORIZATION_HEADER_NAME)));
+        requestHeader.setBasicAuthenticationName(matcher.group(1));
     }
     
     private String getCorrelationId(HttpServletRequest request) {

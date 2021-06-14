@@ -19,7 +19,6 @@ package se.jsquad.rest;
 import nl.altindag.log.LogCaptor;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.activemq.broker.BrokerService;
-import org.jose4j.base64url.Base64;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -41,6 +40,7 @@ import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -104,7 +104,8 @@ public class GetClientInformationLogInfoAndDebugTest extends AbstractSpringBootC
         // When
         MvcResult mvcResult = mockMvc.perform(get("/api/client/info/" + personIdentification)
             .header(CORRELATION_ID_HEADER_NAME, CORRELATION_ID)
-            .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+            .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
             .accept(MediaType.APPLICATION_JSON)).andReturn();
     
         // Then
@@ -138,7 +139,8 @@ public class GetClientInformationLogInfoAndDebugTest extends AbstractSpringBootC
         // When
         MvcResult mvcResult = mockMvc.perform(get("/api/client/info/" + personIdentification)
             .header(CORRELATION_ID_HEADER_NAME, CORRELATION_ID)
-            .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+            .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
             .accept(MediaType.APPLICATION_JSON)).andReturn();
         
         // Then

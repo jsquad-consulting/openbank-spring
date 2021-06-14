@@ -36,7 +36,7 @@ public class BasicAuthValidator {
     private final Map<String, String> basicAuthMap;
     
     public BasicAuthValidator(final Environment environment) throws BasicAuthMapException {
-        basicAuthMap = new HashMap();
+        basicAuthMap = new HashMap<>();
     
         setupBasicAuthenticationMap((ConfigurableEnvironment) environment);
     
@@ -60,13 +60,17 @@ public class BasicAuthValidator {
             .contains(password);
     }
     
-    private void setupBasicAuthenticationMap(ConfigurableEnvironment environment) {
+    private void setupBasicAuthenticationMap(ConfigurableEnvironment environment) throws BasicAuthMapException {
         for (PropertySource<?> propertySource : environment.getPropertySources()) {
             if (propertySource instanceof EnumerablePropertySource) {
                 for (String key : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
                     if (key.startsWith("service.basic.auth.map")) {
-                        basicAuthMap.put(key.replace("service.basic.auth.map.", ""),
-                            propertySource.getProperty(key).toString());
+                        String propertyValue = (String) propertySource.getProperty(key);
+                        if (propertyValue == null) {
+                            throw new BasicAuthMapException(EXCEPTION_MESSAGE);
+                        }
+                        
+                        basicAuthMap.put(key.replace("service.basic.auth.map.", ""), propertyValue);
                     }
                 }
             }

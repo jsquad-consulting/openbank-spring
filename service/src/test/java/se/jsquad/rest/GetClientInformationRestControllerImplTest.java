@@ -21,7 +21,6 @@ import nl.altindag.log.LogCaptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.activemq.broker.BrokerService;
-import org.jose4j.base64url.Base64;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -53,6 +52,7 @@ import se.jsquad.configuration.ApplicationConfiguration;
 
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,7 +67,7 @@ import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEA
 import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
 import static se.jsquad.util.ClientTestCredentials.CLIENT_PASSWORD;
 
-public class GetClientInformationRestControllerImplTest extends AbstractSpringBootConfiguration {
+class GetClientInformationRestControllerImplTest extends AbstractSpringBootConfiguration {
     static String baseUrl;
 
     @Configuration
@@ -115,7 +115,7 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
     private Gson gson = new Gson();
     
     @Test
-    public void testGetHelloWorldByMockedRemoteRestfulServer() {
+    void testGetHelloWorldByMockedRemoteRestfulServer() {
         // Given
         WorldApiResponse worldApiResponse = new WorldApiResponse();
         worldApiResponse.setMessage("Hello world");
@@ -137,7 +137,7 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
     }
 
     @Test
-    public void testGetClientInformationByRequestBody() throws Exception {
+    void testGetClientInformationByRequestBody() throws Exception {
         // Given
         LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
         logCaptor.setLogLevelToInfo();
@@ -183,7 +183,8 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
 
         // When and then
         mockMvc.perform(get("/api/get/client/info/")
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(clientRequest))
                 .accept(MediaType.APPLICATION_JSON))
@@ -197,7 +198,8 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
 
         // When
         MvcResult mvcResult = mockMvc.perform(get("/api/get/client/info/")
-            .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+            .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(gson.toJson(clientRequest))
             .accept(MediaType.APPLICATION_JSON))
@@ -215,7 +217,8 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
 
         // When and then
         mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .content(gson.toJson(clientRequest))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -228,7 +231,8 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
 
         // When and then
         mockMvc.perform(get("/api/get/client/info/").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .content(gson.toJson(clientRequest))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -238,7 +242,7 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
     }
 
     @Test
-    public void testGetClientInformation() throws Exception {
+    void testGetClientInformation() throws Exception {
         // Given
         final String CORRELATION_ID = "980fda45-2f14-44ab-939d-46020d028ef3";
         LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
@@ -251,7 +255,8 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
         // When
         MvcResult mvcResult = mockMvc.perform(get("/api/client/info/" + personIdentification)
             .header(CORRELATION_ID_HEADER_NAME, CORRELATION_ID)
-            .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+            .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
             .accept(MediaType.APPLICATION_JSON)).andReturn();
     
         // Then
@@ -288,21 +293,22 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
     }
 
     @Test
-    public void testResponseEntityPersonIdentificationNumberInvalid() throws Exception {
+    void testResponseEntityPersonIdentificationNumberInvalid() throws Exception {
         // Given
         String personIdentificationNumber = "123";
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
         // When and then
         mockMvc.perform(get("/api/client/info/" + personIdentificationNumber)
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Person identification number must be twelve digits."));
     }
 
     @Test
-    public void testInvalidPersonIdentificationNumberEmpty() {
+    void testInvalidPersonIdentificationNumberEmpty() {
         // Given
         String personalIdentificationNumber = "";
 
@@ -316,7 +322,7 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
     }
 
     @Test
-    public void testInvalidPersonIdentificationNumberLessThenTwelveDigits() {
+    void testInvalidPersonIdentificationNumberLessThenTwelveDigits() {
         // Given
         String personalIdentificationNumber = "123";
 
@@ -330,7 +336,7 @@ public class GetClientInformationRestControllerImplTest extends AbstractSpringBo
     }
 
     @Test
-    public void testSingleton() {
+    void testSingleton() {
         // Given
         GetClientInformationRestController getClientInformationRestController1 = (GetClientInformationRestController)
                 applicationContext.getBean(

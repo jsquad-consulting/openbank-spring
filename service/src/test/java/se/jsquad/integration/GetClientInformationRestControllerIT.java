@@ -19,7 +19,6 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.jose4j.base64url.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import se.jsquad.api.client.ClientApi;
@@ -32,11 +31,13 @@ import se.jsquad.api.client.TypeApi;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_API;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_SERVICE;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTPS;
+import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
 import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEADER_NAME;
 import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
 import static se.jsquad.util.ClientTestCredentials.CLIENT_PASSWORD;
@@ -55,7 +56,9 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(CORRELATION_ID_HEADER_NAME, "b48bb267-04e8-4cba-97ac-01e8898de372")
+                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(clientInformationRequest)
@@ -84,7 +87,9 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(CORRELATION_ID_HEADER_NAME, "1149df8a-7e37-4971-9ce3-271621bba2ba")
+                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(clientInformationRequest)
@@ -105,7 +110,9 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(CORRELATION_ID_HEADER_NAME, "fa0996f5-4bc4-4abb-b137-2b1bc89f607e")
+                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -137,14 +144,16 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
     }
 
     @Test
-    void testGetClientInformationWithInvalidPersonIdenticationNumber() throws MalformedURLException, URISyntaxException {
+    void testGetClientInformationWithInvalidPersonIdentificationNumber() throws MalformedURLException, URISyntaxException {
         // Given
         String personIdentificationNumber = "123";
 
         // When
         Response response = RestAssured
                 .given()
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(CORRELATION_ID_HEADER_NAME, "b92a4c2f-3ba3-41f7-a6d8-eb813f3a0151")
+                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -169,7 +178,9 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(CORRELATION_ID_HEADER_NAME, "a80c3b71-a2c0-48be-b3e2-9087033491a0")
+                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -210,7 +221,9 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         // When
         Response response = RestAssured
                 .given()
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(CORRELATION_ID_HEADER_NAME, "d86e2b8e-866a-4132-aaba-18063c7c5543")
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()

@@ -21,7 +21,6 @@ import se.jsquad.exception.Base64RuntimeException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.regex.Pattern;
 
 import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEADER_NAME;
 
@@ -35,18 +34,6 @@ public class Base64Util {
             var message = X_AUTHORIZATION_HEADER_NAME + " value must be a Base64 encoded string.";
             
             throw new Base64RuntimeException(message, e);
-        }
-    }
-    
-    public String getBasicAuthenticationName(final String encodedToken) {
-        var pattern = Pattern.compile("(\\w*):.*", Pattern.CASE_INSENSITIVE);
-        
-        var matcher = pattern.matcher(decodeEncodedToken(encodedToken).trim());
-        
-        if (matcher.matches()) {
-            return matcher.group(1);
-        } else {
-            return "";
         }
     }
 }
