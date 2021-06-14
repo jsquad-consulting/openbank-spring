@@ -82,7 +82,7 @@ jobs:
         - source setup_production_environment_variables.sh
         - source setup_kubernetes_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-k8-integration.yaml build --force
-        - travis_wait 60 mvn verify -Pintegration-tests
+        # - travis_wait 60 mvn verify -Pintegration-tests disabled for now
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:

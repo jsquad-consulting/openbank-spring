@@ -19,7 +19,6 @@ package se.jsquad.integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.jose4j.base64url.Base64;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.Delay;
@@ -28,6 +27,7 @@ import org.springframework.http.MediaType;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,6 +36,7 @@ import static org.mockserver.model.HttpResponse.response;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_API;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_SERVICE;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTPS;
+import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
 import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEADER_NAME;
 import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
 import static se.jsquad.util.ClientTestCredentials.CLIENT_PASSWORD;
@@ -62,7 +63,9 @@ public class GetHelloWorldErrorRestControllerIT extends AbstractTestContainerSet
         // When
         Response response = RestAssured
                 .given()
-                .header(X_AUTHORIZATION_HEADER_NAME, Base64.encode((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+                .header(CORRELATION_ID_HEADER_NAME, "fdc29e15-9f8c-45df-aaf1-9122f3ae6089")
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                    .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
