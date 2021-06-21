@@ -45,7 +45,7 @@ main() {
 	testFilesToExecute="$(echo "${testFilesToExecute}" | xargs | sed 's/[[:space:]]/,/g')"
 	if [ -z "${testFilesToExecute}" ]
 	then
-		printf ""
+		printf "clean"
 	else
 		printf "test -Dtest=${testFilesToExecute}"
 	fi
