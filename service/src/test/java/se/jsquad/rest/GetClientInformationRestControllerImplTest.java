@@ -44,16 +44,23 @@ import se.jsquad.api.client.AccountApi;
 import se.jsquad.api.client.AccountTransactionApi;
 import se.jsquad.api.client.ClientApi;
 import se.jsquad.api.client.ClientData;
+import se.jsquad.api.client.ClientInformationResponse;
 import se.jsquad.api.client.ClientRequest;
+import se.jsquad.api.client.PersonApi;
 import se.jsquad.api.client.TransactionTypeApi;
 import se.jsquad.api.client.WorldApiResponse;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
 
 import javax.validation.ConstraintViolationException;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -240,6 +247,128 @@ class GetClientInformationRestControllerImplTest extends AbstractSpringBootConfi
     
         logCaptor.clearLogs();
     }
+    
+    @Test
+    void testGetClientInformationResponseIsFollowingContract() throws Exception {
+        // Given
+        final String CORRELATION_ID = "980fda45-2f14-44ab-939d-46020d028ef3";
+        LogCaptor logCaptor = LogCaptor.forClass(GetClientInformationRestController.class);
+        logCaptor.setLogLevelToInfo();
+    
+        String personIdentification = "191212121212";
+    
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+    
+        // When
+        MvcResult mvcResult = mockMvc.perform(get("/api/client/info/" + personIdentification)
+            .header(CORRELATION_ID_HEADER_NAME, CORRELATION_ID)
+            .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+            .accept(MediaType.APPLICATION_JSON)).andReturn();
+    
+        // Then
+        assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus(), "Failed to assert status " +
+            "code 200 " + mvcResult.getResponse().getContentAsString());
+    
+        objectMapper.reader().forType(ClientInformationResponse.class).readValue(mvcResult.getResponse()
+            .getContentAsString());
+        
+        BeanInfo beanInfo = Introspector.getBeanInfo(ClientInformationResponse.class);
+        List<PropertyDescriptor> propertyDescriptors = Arrays.asList(beanInfo.getPropertyDescriptors());
+        assertEquals(4, propertyDescriptors.size());
+        
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("person")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("se.jsquad.api.client.PersonApi")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor ->
+            propertyDescriptor.getName().equals("accountList") &&
+                    propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+                        .equals("java.util.List<se.jsquad.api.client.AccountApi>")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("clientType")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("se.jsquad.api.client.ClientTypeApi")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("clientType")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("se.jsquad.api.client.ClientTypeApi")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("class")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.Class<?>")));
+    
+        beanInfo = Introspector.getBeanInfo(PersonApi.class);
+        propertyDescriptors = Arrays.asList(beanInfo.getPropertyDescriptors());
+        assertEquals(5, propertyDescriptors.size());
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("firstName")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.String")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("lastName")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.String")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("personIdentification")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.String")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("mail")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.String")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("class")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.Class<?>")));
+    
+        beanInfo = Introspector.getBeanInfo(AccountApi.class);
+        propertyDescriptors = Arrays.asList(beanInfo.getPropertyDescriptors());
+        assertEquals(3, propertyDescriptors.size());
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("balance")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("long")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("accountTransactionList")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.util.List<se.jsquad.api.client.AccountTransactionApi>")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("class")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.Class<?>")));
+    
+        beanInfo = Introspector.getBeanInfo(AccountTransactionApi.class);
+        propertyDescriptors = Arrays.asList(beanInfo.getPropertyDescriptors());
+        assertEquals(3, propertyDescriptors.size());
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("message")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.String")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("transactionType")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("se.jsquad.api.client.TransactionTypeApi")));
+    
+        assertTrue(propertyDescriptors.stream().anyMatch(propertyDescriptor -> propertyDescriptor
+            .getName().equals("class")
+            && propertyDescriptor.getReadMethod().getGenericReturnType().getTypeName()
+            .equals("java.lang.Class<?>")));
+    }
 
     @Test
     void testGetClientInformation() throws Exception {
@@ -289,7 +418,6 @@ class GetClientInformationRestControllerImplTest extends AbstractSpringBootConfi
             "980fda45-2f14-44ab-939d-46020d028ef3)", logCaptor.getInfoLogs().get(1));
         
         logCaptor.clearLogs();
-        
     }
 
     @Test
