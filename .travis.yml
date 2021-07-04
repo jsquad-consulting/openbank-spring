@@ -64,7 +64,7 @@ jobs:
       script:
         - mvn clean install -T 1C -DskipTests
         - mvn $(./test_impact_analysis.sh master "${TRAVIS_BRANCH}" se.jsquad) -pl service
-    - stage: build and run unit/system tests with code coverage verification
+    - stage: build and run unit/system tests with full code coverage verification
       script:
         - travis_wait 60 mvn clean verify -T 1C -Pgenerate-unit-coverage,generate-report
         - travis_wait 60 ./verify_code_coverage.sh 70
