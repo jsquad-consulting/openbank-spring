@@ -23,24 +23,21 @@ main() {
 		fi
     done)"
 
-    dependentFiles=$editedJavaFiles
+    filesDependentToCodeChanges=""
 
    for editedJavaFile in $editedJavaFiles; do
-   	    packageFiles=$(jdeps -e "${packageLevel}.+" -recursive -verbose .)
-   		editedJavaFileRegexpPattern="$(echo ${editedJavaFile} | sed 's/\./\[.]/g')"
-   		dependentFiles="${dependentFiles} $(findDependentJavaFilesToSpecificJavaFile "${editedJavaFileRegexpPattern}" "${packageFiles}")"
-   		dependentFiles="$(echo ${dependentFiles} | awk '{for (i=1;i<=NF;i++) if (!a[$i]++) printf("%s%s",$i,FS)}{printf("\n")}')"
+   		packageFiles=$(jdeps -e "${packageLevel}.+" -recursive -verbose . | sed '1d')
+   		filesDependentToCodeChanges="$(findDependentJavaFilesToSpecificJavaFile "${editedJavaFile}" "${packageFiles}")"
+   		filesDependentToCodeChanges="$(echo ${filesDependentToCodeChanges} | awk '{for (i=1;i<=NF;i++) if (!a[$i]++) printf("%s%s",$i,FS)}{printf("\n")}')"
 	done
 
-	regexPattern='[[:space:]]?([a-zA-Z0-9_.]+Test)[[:space:]]?'
+	regexPattern='([a-zA-Z0-9_.]+Test)'
 
-	testFilesToExecute="$(echo "${dependentFiles}" | while read line;
-		do
-		if [[ "${line}" =~ $regexPattern ]]; then
-
-				printf "${testFilesToExecute} ${BASH_REMATCH[1]}"
-			fi
-		done)"
+	for fileDependentToCodeChange in $filesDependentToCodeChanges; do
+		if [[ "${fileDependentToCodeChange}" =~ $regexPattern ]]; then
+			testFilesToExecute="${testFilesToExecute} ${BASH_REMATCH[1]}"
+		fi
+	done
 
 	testFilesToExecute="$(echo "${testFilesToExecute}" | xargs | sed 's/[[:space:]]/,/g')"
 	if [ -z "${testFilesToExecute}" ]
@@ -52,17 +49,23 @@ main() {
 }
 
 findDependentJavaFilesToSpecificJavaFile() {
-	   	regexPattern='([a-zA-Z0-9_.]+)[[:space:]]+->[[:space:]]+('"${1}"')'
-	    dependentFiles="$(echo "${2}" | while read line;
-    	do
-   		if [[ "${line}" =~ $regexPattern ]];
+	   	packageFileArray="${2}"
+
+	   	packageFileArray=$(echo "${packageFileArray}" | sed 's/[[:space:]]\./\;/g')
+	   	packageFileArray=$(echo "${packageFileArray}" | sed 's/[[:space:]]//g')
+	    packageFileArray=$(echo "${packageFileArray}" | tr ";" "\n")
+
+    	for packageFile in $packageFileArray; do
+    	    editedJavaFileRegexpPattern="$(echo "${1}" | sed 's/\./\[.]/g')"
+	   	    regexPattern='([a-zA-Z0-9_.]+)->('"${editedJavaFileRegexpPattern}"')'
+			if [[ "${packageFile}" =~ $regexPattern ]];
 			then :
-			    remainingLines=$(echo "${dependentFiles}" | sed -n "/${line}/d")
-				findDependentJavaFilesToSpecificJavaFile ${BASH_REMATCH[1]} ${remainingLines}
-				printf "${dependentFiles} ${BASH_REMATCH[1]}"
+				remainingLines=$(echo "${packageFileArray}" | sed "/${packageFile}/d")
+				findDependentJavaFilesToSpecificJavaFile "${BASH_REMATCH[1]}" "${remainingLines}"
+				printf " ${BASH_REMATCH[1]} "
 			fi
-    	done)"
-    	printf "${dependentFiles}"
+    	done
+    	printf " ${1} "
 }
 
 main $*
