@@ -14,7 +14,7 @@ main() {
 
 	regexPattern='[A-Z][[:space:]]+.*\/main\/java\/(.*).java'
 
-	editedJavaFiles="$(git diff --name-status "origin/${mainBranch}..origin/${featureBranch}" | while read line; do
+	editedJavaFiles="$(git diff --name-status "${mainBranch}..${featureBranch}" | while read line; do
 		if [[ "${line}" =~ $regexPattern ]];
 		then :
 			editedJavaFiles="${editedJavaFiles} "`(echo "${BASH_REMATCH[1]}" | sed 's/\//./g')`
@@ -61,7 +61,7 @@ findDependentJavaFilesToSpecificJavaFile() {
 			if [[ "${packageFile}" =~ $regexPattern ]];
 			then :
 				remainingLines=$(echo "${packageFileArray}" | sed "/${packageFile}/d")
-				findDependentJavaFilesToSpecificJavaFile "${BASH_REMATCH[1]}" "${remainingLines}"
+				findDependentJavaFilesToSpecificJavaFile "${BASH_REMATCH[1]}" "${remainingLines}" &
 				printf " ${BASH_REMATCH[1]} "
 			fi
     	done
