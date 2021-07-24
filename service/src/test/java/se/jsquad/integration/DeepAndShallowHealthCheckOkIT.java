@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
-import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
 
 public class DeepAndShallowHealthCheckOkIT extends AbstractTestContainerSetup {
     @Test
@@ -39,7 +38,6 @@ public class DeepAndShallowHealthCheckOkIT extends AbstractTestContainerSetup {
         // When
         Response response = RestAssured
                 .given()
-                .header(CORRELATION_ID_HEADER_NAME, "61155803-0e9c-4679-909f-960e00fec8a7")
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -58,7 +56,6 @@ public class DeepAndShallowHealthCheckOkIT extends AbstractTestContainerSetup {
         // When
         Response response = RestAssured
                 .given()
-                .header(CORRELATION_ID_HEADER_NAME, "f09bbd43-6f25-420c-8e27-6c3cc7534825")
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()

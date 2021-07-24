@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 #
 # Copyright 2021 JSquad AB
 #
@@ -35,8 +34,10 @@ do
 	fi
 done
 
+encryptedBasicAuthentication=$(echo 'client1:password1' | base64)
 statusCodeHttpEndPoint=$(curl -o /dev/null -I -w "%{http_code}"  -X GET "http://localhost/actuator/shallowhealth")
-statusCodeHttpsEndpoint=$(curl -o /dev/null -I -w "%{http_code}" -kX GET "https://localhost/api/client/info/191212121212")
+statusCodeHttpsEndpoint=$(curl -o /dev/null -I -w "%{http_code}" \
+-kX GET "https://localhost/api/client/info/191212121212" -H "X-AUTHORIZATION: ${encryptedBasicAuthentication}")
 
 if [ "$statusCodeHttpEndPoint" -ne 200 ] || [ "$statusCodeHttpsEndpoint" -ne 200 ]; then
 	exit 1

@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
-import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
 
 public class MonitorPrometheusUpStatusIT extends AbstractTestContainerSetup {
     @Test
@@ -37,7 +36,6 @@ public class MonitorPrometheusUpStatusIT extends AbstractTestContainerSetup {
         // When
         Response response = RestAssured
                 .given()
-                .header(CORRELATION_ID_HEADER_NAME, "c6114495-7207-4a77-9cbe-84176b65dfee")
                 .contentType(ContentType.ANY)
                 .accept(ContentType.ANY)
                 .when()

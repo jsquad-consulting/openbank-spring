@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
-import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
 
 public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
     @Test
@@ -47,7 +46,6 @@ public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
         Awaitility.await().pollDelay(Duration.ofSeconds(5)).atMost(Duration.ofMinutes(10)).until(() -> {
             Response response = RestAssured
                 .given()
-                .header(CORRELATION_ID_HEADER_NAME, "4ae438d5-1b79-4900-bf17-bf8687d90275")
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -64,7 +62,6 @@ public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
         // When
         Response response = RestAssured
                 .given()
-                .header(CORRELATION_ID_HEADER_NAME, "d5acd73f-2845-4123-ba58-a602ae4fad5f")
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -89,7 +86,6 @@ public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
             try {
                 Response response1 = RestAssured
                     .given()
-                    .header(CORRELATION_ID_HEADER_NAME, "85374909-1a52-454d-804b-aec65379984b")
                     .contentType(ContentType.JSON)
                     .accept(ContentType.JSON)
                     .when()
