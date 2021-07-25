@@ -15,7 +15,7 @@
 #
 
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: openbank-ingress-https
@@ -28,11 +28,14 @@ spec:
     - http:
         paths:
           - path: /api
+            pathType: Prefix
             backend:
-              serviceName: openbank-spring-service
-              servicePort: 8443
+              service:
+                name: openbank-spring-service
+                port:
+                  number: 8443
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: openbank-ingress-http
@@ -44,6 +47,9 @@ spec:
     - http:
         paths:
           - path: /actuator
+            pathType: Prefix
             backend:
-              serviceName: openbank-spring-service
-              servicePort: 8081
+              service:
+                name: openbank-spring-service
+                port:
+                  number: 8081

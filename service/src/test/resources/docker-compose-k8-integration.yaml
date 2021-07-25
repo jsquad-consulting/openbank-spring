@@ -39,7 +39,7 @@ services:
     - ../../../../service:/service
     - /var/run/docker.sock:/var/run/docker.sock
     healthcheck:
-      test: ["CMD-SHELL", "sh -c '/kubernetes/health_check.sh || exit 1'"]
+      test: ["CMD-SHELL", "bash -c '/kubernetes/health_check.sh || exit 1'"]
       interval: 10s
       timeout: 10s
       retries: 120

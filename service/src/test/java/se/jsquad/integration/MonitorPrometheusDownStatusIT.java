@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
-import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
 
 public class MonitorPrometheusDownStatusIT extends AbstractTestContainerSetup {
     @Test
@@ -48,7 +47,6 @@ public class MonitorPrometheusDownStatusIT extends AbstractTestContainerSetup {
         Awaitility.await().pollDelay(Duration.ofSeconds(5)).atMost(Duration.ofMinutes(10)).until(() -> {
             Response response = RestAssured
                 .given()
-                .header(CORRELATION_ID_HEADER_NAME, "ee2c1a5f-8659-4981-8e4b-f097b8c460a9")
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -65,7 +63,6 @@ public class MonitorPrometheusDownStatusIT extends AbstractTestContainerSetup {
         // When
         Response response = RestAssured
                 .given()
-                .header(CORRELATION_ID_HEADER_NAME, "55116d6c-15cc-4a10-b827-309964c457b2")
                 .contentType(ContentType.ANY)
                 .accept(ContentType.ANY)
                 .when()
@@ -88,7 +85,6 @@ public class MonitorPrometheusDownStatusIT extends AbstractTestContainerSetup {
             try {
                 Response response1 = RestAssured
                     .given()
-                    .header(CORRELATION_ID_HEADER_NAME, "814d7c43-c0c7-457c-9272-5ea702ca8a3a")
                     .contentType(ContentType.JSON)
                     .accept(ContentType.JSON)
                     .when()

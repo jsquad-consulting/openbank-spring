@@ -57,7 +57,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         Response response = RestAssured
                 .given()
                 .header(CORRELATION_ID_HEADER_NAME, "b48bb267-04e8-4cba-97ac-01e8898de372")
-                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
                     .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -88,7 +88,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         Response response = RestAssured
                 .given()
                 .header(CORRELATION_ID_HEADER_NAME, "1149df8a-7e37-4971-9ce3-271621bba2ba")
-                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
                     .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -111,7 +111,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         Response response = RestAssured
                 .given()
                 .header(CORRELATION_ID_HEADER_NAME, "fa0996f5-4bc4-4abb-b137-2b1bc89f607e")
-                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
                     .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -152,7 +152,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         Response response = RestAssured
                 .given()
                 .header(CORRELATION_ID_HEADER_NAME, "b92a4c2f-3ba3-41f7-a6d8-eb813f3a0151")
-                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
                     .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -179,7 +179,7 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         Response response = RestAssured
                 .given()
                 .header(CORRELATION_ID_HEADER_NAME, "a80c3b71-a2c0-48be-b3e2-9087033491a0")
-                .header(X_AUTHORIZATION_HEADER_NAME, java.util.Base64.getEncoder()
+                .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
                     .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
