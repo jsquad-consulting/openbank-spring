@@ -16,21 +16,34 @@
 
 package se.jsquad.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import se.jsquad.component.schema.JsonSchemaValidatingArgumentResolver;
 import se.jsquad.interceptor.RequestHeaderInterceptor;
+
+import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final RequestHeaderInterceptor requestHeaderInterceptor;
+    private final ObjectMapper objectMapper;
     
-    public WebMvcConfiguration(RequestHeaderInterceptor requestHeaderInterceptor) {
+    public WebMvcConfiguration(RequestHeaderInterceptor requestHeaderInterceptor,
+                               ObjectMapper objectMapper) {
         this.requestHeaderInterceptor = requestHeaderInterceptor;
+        this.objectMapper = objectMapper;
     }
     
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(requestHeaderInterceptor);
+    }
+    
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new JsonSchemaValidatingArgumentResolver(objectMapper));
     }
 }

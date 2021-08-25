@@ -40,6 +40,7 @@ import se.jsquad.constant.ApiConstants;
 import se.jsquad.validator.ClientInformationBodyConstraint;
 import se.jsquad.validator.ClientRequestBodyConstraint;
 import se.jsquad.validator.PersonIdentificationNumberConstraint;
+import se.jsquad.validator.ValidateJsonSchema;
 
 @Api(value = ApiConstants.OPENBANK_BASE_PATH, authorizations = {})
 @RequestMapping(path = ApiConstants.OPENBANK_BASE_PATH)
@@ -48,7 +49,7 @@ public interface ClientInformation {
     @PutMapping(value = "/update/client/information", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces =
         {MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "Update client information.",
-        description = "Update the client information based with common constraint vaidation for ClientApi xsd " +
+        description = "Update the client information based with common constraint validation for ClientApi xsd " +
             "model.",
         responses = {
             @ApiResponse(responseCode = "200",
@@ -61,7 +62,8 @@ public interface ClientInformation {
             @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
             @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(
                 example = "Severe system failure has occured!")))})
-    ResponseEntity<ClientInformationResponse> updateClientInformation(@RequestBody @ClientInformationBodyConstraint
+    ResponseEntity<ClientInformationResponse> updateClientInformation(
+        @ValidateJsonSchema(xsdClass = ClientInformationRequest.class) @ClientInformationBodyConstraint
                                                                           ClientInformationRequest clientInformationRequest);
     
     @GetMapping(value = "/get/hello/world", produces = {MediaType.APPLICATION_JSON_VALUE})

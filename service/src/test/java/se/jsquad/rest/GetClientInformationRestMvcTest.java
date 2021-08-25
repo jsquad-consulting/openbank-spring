@@ -35,6 +35,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
 import se.jsquad.AbstractSpringBootConfiguration;
+import se.jsquad.api.client.ClientInformationRequest;
+import se.jsquad.api.client.PersonApi;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
 
@@ -43,7 +45,10 @@ import java.util.Base64;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.jms.support.JmsHeaders.CORRELATION_ID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static se.jsquad.constant.ApiConstants.OPENBANK_BASE_PATH;
 import static se.jsquad.interceptor.RequestHeaderInterceptor.CORRELATION_ID_HEADER_NAME;
 import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEADER_NAME;
 import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
@@ -110,5 +115,30 @@ class GetClientInformationRestMvcTest extends AbstractSpringBootConfiguration {
         // Then
         assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus(), "Failed to assert status " +
             "code 200 " + mvcResult.getResponse().getContentAsString());
+    }
+    
+    @Test
+    void updateClientInformationWithBadContent() throws Exception {
+        // Given
+        ClientInformationRequest clientInformationRequest = new ClientInformationRequest()
+            .withPerson(new PersonApi());
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        
+        // When
+        MvcResult mvcResult = mockMvc.perform(put(OPENBANK_BASE_PATH + "/update/client/information/")
+            .header(CORRELATION_ID_HEADER_NAME, CORRELATION_ID)
+            .header(X_AUTHORIZATION_HEADER_NAME, Base64.getEncoder()
+                .encodeToString((CLIENT_NAME + ":" + CLIENT_PASSWORD).getBytes()))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(objectMapper.writeValueAsString(clientInformationRequest))
+            .accept(MediaType.APPLICATION_JSON)).andReturn();
+        
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus(), "Failed to get bad " +
+            "request " + mvcResult.getResponse().getContentAsString());
+        assertEquals("[$.clientType: null found, object expected, $.person.firstName: null found, " +
+                "string expected, $.person.lastName: null found, string expected, $.person.mail: null found, " +
+                "string expected, $.person.personIdentification: null found, string expected]",
+            mvcResult.getResponse().getContentAsString());
     }
 }
