@@ -26,6 +26,7 @@ import se.jsquad.api.client.ClientData;
 import se.jsquad.api.client.ClientInformationRequest;
 import se.jsquad.api.client.ClientInformationResponse;
 import se.jsquad.api.client.ClientRequest;
+import se.jsquad.api.client.ClientTypeApi;
 import se.jsquad.api.client.PersonApi;
 import se.jsquad.api.client.TypeApi;
 
@@ -42,7 +43,7 @@ import static se.jsquad.interceptor.RequestHeaderInterceptor.X_AUTHORIZATION_HEA
 import static se.jsquad.util.ClientTestCredentials.CLIENT_NAME;
 import static se.jsquad.util.ClientTestCredentials.CLIENT_PASSWORD;
 
-public class GetClientInformationRestControllerIT extends AbstractTestContainerSetup {
+class GetClientInformationRestControllerIT extends AbstractTestContainerSetup {
     @Test
     void updateClientInformation() throws MalformedURLException, URISyntaxException {
         // Given
@@ -50,8 +51,13 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
 
         clientInformationRequest.setPerson(new PersonApi());
         String personIdentification = "191212121212";
-
-        clientInformationRequest.getPerson().setPersonIdentification(personIdentification);
+    
+        clientInformationRequest.withPerson(new PersonApi()
+            .withPersonIdentification(personIdentification)
+            .withMail("test@test.se")
+            .withFirstName("Tesla")
+            .withLastName("Coil")).withClientType(new ClientTypeApi()
+            .withType(TypeApi.REGULAR).withCountry("Sweden").withSpecialOffers("PREMIUM"));
 
         // When
         Response response = RestAssured
@@ -66,11 +72,12 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
                 .put(toURI(BASE_PATH_API + "/update/client/information/", PROTOCOL_HTTPS, OPENBANK_SERVICE))
             .andReturn();
 
-        ClientInformationResponse clientApiResponse = gson.fromJson(response.getBody().asString(),
-                ClientInformationResponse.class);
-
         // Then
         assertEquals(200, response.getStatusCode());
+    
+        ClientInformationResponse clientApiResponse = gson.fromJson(response.getBody().asString(),
+            ClientInformationResponse.class);
+        
         assertEquals(personIdentification, clientApiResponse.getPerson().getPersonIdentification());
     }
 
@@ -82,7 +89,12 @@ public class GetClientInformationRestControllerIT extends AbstractTestContainerS
         clientInformationRequest.setPerson(new PersonApi());
         String personIdentification = "19121212121";
 
-        clientInformationRequest.getPerson().setPersonIdentification(personIdentification);
+        clientInformationRequest.withPerson(new PersonApi()
+            .withPersonIdentification(personIdentification)
+            .withMail("test@test.se")
+            .withFirstName("Tesla")
+            .withLastName("Coil")).withClientType(new ClientTypeApi()
+            .withType(TypeApi.REGULAR).withCountry("Sweden").withSpecialOffers("PREMIUM"));
 
         // When
         Response response = RestAssured
