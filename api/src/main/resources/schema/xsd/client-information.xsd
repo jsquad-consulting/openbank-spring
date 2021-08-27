@@ -71,9 +71,33 @@
 
     <xs:complexType name="ClientApi">
         <xs:sequence>
-            <xs:element name="person" type="tns:PersonApi"/>
-            <xs:element name="accountList" type="tns:AccountApi" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="clientType" type="tns:ClientTypeApi"/>
+            <xs:element name="person" type="tns:PersonApi">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "Person API model.")
+                        </annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
+            <xs:element name="accountList" type="tns:AccountApi" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "Account API model list.")
+                        </annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
+            <xs:element name="clientType" type="tns:ClientTypeApi">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <annox:annotate target="">@io.swagger.v3.oas.annotations.media.Schema(description =
+                            "Client type API model.")
+                        </annox:annotate>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
 

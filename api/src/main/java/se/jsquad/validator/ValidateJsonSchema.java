@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package se.jsquad.exception;
+package se.jsquad.validator;
 
-public class BadRequestRuntimeException extends RuntimeException {
-    public BadRequestRuntimeException(String message) {
-        super(message);
-    }
-    
-    public BadRequestRuntimeException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ValidateJsonSchema {
+    Class<?> xsdClass();
 }

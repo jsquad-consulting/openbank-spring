@@ -55,6 +55,8 @@
         <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
         <jaxws.ri.version>2.3.0</jaxws.ri.version>
         <jdk.version>11</jdk.version>
+        <json.schema.generator.version>4.18.0</json.schema.generator.version>
+        <json.schema.validator.version>1.0.58</json.schema.validator.version>
         <kubernetes.client.version>11.0.0</kubernetes.client.version>
         <logcaptor.version>2.5.0</logcaptor.version>
         <lombok.version>1.18.16</lombok.version>
@@ -153,6 +155,21 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
                 <version>${flywaydb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>json-schema-validator</artifactId>
+                <version>${json.schema.validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.victools</groupId>
+                <artifactId>jsonschema-generator</artifactId>
+                <version>${json.schema.generator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.victools</groupId>
+                <artifactId>jsonschema-module-swagger-2</artifactId>
+                <version>${json.schema.generator.version}</version>
             </dependency>
 
             <!-- Test dependencies -->
