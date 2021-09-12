@@ -44,7 +44,7 @@
         <jacoco.report>${project.basedir}/../target/site</jacoco.report>
         <jacoco.version>0.8.7</jacoco.version>
         <jakarta.activation.version>1.2.1</jakarta.activation.version>
-        <jasypt.spring.boot.starter.version>2.1.2</jasypt.spring.boot.starter.version>
+        <jasypt.spring.boot.starter.version>3.0.4</jasypt.spring.boot.starter.version>
         <java.version>1.11</java.version>
         <javax.inject.version>1</javax.inject.version>
         <jaxb.version>2.3.3</jaxb.version>
