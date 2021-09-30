@@ -35,7 +35,7 @@ import static se.jsquad.integration.RyukIntegration.BASE_PATH_ACTUATOR;
 import static se.jsquad.integration.RyukIntegration.OPENBANK_MONITORING;
 import static se.jsquad.integration.RyukIntegration.PROTOCOL_HTTP;
 
-public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
+class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
     @Test
     void testDeepHealthCheckNotOk() throws NoSuchMethodException, InvocationTargetException,
         IllegalAccessException, ApiException, MalformedURLException, URISyntaxException {
@@ -56,6 +56,7 @@ public class DeepHealthCheckNotOkIT extends AbstractTestContainerSetup {
     
             return 200 == response.getStatusCode() && HealthStatus.DOWN.equals(deepSystemStatusResponse.getStatus())
                 && HealthStatus.UP.equals(deepSystemStatusResponse.getService())
+                && HealthStatus.DOWN.equals(deepSystemStatusResponse.getDependencies().getSecurityDb())
                 && HealthStatus.DOWN.equals(deepSystemStatusResponse.getDependencies().getOpenbankDb());
         });
 
