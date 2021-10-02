@@ -28,14 +28,10 @@ import org.springframework.stereotype.Component;
 import se.jsquad.api.health.DeepSystemStatusResponse;
 import se.jsquad.api.health.Dependencies;
 import se.jsquad.api.health.HealthStatus;
-import se.jsquad.api.health.ShallowSystemStatusResponse;
 
 @Component
 @Endpoint(id = "deephealth")
 public class DeepSystemStatusIndicator {
-    private ShallowSystemStatusIndicator shallowSystemStatusIndicator;
-    private HealthIndicator openbankDatabaseHealthIndicator;
-    private HealthIndicator securityDatabaseHealthIndicator;
     private Gauge gaugeDeepHealth;
     private Gauge gaugeService;
     private Gauge gaugeOpenBankDatabase;
@@ -47,38 +43,27 @@ public class DeepSystemStatusIndicator {
                                      @Qualifier("securityDatabaseHealthIndicator")
                                              HealthIndicator securityDatabaseHealthIndicator,
                                      MeterRegistry meterRegistry) {
-        this.shallowSystemStatusIndicator = shallowSystemStatusIndicator;
-        this.openbankDatabaseHealthIndicator = openbankDatabaseHealthIndicator;
-        this.securityDatabaseHealthIndicator = securityDatabaseHealthIndicator;
-
-        gaugeDeepHealth = Gauge.builder("deep_health", this,
+        gaugeDeepHealth = addGaugeDescription(Gauge.builder("deep_health", this,
                 deepSystemStatusIndicator -> "UP".equals(deepSystemStatusIndicator.getDeepSystemStatus()
-                        .getBody().getStatus().value()) ? 1 : 0)
-                .strongReference(true)
-                .description("Deep health of this service and it's dependencies")
-                .tags(Tags.of("status", "up"))
-                .register(meterRegistry);
+                        .getBody().getStatus().value()) ? 1 : 0),
+            "Deep health of this service and it's dependencies", meterRegistry);
 
-        gaugeService = Gauge.builder("deep_health_service", shallowSystemStatusIndicator,
-                s -> "UP".equals(s.getShallowSystemStatus().getBody().getStatus().value()) ? 1 : 0)
-                .strongReference(true)
-                .description("Health of just this service")
-                .tags(Tags.of("status", "up"))
-                .register(meterRegistry);
+        gaugeService = addGaugeDescription(Gauge.builder("deep_health_service", shallowSystemStatusIndicator,
+                s -> "UP".equals(s.getShallowSystemStatus().getBody().getStatus().value()) ? 1 : 0),
+            "Health of just this service", meterRegistry);
 
-        gaugeOpenBankDatabase = Gauge.builder("deep_health_openbank_database", openbankDatabaseHealthIndicator,
-                o -> "UP".equals(o.health().getStatus().getCode()) ? 1 : 0)
-                .strongReference(true)
-                .description("Health of the openbank database")
-                .tags(Tags.of("status", "up"))
-                .register(meterRegistry);
+        gaugeOpenBankDatabase = addGaugeDescription(Gauge.builder("deep_health_openbank_database",
+            openbankDatabaseHealthIndicator, o -> "UP".equals(o.health().getStatus().getCode()) ? 1 : 0),
+            "Health of the openbank database", meterRegistry);
 
-        gaugeSecurityDatabase = Gauge.builder("deep_health_security_database", securityDatabaseHealthIndicator,
-                s -> "UP".equals(s.health().getStatus().getCode()) ? 1 : 0)
-                .strongReference(true)
-                .description("Health of the security database")
-                .tags(Tags.of("status", "up"))
-                .register(meterRegistry);
+        gaugeSecurityDatabase = addGaugeDescription(Gauge.builder("deep_health_security_database",
+            securityDatabaseHealthIndicator, s -> "UP".equals(s.health().getStatus().getCode()) ? 1 : 0),
+                "Health of the security database", meterRegistry);
+        
+        gaugeDeepHealth.measure();
+        gaugeService.measure();
+        gaugeOpenBankDatabase.measure();
+        gaugeSecurityDatabase.measure();
     }
 
     @ReadOperation
@@ -88,41 +73,34 @@ public class DeepSystemStatusIndicator {
 
     private DeepSystemStatusResponse checkDeepSystemStatus() {
         DeepSystemStatusResponse deepSystemStatusResponse = new DeepSystemStatusResponse();
-
-        deepSystemStatusResponse.setStatus(HealthStatus.DOWN);
-
-        ResponseEntity<ShallowSystemStatusResponse> responseEntity = shallowSystemStatusIndicator
-                .getShallowSystemStatus();
-
-        if (responseEntity.getStatusCode().is2xxSuccessful()
-                && HealthStatus.UP.equals(responseEntity.getBody().getStatus())) {
-            deepSystemStatusResponse.setService(responseEntity.getBody().getStatus());
-        } else {
-            deepSystemStatusResponse.setService(HealthStatus.DOWN);
-        }
+        
+        deepSystemStatusResponse.setService(setHealthStatus(gaugeService));
 
         Dependencies dependencies = new Dependencies();
         deepSystemStatusResponse.setDependencies(dependencies);
 
-        dependencies.setSecurityDb(HealthStatus.DOWN);
-        dependencies.setOpenbankDb(HealthStatus.DOWN);
-
-        dependencies.setOpenbankDb(HealthStatus.fromValue(openbankDatabaseHealthIndicator.health()
-                .getStatus().getCode()));
-
-        dependencies.setSecurityDb(HealthStatus.fromValue(securityDatabaseHealthIndicator.health()
-                .getStatus().getCode()));
-
-        if (HealthStatus.UP.equals(dependencies.getOpenbankDb()) && HealthStatus.UP.equals(dependencies.getSecurityDb())
-                && HealthStatus.UP.equals(deepSystemStatusResponse.getService())) {
+        dependencies.setSecurityDb(setHealthStatus(gaugeSecurityDatabase));
+        dependencies.setOpenbankDb(setHealthStatus(gaugeOpenBankDatabase));
+        
+        if (HealthStatus.UP.equals(dependencies.getOpenbankDb())
+            && HealthStatus.UP.equals(dependencies.getSecurityDb())
+            && HealthStatus.UP.equals(deepSystemStatusResponse.getService())) {
             deepSystemStatusResponse.setStatus(HealthStatus.UP);
+        } else {
+            deepSystemStatusResponse.setStatus(HealthStatus.DOWN);
         }
 
-        gaugeDeepHealth.measure();
-        gaugeService.measure();
-        gaugeOpenBankDatabase.measure();
-        gaugeSecurityDatabase.measure();
-
         return deepSystemStatusResponse;
+    }
+    
+    private <T> Gauge addGaugeDescription(Gauge.Builder<T> gaugeBuilder, String description, MeterRegistry meterRegistry) {
+        return gaugeBuilder.strongReference(true)
+            .description(description)
+            .tags(Tags.of("status", "up"))
+            .register(meterRegistry);
+    }
+    
+    private HealthStatus setHealthStatus(Gauge gauge) {
+        return gauge.value() == 1.0 ? HealthStatus.UP : HealthStatus.DOWN;
     }
 }
