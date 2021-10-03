@@ -1,19 +1,19 @@
 openbank.datasource:
   url: jdbc:postgresql://openbankdb:5432/openbank
   username: openbank_user
-  password: ENC(DSQpSyewyvrR8AurZvZC0DUax5oSZSqRvGmcAVFwKGcTZTnshKQiTw==)
+  password: ENC(BRvskNui+dI2tl1w23UMPFTI8aVXV/iC/KCXqqWqxPpCJYrkNtqi5QBXbkZ+JWvQTxV0RG38nWs9ByPd6Am9AQ==)
   driverclassname: org.postgresql.Driver
 
 security.datasource:
   url: jdbc:postgresql://securitydb:5432/security
   username: security_user
-  password: ENC(vNq9+oOFXPNeXnQwwcPWWjMCgjNMOS5z2tt1TkE7WVxXK4bib+K8/w==)
+  password: ENC(FStSVsadRTmYp7SXKvqMdjRZnw+lHM/TbQlg7Gaz9kxTBtZEtMGBpyV7btZp19Ofw6gr6FNPrzjIHiZZUf9W1g==)
   driverclassname: org.postgresql.Driver
 
 server.port: 8443
 server.ssl.key-store-type: PKCS12
 server.ssl.key-store: classpath:ssl/keystore/jsquad.pfx
-server.ssl.key-store-password: ENC(M5JhYsUTMq6n1OKArpvF+TvuBjQTDO+/)
+server.ssl.key-store-password: ENC(K5kJ3wPuXD5f3/GXRczng3nNzkIxKpFGPOtreNZUhVgjNrakjF8ZPJH3oGI3boWh)
 server.ssl.enabled: true
 
 world.webclient.baseUrl: http://mockserver:1080
@@ -41,4 +41,4 @@ service:
     auth:
       map:
         client1:
-          token: 'password1,password2'
+          token: ENC(ELVLI8foga4ozzKyCp3Lc0N5Q3jE1cflhqTop5NiFtZbvdD0clRgxCrisYPAY+HPWFPA4i9vn/ga9dygfuaisw==)
