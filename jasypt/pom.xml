@@ -24,9 +24,9 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <algorithm>PBEWithMD5AndDES</algorithm>
+        <algorithm>PBEWITHHMACSHA512ANDAES_256</algorithm>
         <exec.maven.plugin.version>1.6.0</exec.maven.plugin.version>
-        <generator.algorithm>org.jasypt.iv.NoIvGenerator</generator.algorithm>
+        <generator.algorithm>org.jasypt.iv.RandomIvGenerator</generator.algorithm>
         <jasypt.version>1.9.3</jasypt.version>
     </properties>
 
