@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: openbank-spring
-          image: jsquadab/openbank-spring:latest
+          image: mrasimov/spring-boot-openbank:latest
           ports:
             - containerPort: 8443
               name: https
