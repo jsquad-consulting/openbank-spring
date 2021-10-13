@@ -89,10 +89,10 @@ jobs:
       if: branch = master
       script:
         - mvn clean install -T 1C -DskipTests
-        - cd service && docker build -f Dockerfile --no-cache -t openbank-spring .
-        - docker tag openbank-spring:latest jsquadab/openbank-spring:latest
-        - docker push jsquadab/openbank-spring:latest
+        - cd service && docker build -f Dockerfile --no-cache -t spring-boot-openbank .
+        - docker tag spring-boot-openbank:latest mrasimov/spring-boot-openbank:latest
+        - docker push mrasimov/spring-boot-openbank:latest
 env:
   global:
   - SH=bash
-  - secure: reHv+UYQsFrg6nVzmjya/yuvFl0otKaBq4cGAXhVaEMiFWIfwnETR/BghQCSo07htAzN0/tMaYUcmsf2+5gw3mxsC7gMZX+JQVRjHsVIl6VbNdHgJCYAG00nHZa9TsJXvI3o0rV0Pzv6dKqlrn5NKrIL/ZEpUCcoZKYyMTZJpE9q1BKN/YsBEZp2vyn7rAcqzKcwqSmcysSsfAIHrYnHBb/6ZFVtiwDY0FA9O6GvAxUO1P9sKp+nxISH4hEtIHB8ZgXdhDfM7KEBnCCmjCyQlaIPgo6xAK/E07C8NHsdMiwGGyQ3N8YhsOa3Hvc9XnST3isflUbQ1xKKK4ay14k7wg+ijtwmBfT5Xi5RCxaMe8UvCz5FCORYIQn77JTTJICVqPFXEJwAa3JPiVGejtFHWzYVEylCqSZ+8efWwnUjqnQddirwGrnzsS+FKXrSQytVfSp7QgJkz1PiUXG2Jvl/Hubq0lQiBsGxQs/57dDJr451MDROR78OFQA0ltcLuUreCHWc1XEHDNQJUnKMxWiSmfzoPTwUKbtNuHSRdi9UIsxN9apKWnewLffRCy3M+DyN7FFS1Sl5ieRaHcd+cAAutlnjgwiKz7GJ8H6Is/hs63nk9oa7+E1FMK3FdqaSt5GvFLPdZPExTGuaJBcwA1UitJuz1RKpxHegRUN3LaTsYm4=
+  - secure: dDfYfu00jNJgRYcdGy4lWhbJZEtbTjANbgILh7FHivx70LskBvad5w1+B5aTy8wIWSxvRGBi8DD+45IOkFdYwlAiU3BbaE1GSQuIOsfGvlBwlzvGtgIz8Pff43rtvjuKg5PTNd7qoz8kue++F7aLZBLV63uEzwpY1u0t10sLiXxY9NECxqsnCxhTc7mOS3RqOtLUkMgPTXwgBmvg0voI/c9Ii2CpiJCZ86ovpcI8jxil40luRRrJNZMgTlqnttwsr6QdYZiB14kRvxq6DGoywDUB3VX5WLmD063UGQn8ZSTgANK+1Kimu7RwhlB43eBbV5Meou2ysw1hnaJmWjXA+HdOU5GMepkIDAOUPhzD7yi+JgOI9ddnMa0GzEdGGxE6sjBvPhJZXo0zho6daOq14vN4gdKRneNzItFCViXqcZw3oN8fYrs55n59Ex0PVLPr35kAJDEVTxauV3X7Oh7mfVghjTIXzJvor1wVRWY8XBcr3yFOKnNxmUYNxze4QMIXPq0/gaiJzBfyIDESuBQGiCNA5+J124PsEPrdNF7l9e36y583oiy5pk5DdM015RyOKjsnvYVLPWMnrQvVf/NVjlpGimmq3Zq8YvYia6y62aaiDCiu4d9m6NhS5PPattENHWnga9J5FZn5cS9NxvrP2d/nauTgDLQuH//tutO1UT4=
