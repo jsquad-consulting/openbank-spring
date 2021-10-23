@@ -20,7 +20,7 @@ services:
     network_mode: host
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    image: jsquadab/k3dcontainer:latest
+    image: mrasimov/k3dcontainer:latest
     environment:
       CLUSTER_NAME: "jsquad"
       CLUSTER_API_PORT: "6443"
