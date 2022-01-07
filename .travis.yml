@@ -27,6 +27,10 @@ cache:
     - $HOME/.m2
 
 before_install:
+  - curl -s "https://get.sdkman.io" | bash
+  - source "$HOME/.sdkman/bin/sdkman-init.sh"
+  - sdk install gradle 7.3.1
+  - gradle wrapper --gradle-version 7.3.1 --distribution-type bin
   - gem install travis-artifacts
   - echo $JAVA_HOME
   - which java
@@ -65,7 +69,7 @@ jobs:
     - stage: build and run unit/system tests with full code coverage verification
       script:
         - travis_wait 10 mvn clean verify -T 1C -Pgenerate-unit-coverage,generate-report
-        - travis_wait 10 ./verify_code_coverage.sh 70
+        - travis_wait 10 ./verify_code_coverage.sh 69
     - stage: verify feature branch is not behind master branch with SQL file changes or pipeline changes
       script:
         - ./verify_sql_and_pipeline_changes.sh "${TRAVIS_BRANCH}"
@@ -74,21 +78,21 @@ jobs:
         - ./flyway_sql_validation.sh
     - stage: run integration tests in Docker
       script:
-        - mvn clean install -T 1C -DskipTests
+        - ./gradlew clean build -x test
         - source setup_docker_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-int.yaml build --force
-        - travis_wait 20 mvn verify -Pintegration-tests
+        - travis_wait 20 ./gradlew integrationTests
         - find **/target/** -name "*.log" -exec travis-artifacts upload --path {} \;
     - stage: run integration tests in Kubernetes
       script:
         - source setup_production_environment_variables.sh
         - source setup_kubernetes_integration_environment.sh
         - docker-compose -f service/src/test/resources/docker-compose-k8-integration.yaml build --force
-        - travis_wait 20 mvn verify -Pintegration-tests
+        - travis_wait 20 ./gradlew integrationTests
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
-        - mvn clean install -T 1C -DskipTests
+        - ./gradlew clean build -x test
         - cd service && docker build -f Dockerfile --no-cache -t spring-boot-openbank .
         - docker tag spring-boot-openbank:latest mrasimov/spring-boot-openbank:latest
         - docker push mrasimov/spring-boot-openbank:latest

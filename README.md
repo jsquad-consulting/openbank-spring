@@ -4,7 +4,7 @@
 ## Requirements
 
 * JDK 11
-* Maven 3.6.0
+* Maven 3.6.0 or Gradle 7.3.1+
 * Docker 1.19+
 
 ## UML Diagram generation
@@ -18,7 +18,11 @@ Generate the graphvis dot files to pdf by the command:
 ## Package OpenBank application
 
 ```bash
+# Maven
 mvn clean install -T 1C -DskipTests
+
+# Gradle
+./gradlew clean build -x test
 ```
 
 ## Start the application
@@ -40,7 +44,11 @@ source setup_environment_variables.sh
 ## Run unit/system tests
 
 ```bash
+# Maven
 mvn clean install -T 1C
+
+# Gradle
+./gradlew clean build
 ```
 
 ## Run integration tests
@@ -66,7 +74,11 @@ source setup_kubernetes_environment.sh
 ### Execute the integration tests for specific environment
 
 ```bash
+# Maven
 mvn verify -Pintegrationtests
+
+# Gradle
+./gradlew integrationTests
 ```
 
 ## Access on the fly RESTful API code generation
