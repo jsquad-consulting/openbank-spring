@@ -12,6 +12,13 @@ java {
 	}
 }
 
+test {
+	useJUnitPlatform()
+	filter {
+		excludeTestsMatching("*IT")
+	}
+}
+
 configurations {
 	jaxb
 }
