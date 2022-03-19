@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import nl.altindag.log.LogCaptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -40,15 +41,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
 import se.jsquad.AbstractSpringBootConfiguration;
-import se.jsquad.api.client.AccountApi;
-import se.jsquad.api.client.AccountTransactionApi;
-import se.jsquad.api.client.ClientApi;
-import se.jsquad.api.client.ClientData;
-import se.jsquad.api.client.ClientInformationResponse;
-import se.jsquad.api.client.ClientRequest;
-import se.jsquad.api.client.PersonApi;
-import se.jsquad.api.client.TransactionTypeApi;
-import se.jsquad.api.client.WorldApiResponse;
+import se.jsquad.api.client.*;
 import se.jsquad.component.database.FlywayDatabaseMigration;
 import se.jsquad.configuration.ApplicationConfiguration;
 
@@ -62,10 +55,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -122,7 +112,7 @@ class GetClientInformationRestControllerImplTest extends AbstractSpringBootConfi
     private Gson gson = new Gson();
     
     @Test
-    void testGetHelloWorldByMockedRemoteRestfulServer() {
+    void testGetHelloWorldByMockedRemoteRestfulServer() throws InterruptedException {
         // Given
         WorldApiResponse worldApiResponse = new WorldApiResponse();
         worldApiResponse.setMessage("Hello world");
@@ -136,6 +126,11 @@ class GetClientInformationRestControllerImplTest extends AbstractSpringBootConfi
 
         // Then
         assertEquals(HttpStatus.OK, worldApiResponseResponseEntity.getStatusCode());
+
+        RecordedRequest request = mockBackEnd.takeRequest();
+        assertEquals("GET", request.getMethod());
+        assertEquals("/api/get/hello/world", request.getPath());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, request.getHeader(HttpHeaders.CONTENT_TYPE));
 
         WorldApiResponse worldApiResponseResult = worldApiResponseResponseEntity.getBody();
 
